@@ -132,3 +132,26 @@ test("POST /api/config saves settings and GET /api/config returns masked state",
   // Verify key is masked in GET
   assert.equal(getData.config.apiKeys.gemini, "configured");
 });
+
+test("POST /api/generate-storyboard generates validated storyboard", async () => {
+  const payload = {
+    prompt: "A modern fast developer tool that runs everywhere.",
+    tone: "default",
+    aspectRatio: "16:9",
+    duration: 20,
+  };
+
+  const res = await fetch(`${baseUrl}/api/generate-storyboard`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+
+  assert.equal(res.status, 200);
+  const data = await res.json();
+  assert.equal(data.success, true);
+  assert.ok(data.storyboard);
+  assert.ok(Array.isArray(data.storyboard.scenes));
+  assert.equal(data.storyboard.scenes[0].type, "hook");
+});
+

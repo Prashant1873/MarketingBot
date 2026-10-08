@@ -8,7 +8,7 @@ Marcutie is built in 6 phases, moving from the local server scaffold and modern 
 
 - [x] **Phase 1: Local Server & Project Scaffold** - Node.js local server, Vite integration, local uploads directory, asset endpoints, and local config.
 - [x] **Phase 2: Web GUI & Input Studio** - Premium dark-mode interface, prompt & image inputs, tone/aspect selectors, and BYOK settings modal.
-- [ ] **Phase 3: BYOK Multimodal AI Storyboard Engine** - Gemini/Claude/OpenAI integrations, prompt & image analysis, structured storyboard JSON generation, and marketing laws validation.
+- [x] **Phase 3: BYOK Multimodal AI Storyboard Engine** - Gemini/Claude/OpenAI integrations, prompt & image analysis, structured storyboard JSON generation, and marketing laws validation.
 - [ ] **Phase 4: Composition Engine & Live Preview** - Remotion animated scene components (Hook, Reveal, Highlights, Outro) and embedded live scrubbing player.
 - [ ] **Phase 5: Audio & Sound FX Pipeline** - Bundled CC0 music library, motion-matched sound effect triggers, and audio ducking.
 - [ ] **Phase 6: Local Render, Poster Baking & Social Delivery** - Local MP4 rendering, settled poster frame extraction, frame-0 poster baking, and one-click share copy generation.
@@ -56,8 +56,8 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 03-01: Implement multimodal AI provider adapters (Gemini, Claude, OpenAI) with prompt & vision prompts.
-- [ ] 03-02: Implement storyboard JSON schema generator and marketing laws validation & auto-fix pipeline.
+- [x] 03-01: Implement multimodal AI provider adapters (Gemini, Claude, OpenAI) with prompt & vision prompts.
+- [x] 03-02: Implement storyboard JSON schema generator and marketing laws validation & auto-fix pipeline.
 
 ### Phase 4: Composition Engine & Live Preview
 **Goal**: Implement Remotion motion graphics scene components and embed real-time timeline player in the Web GUI.  
@@ -113,7 +113,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 |-------|----------------|--------|-----------|
 | 1. Local Server & Project Scaffold | 2/2 | Complete | 2026-10-08 |
 | 2. Web GUI & Input Studio | 2/2 | Complete | 2026-10-08 |
-| 3. BYOK Multimodal AI Storyboard Engine | 0/2 | Not started | - |
+| 3. BYOK Multimodal AI Storyboard Engine | 2/2 | Complete | 2026-10-08 |
 | 4. Composition Engine & Live Preview | 0/3 | Not started | - |
 | 5. Audio & Sound FX Pipeline | 0/2 | Not started | - |
 | 6. Local Render, Poster Baking & Social Delivery | 0/2 | Not started | - |

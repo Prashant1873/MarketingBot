@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { Play, Sparkles, Key, CheckCircle2, ShieldAlert } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
+import { Play, Sparkles, Key, CheckCircle2, ShieldAlert, Loader2, AlertCircle } from "lucide-react";
 
 import { Header } from "./components/Header";
 import { PromptInput } from "./components/PromptInput";
@@ -7,8 +7,9 @@ import { ImageDropzone } from "./components/ImageDropzone";
 import { ToneSelector } from "./components/ToneSelector";
 import { FormatControls } from "./components/FormatControls";
 import { SettingsModal } from "./components/SettingsModal";
+import { StoryboardInspector } from "./components/StoryboardInspector";
 import { useConfig } from "./hooks/useConfig";
-import { Tone, AspectRatio, Duration } from "./types";
+import { Tone, AspectRatio, Duration, Storyboard } from "./types";
 
 export default function App() {
   const { config, hasKey, hasAnyKey, saveConfig } = useConfig();
@@ -25,6 +26,15 @@ export default function App() {
   const [customTone, setCustomTone] = useState("");
   const [aspectRatio, setAspectRatio] = useState<AspectRatio>("16:9");
   const [duration, setDuration] = useState<Duration>(20);
+
+  // Storyboard Generation State
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [generationError, setGenerationError] = useState<string | null>(null);
+  const [storyboard, setStoryboard] = useState<Storyboard | null>(null);
+  const [providerUsed, setProviderUsed] = useState("gemini");
+  const [isMock, setIsMock] = useState(false);
+
+  const inspectorRef = useRef<HTMLDivElement>(null);
 
   // Check backend server status
   useEffect(() => {
@@ -55,30 +65,59 @@ export default function App() {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
-        if (prompt.trim()) {
+        if (prompt.trim() && !isGenerating) {
           handleGenerate();
         }
       }
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [prompt]);
+  }, [prompt, isGenerating]);
 
-  const handleGenerate = () => {
-    if (!prompt.trim()) return;
+  const handleGenerate = async () => {
+    if (!prompt.trim() || isGenerating) return;
 
-    if (!hasAnyKey) {
-      setIsSettingsOpen(true);
-      return;
+    setIsGenerating(true);
+    setGenerationError(null);
+
+    try {
+      const res = await fetch("/api/generate-storyboard", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          prompt,
+          imageUrl,
+          tone,
+          customTone,
+          aspectRatio,
+          duration,
+          provider: config?.preferences?.preferredProvider,
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || "Failed to generate storyboard");
+      }
+
+      setStoryboard(data.storyboard);
+      setProviderUsed(data.providerUsed);
+      setIsMock(Boolean(data.isMock));
+
+      // Smooth scroll to storyboard inspector
+      setTimeout(() => {
+        inspectorRef.current?.scrollIntoView({ behavior: "smooth" });
+      }, 100);
+    } catch (err: unknown) {
+      const errorMsg = err instanceof Error ? err.message : "An unexpected error occurred";
+      setGenerationError(errorMsg);
+    } finally {
+      setIsGenerating(false);
     }
-
-    alert(
-      `⚡ Ready for Phase 3! Storyboard Engine will parse:\n• Prompt: ${prompt.slice(0, 60)}...\n• Visual: ${imageFilename || "Prompt-only"}\n• Tone: ${customTone || tone}\n• Format: ${aspectRatio} (${duration}s)`
-    );
   };
 
   return (
-    <div style={{ maxWidth: "1280px", margin: "0 auto", padding: "32px 24px 100px" }}>
+    <div style={{ maxWidth: "1280px", margin: "0 auto", padding: "32px 24px 120px" }}>
       {/* Header Navigation */}
       <Header
         serverStatus={serverStatus}
@@ -147,6 +186,54 @@ export default function App() {
         </div>
       </main>
 
+      {/* Generation Error Alert */}
+      {generationError && (
+        <div
+          style={{
+            marginTop: "24px",
+            padding: "16px 20px",
+            background: "rgba(239, 68, 68, 0.15)",
+            border: "1px solid rgba(239, 68, 68, 0.4)",
+            borderRadius: "var(--radius-md)",
+            display: "flex",
+            alignItems: "center",
+            gap: "12px",
+            color: "#fca5a5",
+            fontSize: "13px",
+          }}
+        >
+          <AlertCircle size={18} color="#ef4444" />
+          <div style={{ flex: 1 }}>{generationError}</div>
+          <button
+            onClick={() => setGenerationError(null)}
+            style={{
+              background: "transparent",
+              border: "none",
+              color: "#fca5a5",
+              cursor: "pointer",
+              fontSize: "12px",
+              textDecoration: "underline",
+            }}
+          >
+            Dismiss
+          </button>
+        </div>
+      )}
+
+      {/* Storyboard Inspector Section */}
+      {storyboard && (
+        <div ref={inspectorRef} style={{ marginTop: "40px" }}>
+          <div style={{ height: "1px", background: "var(--border-color)", margin: "32px 0 40px" }} />
+          <StoryboardInspector
+            storyboard={storyboard}
+            providerUsed={providerUsed}
+            isMock={isMock}
+            onUpdateStoryboard={setStoryboard}
+            onRegenerate={handleGenerate}
+          />
+        </div>
+      )}
+
       {/* Floating Action Bar */}
       <footer
         style={{
@@ -157,7 +244,7 @@ export default function App() {
           width: "calc(100% - 48px)",
           maxWidth: "960px",
           padding: "14px 24px",
-          background: "rgba(13, 19, 34, 0.9)",
+          background: "rgba(13, 19, 34, 0.92)",
           backdropFilter: "blur(20px)",
           border: "1px solid var(--border-highlight)",
           borderRadius: "var(--radius-xl)",
@@ -180,16 +267,26 @@ export default function App() {
               justifyContent: "center",
             }}
           >
-            <Sparkles size={16} color="#fff" />
+            {isGenerating ? (
+              <Loader2 size={16} color="#fff" className="animate-spin" />
+            ) : (
+              <Sparkles size={16} color="#fff" />
+            )}
           </div>
           <div>
             <div style={{ fontSize: "13px", fontWeight: "700" }}>
-              {prompt.trim() ? "Ready to compose video" : "Enter prompt to start"}
+              {isGenerating
+                ? "Synthesizing marketing storyboard with AI..."
+                : storyboard
+                ? "Storyboard generated • Ready to preview & render"
+                : prompt.trim()
+                ? "Ready to compose video"
+                : "Enter prompt to start"}
             </div>
             <div style={{ fontSize: "11px", color: "var(--text-secondary)" }}>
               {!hasAnyKey ? (
                 <span style={{ color: "var(--warning)", display: "flex", alignItems: "center", gap: "4px" }}>
-                  <ShieldAlert size={12} /> BYOK key required before AI generation
+                  <ShieldAlert size={12} /> No API key saved (will run offline mock mode)
                 </span>
               ) : (
                 <span style={{ color: "var(--success)", display: "flex", alignItems: "center", gap: "4px" }}>
@@ -213,16 +310,26 @@ export default function App() {
 
           <button
             onClick={handleGenerate}
-            disabled={!prompt.trim()}
+            disabled={!prompt.trim() || isGenerating}
             className="btn-primary"
             style={{
               padding: "10px 24px",
               fontSize: "14px",
               borderRadius: "var(--radius-md)",
+              opacity: isGenerating ? 0.7 : 1,
             }}
           >
-            <Play size={16} fill="#fff" />
-            <span>Generate Storyboard & Video</span>
+            {isGenerating ? (
+              <>
+                <Loader2 size={16} className="animate-spin" />
+                <span>Crafting Scenes...</span>
+              </>
+            ) : (
+              <>
+                <Play size={16} fill="#fff" />
+                <span>{storyboard ? "Re-generate Storyboard" : "Generate Storyboard & Video"}</span>
+              </>
+            )}
           </button>
         </div>
       </footer>

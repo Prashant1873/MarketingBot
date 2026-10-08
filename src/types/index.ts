@@ -54,3 +54,39 @@ export interface TonePreset {
   tagline: string;
   iconName: string;
 }
+
+export interface StoryboardScene {
+  id: string;
+  type: "hook" | "product_reveal" | "highlight_beats" | "outro" | string;
+  duration: number;
+  headline: string;
+  subtext?: string;
+  cta?: string;
+  beats?: string[];
+  visualEmphasis?: string;
+  transition?: string;
+}
+
+export interface AudioDirection {
+  musicMood: string;
+  trackRecommendation: string;
+  sfxCues: string[];
+}
+
+export interface ShareCopy {
+  twitter: string;
+  linkedin: string;
+  discord: string;
+}
+
+export interface Storyboard {
+  title: string;
+  tagline: string;
+  tone: Tone;
+  aspectRatio: AspectRatio;
+  targetDuration: number;
+  imageUrl?: string;
+  scenes: StoryboardScene[];
+  audioDirection: AudioDirection;
+  shareCopy: ShareCopy;
+}

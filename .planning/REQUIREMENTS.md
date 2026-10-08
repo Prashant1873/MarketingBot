@@ -18,15 +18,15 @@
 - [x] **GUI-02**: Multi-input prompt panel supporting long text prompts, product description markdown, and image drag-and-drop.
 - [x] **GUI-03**: Tone preset selector (`default`, `polished`, `yc-parody`, `chaotic`, `deadpan`, `cinematic`, `app-store`) and custom direction input.
 - [x] **GUI-04**: Aspect ratio selector (16:9 Landscape, 9:16 Vertical, 1:1 Square) and duration picker (15s, 20s, 25s).
-- [ ] **GUI-05**: Interactive Storyboard Editor allowing inspection and fine-tuning of scene text, timings, and visual emphasis.
+- [x] **GUI-05**: Interactive Storyboard Editor allowing inspection and fine-tuning of scene text, timings, and visual emphasis.
 - [ ] **GUI-06**: Live embedded video player preview with play/pause, scrub slider, and frame timecode display.
 
 ### AI Storyboard Engine (AI)
 
-- [ ] **AI-01**: Multimodal API integration supporting Google Gemini (Flash/Pro), Anthropic Claude, and OpenAI GPT-4o.
-- [ ] **AI-02**: Prompt & image analysis decomposes user inputs into visual hooks, claims, and product highlights.
-- [ ] **AI-03**: Strict JSON storyboard generator producing structured scenes with copy, duration, visual treatments, and transition cues.
-- [ ] **AI-04**: Marketing laws validator ensuring:
+- [x] **AI-01**: Multimodal API integration supporting Google Gemini (Flash/Pro), Anthropic Claude, and OpenAI GPT-4o.
+- [x] **AI-02**: Prompt & image analysis decomposes user inputs into visual hooks, claims, and product highlights.
+- [x] **AI-03**: Strict JSON storyboard generator producing structured scenes with copy, duration, visual treatments, and transition cues.
+- [x] **AI-04**: Marketing laws validator ensuring:
   - Opening hook duration between 2–3s
   - Text hold times satisfy legibility floor (>=0.8s for labels, >=0.3s/word for headlines)
   - Total video duration between 15–25s

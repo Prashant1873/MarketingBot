@@ -6,6 +6,7 @@ import fs from "fs";
 import uploadRouter from "./routes/upload.js";
 import assetsRouter from "./routes/assets.js";
 import configRouter from "./routes/config.js";
+import storyboardRouter from "./routes/storyboard.js";
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -42,6 +43,7 @@ app.get("/api/health", (_req, res) => {
 app.use("/api/upload", uploadRouter);
 app.use("/api/assets", assetsRouter);
 app.use("/api/config", configRouter);
+app.use("/api/generate-storyboard", storyboardRouter);
 
 import { fileURLToPath } from "url";
 
