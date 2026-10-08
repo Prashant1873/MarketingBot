@@ -4,6 +4,8 @@
   "description": "Local-first marketing and launch video generator",
   "type": "module",
   "scripts": {
+    "start": "node scripts/dev.js",
+    "dev:all": "node scripts/dev.js",
     "dev": "vite",
     "server": "node server/index.js",
     "build": "tsc && vite build",
