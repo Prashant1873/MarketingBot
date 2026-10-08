@@ -16,9 +16,9 @@ Turn raw product ideas, marketing prompts, and product images into professional,
 - ✓ **SRV-02**: Image upload endpoint stores files locally with MIME validation — Phase 1
 - ✓ **SRV-03**: Audio asset endpoint serves bundled music & SFX — Phase 1
 - ✓ **SRV-04**: Local config store securely saves BYOK keys — Phase 1
+- ✓ **GUI-01**: Sleek dark-mode Web GUI with prompt input, image dropzone, tone/duration selectors, and API key management — Phase 2
 
 ### Active
-- [ ] **GUI-01**: Sleek, high-aesthetics Web GUI with dark mode, prompt input, image upload/dropzone, tone/duration selectors, and API key management.
 - [ ] **AI-01**: BYOK (Bring Your Own Key) multimodal AI engine supporting Gemini, Claude, and OpenAI to parse prompts and analyze product images into structured storyboard scenes.
 - [ ] **STORY-01**: Creative script and storyboard generator enforcing marketing video laws: punchy 2-3s hook, readable hold times (>=0.8s), key product highlight scenes, and memorable punchline outro.
 - [ ] **AUDIO-01**: Built-in audio direction, royalty-free background music tracks, motion-matched sound effect triggers, and optional narration/TTS support.

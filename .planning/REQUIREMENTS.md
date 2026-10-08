@@ -14,10 +14,10 @@
 
 ### Web GUI & User Experience (GUI)
 
-- [ ] **GUI-01**: Modern, dark-mode Web GUI adhering to high aesthetic standards with responsive glassmorphism layout.
-- [ ] **GUI-02**: Multi-input prompt panel supporting long text prompts, product description markdown, and image drag-and-drop.
-- [ ] **GUI-03**: Tone preset selector (`default`, `polished`, `yc-parody`, `chaotic`, `deadpan`, `cinematic`, `app-store`) and custom direction input.
-- [ ] **GUI-04**: Aspect ratio selector (16:9 Landscape, 9:16 Vertical, 1:1 Square) and duration picker (15s, 20s, 25s).
+- [x] **GUI-01**: Modern, dark-mode Web GUI adhering to high aesthetic standards with responsive glassmorphism layout.
+- [x] **GUI-02**: Multi-input prompt panel supporting long text prompts, product description markdown, and image drag-and-drop.
+- [x] **GUI-03**: Tone preset selector (`default`, `polished`, `yc-parody`, `chaotic`, `deadpan`, `cinematic`, `app-store`) and custom direction input.
+- [x] **GUI-04**: Aspect ratio selector (16:9 Landscape, 9:16 Vertical, 1:1 Square) and duration picker (15s, 20s, 25s).
 - [ ] **GUI-05**: Interactive Storyboard Editor allowing inspection and fine-tuning of scene text, timings, and visual emphasis.
 - [ ] **GUI-06**: Live embedded video player preview with play/pause, scrub slider, and frame timecode display.
 
@@ -76,10 +76,10 @@
 | SRV-02 | Phase 1 | Complete |
 | SRV-03 | Phase 1 | Complete |
 | SRV-04 | Phase 1 | Complete |
-| GUI-01 | Phase 2 | Pending |
-| GUI-02 | Phase 2 | Pending |
-| GUI-03 | Phase 2 | Pending |
-| GUI-04 | Phase 2 | Pending |
+| GUI-01 | Phase 2 | Complete |
+| GUI-02 | Phase 2 | Complete |
+| GUI-03 | Phase 2 | Complete |
+| GUI-04 | Phase 2 | Complete |
 | AI-01 | Phase 3 | Pending |
 | AI-02 | Phase 3 | Pending |
 | AI-03 | Phase 3 | Pending |

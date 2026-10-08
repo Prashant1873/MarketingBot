@@ -7,7 +7,7 @@ Marcutie is built in 6 phases, moving from the local server scaffold and modern 
 ## Phases
 
 - [x] **Phase 1: Local Server & Project Scaffold** - Node.js local server, Vite integration, local uploads directory, asset endpoints, and local config.
-- [ ] **Phase 2: Web GUI & Input Studio** - Premium dark-mode interface, prompt & image inputs, tone/aspect selectors, and BYOK settings modal.
+- [x] **Phase 2: Web GUI & Input Studio** - Premium dark-mode interface, prompt & image inputs, tone/aspect selectors, and BYOK settings modal.
 - [ ] **Phase 3: BYOK Multimodal AI Storyboard Engine** - Gemini/Claude/OpenAI integrations, prompt & image analysis, structured storyboard JSON generation, and marketing laws validation.
 - [ ] **Phase 4: Composition Engine & Live Preview** - Remotion animated scene components (Hook, Reveal, Highlights, Outro) and embedded live scrubbing player.
 - [ ] **Phase 5: Audio & Sound FX Pipeline** - Bundled CC0 music library, motion-matched sound effect triggers, and audio ducking.
@@ -42,8 +42,8 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 02-01: Build design system tokens, layout shell, header, and BYOK settings panel.
-- [ ] 02-02: Build prompt input studio, image uploader with preview, and video configuration controls.
+- [x] 02-01: Build design system tokens, layout shell, header, and BYOK settings panel.
+- [x] 02-02: Build prompt input studio, image uploader with preview, and video configuration controls.
 
 ### Phase 3: BYOK Multimodal AI Storyboard Engine
 **Goal**: Build the multimodal AI parser that takes prompts and images and generates a structured marketing storyboard adhering to viral video laws.  
@@ -112,7 +112,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Local Server & Project Scaffold | 2/2 | Complete | 2026-10-08 |
-| 2. Web GUI & Input Studio | 0/2 | Not started | - |
+| 2. Web GUI & Input Studio | 2/2 | Complete | 2026-10-08 |
 | 3. BYOK Multimodal AI Storyboard Engine | 0/2 | Not started | - |
 | 4. Composition Engine & Live Preview | 0/3 | Not started | - |
 | 5. Audio & Sound FX Pipeline | 0/2 | Not started | - |
