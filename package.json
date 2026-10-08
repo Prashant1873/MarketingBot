@@ -11,7 +11,9 @@
     "test": "node --test tests/server.test.js tests/storyboard.test.js tests/composition.test.js tests/audio.test.js"
   },
   "dependencies": {
+    "@remotion/bundler": "^4.0.534",
     "@remotion/player": "^4.0.260",
+    "@remotion/renderer": "^4.0.534",
     "cors": "^2.8.5",
     "express": "^4.21.2",
     "lucide-react": "^0.477.0",
