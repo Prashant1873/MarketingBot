@@ -1,12 +1,11 @@
 import { Sequence } from "remotion";
 import { RemotionCompositionProps, secondsToFrames } from "./types";
-import { HookScene } from "./scenes/HookScene";
-import { ProductRevealScene } from "./scenes/ProductRevealScene";
+import { HookScene, ProductRevealScene, HighlightScene, OutroScene } from "./scenes";
 
 export function MarcutieComposition({ storyboard, fps = 30 }: RemotionCompositionProps) {
   const { scenes, aspectRatio, tone, imageUrl } = storyboard;
 
-  // Calculate cumulative start frames
+  // Calculate cumulative start frames for exact sequential alignment
   let currentStartFrame = 0;
   const sequencedScenes = (scenes || []).map((scene) => {
     const durationInFrames = secondsToFrames(scene.duration, fps);
@@ -49,8 +48,25 @@ export function MarcutieComposition({ storyboard, fps = 30 }: RemotionCompositio
                       durationInFrames={durationInFrames}
                     />
                   );
+                case "highlight_beats":
+                  return (
+                    <HighlightScene
+                      scene={scene}
+                      aspectRatio={aspectRatio}
+                      tone={tone}
+                      durationInFrames={durationInFrames}
+                    />
+                  );
+                case "outro":
+                  return (
+                    <OutroScene
+                      scene={scene}
+                      aspectRatio={aspectRatio}
+                      tone={tone}
+                      durationInFrames={durationInFrames}
+                    />
+                  );
                 default:
-                  // Temporary fallback for highlight_beats and outro (until Plan 04-02 implements dedicated scenes)
                   return (
                     <HookScene
                       scene={scene}

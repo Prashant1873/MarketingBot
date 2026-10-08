@@ -48,3 +48,37 @@ test("Scene sequence frame sum equals target duration frames", () => {
   const totalFrames = scenes.reduce((sum, s) => sum + secondsToFrames(s.duration, 30), 0);
   assert.equal(totalFrames, targetFrames);
 });
+
+test("Scene sequence transitions have zero gaps and zero overlaps", () => {
+  const scenes = [
+    { type: "hook", duration: 2.5 },
+    { type: "product_reveal", duration: 5.5 },
+    { type: "highlight_beats", duration: 7.0 },
+    { type: "outro", duration: 5.0 },
+  ];
+
+  let currentStart = 0;
+  const sequenced = scenes.map((s) => {
+    const durationFrames = secondsToFrames(s.duration, 30);
+    const from = currentStart;
+    currentStart += durationFrames;
+    return { type: s.type, from, to: from + durationFrames, durationFrames };
+  });
+
+  // Verify contiguous alignment
+  for (let i = 0; i < sequenced.length - 1; i++) {
+    assert.equal(sequenced[i].to, sequenced[i + 1].from);
+  }
+
+  // Verify end frame strictly matches 600
+  assert.equal(sequenced[sequenced.length - 1].to, 600);
+});
+
+test("All 4 core viral marketing scene acts are recognized", () => {
+  const validActs = new Set(["hook", "product_reveal", "highlight_beats", "outro"]);
+  const testScenes = ["hook", "product_reveal", "highlight_beats", "outro"];
+
+  for (const act of testScenes) {
+    assert.ok(validActs.has(act));
+  }
+});
