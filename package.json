@@ -8,7 +8,7 @@
     "server": "node server/index.js",
     "build": "tsc && vite build",
     "preview": "vite preview",
-    "test": "node --test tests/server.test.js tests/storyboard.test.js tests/composition.test.js"
+    "test": "node --test tests/server.test.js tests/storyboard.test.js tests/composition.test.js tests/audio.test.js"
   },
   "dependencies": {
     "@remotion/player": "^4.0.260",

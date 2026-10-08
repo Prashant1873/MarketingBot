@@ -52,8 +52,10 @@ fs.mkdirSync(sfxImpactDir, { recursive: true });
 fs.mkdirSync(sfxInterfaceDir, { recursive: true });
 
 // Generate sample music beds (longer gentle chords)
-fs.writeFileSync(path.join(musicDir, "pulse-launch-theme.wav"), createWavBuffer(2.0, 220));
-fs.writeFileSync(path.join(musicDir, "cyber-synth-groove.wav"), createWavBuffer(2.0, 330));
+fs.writeFileSync(path.join(musicDir, "pulse-launch-theme.wav"), createWavBuffer(2.5, 220));
+fs.writeFileSync(path.join(musicDir, "cyber-synth-groove.wav"), createWavBuffer(2.5, 330));
+fs.writeFileSync(path.join(musicDir, "indie-hustle-acoustic.wav"), createWavBuffer(2.5, 261.63));
+fs.writeFileSync(path.join(musicDir, "minimal-dark-sub.wav"), createWavBuffer(2.5, 130.81));
 
 // Generate sample SFX (short clicks, impacts, pops)
 fs.writeFileSync(path.join(sfxUiDir, "click.wav"), createWavBuffer(0.08, 1200));

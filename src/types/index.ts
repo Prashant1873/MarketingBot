@@ -90,3 +90,23 @@ export interface Storyboard {
   audioDirection: AudioDirection;
   shareCopy: ShareCopy;
 }
+
+export interface MusicTrack {
+  id: string;
+  name: string;
+  filename: string;
+  url: string;
+  bpm: number;
+  mood: string;
+  tones: string[];
+  description?: string;
+  available?: boolean;
+}
+
+export interface AudioConfig {
+  selectedMusicTrack: string;
+  musicVolume: number;
+  sfxVolume: number;
+  isMuted: boolean;
+}
+

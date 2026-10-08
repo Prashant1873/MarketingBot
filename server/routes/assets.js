@@ -1,59 +1,40 @@
 import express from "express";
 import path from "path";
 import fs from "fs";
+import { musicTracks, sfxLibrary, getRecommendedTrack } from "../data/audioCatalog.js";
 
 const router = express.Router();
 
 const musicDir = path.join(process.cwd(), "assets", "music");
 const sfxDir = path.join(process.cwd(), "assets", "sfx");
 
-router.get("/audio", (_req, res) => {
-  const music = [];
-  const sfx = [];
+router.get("/audio", (req, res) => {
+  const tone = req.query.tone || "default";
 
-  if (fs.existsSync(musicDir)) {
-    const files = fs.readdirSync(musicDir);
-    for (const file of files) {
-      if (/\.(mp3|wav|ogg|m4a)$/i.test(file)) {
-        const name = path.parse(file).name.replace(/[-_]/g, " ");
-        music.push({
-          id: path.parse(file).name,
-          name: name.charAt(0).toUpperCase() + name.slice(1),
-          filename: file,
-          url: `/assets/music/${file}`,
-        });
-      }
-    }
-  }
-
-  if (fs.existsSync(sfxDir)) {
-    const scanSfx = (dir, category = "general") => {
-      const items = fs.readdirSync(dir, { withFileTypes: true });
-      for (const item of items) {
-        if (item.isDirectory()) {
-          scanSfx(path.join(dir, item.name), item.name);
-        } else if (/\.(mp3|wav|ogg)$/i.test(item.name)) {
-          const relativePath = path
-            .relative(sfxDir, path.join(dir, item.name))
-            .replace(/\\/g, "/");
-          const name = path.parse(item.name).name.replace(/[-_]/g, " ");
-          sfx.push({
-            id: path.parse(item.name).name,
-            name: name.charAt(0).toUpperCase() + name.slice(1),
-            filename: item.name,
-            category,
-            url: `/assets/sfx/${relativePath}`,
-          });
-        }
-      }
+  // Merge catalog metadata with filesystem presence
+  const music = musicTracks.map((track) => {
+    const exists = fs.existsSync(path.join(musicDir, track.filename));
+    return {
+      ...track,
+      available: exists,
     };
-    scanSfx(sfxDir);
-  }
+  });
+
+  const sfx = sfxLibrary.map((item) => {
+    const exists = fs.existsSync(path.join(sfxDir, item.category, item.filename));
+    return {
+      ...item,
+      available: exists,
+    };
+  });
+
+  const recommendedTrack = getRecommendedTrack(tone);
 
   res.json({
     success: true,
     music,
     sfx,
+    recommendedTrack,
   });
 });
 
