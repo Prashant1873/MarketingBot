@@ -17,14 +17,14 @@ Turn raw product ideas, marketing prompts, and product images into professional,
 - ✓ **SRV-03**: Audio asset endpoint serves bundled music & SFX — Phase 1
 - ✓ **SRV-04**: Local config store securely saves BYOK keys — Phase 1
 - ✓ **GUI-01**: Sleek dark-mode Web GUI with prompt input, image dropzone, tone/duration selectors, and API key management — Phase 2
+- ✓ **AI-01**: BYOK multimodal AI engine supporting Gemini, Claude, and OpenAI to parse prompts and analyze product images — Phase 3
+- ✓ **STORY-01**: Creative script and storyboard generator enforcing viral marketing video laws — Phase 3
+- ✓ **SHARE-01**: Automatic social share copy generation matching video tone for Twitter/X, LinkedIn, and Discord — Phase 3
 
 ### Active
-- [ ] **AI-01**: BYOK (Bring Your Own Key) multimodal AI engine supporting Gemini, Claude, and OpenAI to parse prompts and analyze product images into structured storyboard scenes.
-- [ ] **STORY-01**: Creative script and storyboard generator enforcing marketing video laws: punchy 2-3s hook, readable hold times (>=0.8s), key product highlight scenes, and memorable punchline outro.
-- [ ] **AUDIO-01**: Built-in audio direction, royalty-free background music tracks, motion-matched sound effect triggers, and optional narration/TTS support.
-- [ ] **RENDER-01**: Client-side motion graphics & video rendering engine (Remotion / WebCodecs / Canvas) supporting instant live playback preview and local MP4 export.
-- [ ] **EXPORT-01**: Full video delivery pipeline: MP4 rendering, settled poster frame extraction (`poster.jpg`), and frame 0 poster baking for thumbnail preview on social feeds.
-- [ ] **SHARE-01**: Automatic social share copy generation matching video tone for Twitter/X, LinkedIn, and Discord.
+- [ ] **RENDER-01**: Client-side motion graphics & video rendering engine (Remotion) supporting instant live playback preview and local MP4 export — Phase 4 & Phase 6
+- [ ] **AUDIO-01**: Built-in audio direction, royalty-free background music tracks, and motion-matched sound effect triggers — Phase 5
+- [ ] **EXPORT-01**: Full video delivery pipeline: MP4 rendering, settled poster frame extraction (`poster.jpg`), and frame 0 poster baking — Phase 6
 
 ### Out of Scope
 
