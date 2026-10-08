@@ -6,7 +6,7 @@ Marcutie is built in 6 phases, moving from the local server scaffold and modern 
 
 ## Phases
 
-- [ ] **Phase 1: Local Server & Project Scaffold** - Node.js local server, Vite integration, local uploads directory, asset endpoints, and local config.
+- [x] **Phase 1: Local Server & Project Scaffold** - Node.js local server, Vite integration, local uploads directory, asset endpoints, and local config.
 - [ ] **Phase 2: Web GUI & Input Studio** - Premium dark-mode interface, prompt & image inputs, tone/aspect selectors, and BYOK settings modal.
 - [ ] **Phase 3: BYOK Multimodal AI Storyboard Engine** - Gemini/Claude/OpenAI integrations, prompt & image analysis, structured storyboard JSON generation, and marketing laws validation.
 - [ ] **Phase 4: Composition Engine & Live Preview** - Remotion animated scene components (Hook, Reveal, Highlights, Outro) and embedded live scrubbing player.
@@ -27,8 +27,8 @@ Marcutie is built in 6 phases, moving from the local server scaffold and modern 
 **Plans**: 2 plans
 
 Plans:
-- [ ] 01-01: Initialize project dependencies (Node, Express, Vite, React, Remotion) and folder architecture.
-- [ ] 01-02: Implement local server endpoints for static assets, image uploads, and local settings storage.
+- [x] 01-01: Initialize project dependencies (Node, Express, Vite, React, Remotion) and folder architecture.
+- [x] 01-02: Implement local server endpoints for static assets, image uploads, and local settings storage.
 
 ### Phase 2: Web GUI & Input Studio
 **Goal**: Build a high-aesthetic, responsive dark-mode Web GUI for entering marketing prompts, uploading product images, and choosing video parameters.  
@@ -111,7 +111,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Local Server & Project Scaffold | 0/2 | Not started | - |
+| 1. Local Server & Project Scaffold | 2/2 | Complete | 2026-10-08 |
 | 2. Web GUI & Input Studio | 0/2 | Not started | - |
 | 3. BYOK Multimodal AI Storyboard Engine | 0/2 | Not started | - |
 | 4. Composition Engine & Live Preview | 0/3 | Not started | - |

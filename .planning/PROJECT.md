@@ -12,11 +12,12 @@ Turn raw product ideas, marketing prompts, and product images into professional,
 
 ### Validated
 
-(None yet — greenfield initialization)
+- ✓ **SRV-01**: Node.js local server serves frontend on localhost — Phase 1
+- ✓ **SRV-02**: Image upload endpoint stores files locally with MIME validation — Phase 1
+- ✓ **SRV-03**: Audio asset endpoint serves bundled music & SFX — Phase 1
+- ✓ **SRV-04**: Local config store securely saves BYOK keys — Phase 1
 
 ### Active
-
-- [ ] **APP-01**: Lightweight local server (Node/Express or Python/FastAPI) serving local web GUI on localhost and managing file assets.
 - [ ] **GUI-01**: Sleek, high-aesthetics Web GUI with dark mode, prompt input, image upload/dropzone, tone/duration selectors, and API key management.
 - [ ] **AI-01**: BYOK (Bring Your Own Key) multimodal AI engine supporting Gemini, Claude, and OpenAI to parse prompts and analyze product images into structured storyboard scenes.
 - [ ] **STORY-01**: Creative script and storyboard generator enforcing marketing video laws: punchy 2-3s hook, readable hold times (>=0.8s), key product highlight scenes, and memorable punchline outro.

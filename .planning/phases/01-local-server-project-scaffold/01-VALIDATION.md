@@ -1,9 +1,9 @@
 ---
 phase: 1
 slug: local-server-project-scaffold
-status: draft
+status: validated
 nyquist_compliant: true
-wave_0_complete: false
+wave_0_complete: true
 created: 2026-10-08
 ---
 

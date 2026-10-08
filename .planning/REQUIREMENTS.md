@@ -7,10 +7,10 @@
 
 ### Local Server & Infrastructure (SRV)
 
-- [ ] **SRV-01**: Node.js local server serves the web application on `localhost` with static asset routing.
-- [ ] **SRV-02**: File upload endpoint stores user-provided images in a local temporary/uploads directory with image validation.
-- [ ] **SRV-03**: Built-in asset endpoint serves curated royalty-free music and sound effect libraries.
-- [ ] **SRV-04**: Secure local BYOK configuration storage (keeps user API keys local on disk or browser storage).
+- [x] **SRV-01**: Node.js local server serves the web application on `localhost` with static asset routing.
+- [x] **SRV-02**: File upload endpoint stores user-provided images in a local temporary/uploads directory with image validation.
+- [x] **SRV-03**: Built-in asset endpoint serves curated royalty-free music and sound effect libraries.
+- [x] **SRV-04**: Secure local BYOK configuration storage (keeps user API keys local on disk or browser storage).
 
 ### Web GUI & User Experience (GUI)
 
@@ -72,10 +72,10 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| SRV-01 | Phase 1 | Pending |
-| SRV-02 | Phase 1 | Pending |
-| SRV-03 | Phase 1 | Pending |
-| SRV-04 | Phase 1 | Pending |
+| SRV-01 | Phase 1 | Complete |
+| SRV-02 | Phase 1 | Complete |
+| SRV-03 | Phase 1 | Complete |
+| SRV-04 | Phase 1 | Complete |
 | GUI-01 | Phase 2 | Pending |
 | GUI-02 | Phase 2 | Pending |
 | GUI-03 | Phase 2 | Pending |
