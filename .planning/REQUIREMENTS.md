@@ -51,7 +51,11 @@
 - [x] **EXP-02**: Automatic settled poster frame extraction (`poster.jpg`) at the peak visual moment.
 - [x] **EXP-03**: Frame 0 poster baking into the exported MP4 so social platforms display the poster as the idle thumbnail.
 - [x] **EXP-04**: Social share copy generator producing ready-to-post captions for Twitter/X, LinkedIn, and Discord.
-- [x] **EXP-05**: Download and export management panel in the GUI with render progress indicators.
+### Milestone 2: Synthetic Mockups & Visual Style Transfer
+
+- [ ] **MOCKUP-01**: Procedural synthetic app window generator (macOS title bar with traffic lights, sidebar navigation, metric widgets, and sparkline graphs) for prompt-only mode.
+- [ ] **STYLE-01**: Image-to-Theme style transfer extracting color palette (primary, secondary, background, dark/light) and visual tone from uploaded images to theme video elements.
+- [ ] **FEATURE-01**: Prompt-described page feature synthesizer dynamically creating custom UI screens for whatever specific page/feature was described in the prompt while inheriting the brand design system.
 
 ## v2 Requirements (Deferred)
 
@@ -99,11 +103,14 @@
 | EXP-03 | Phase 6 | Complete |
 | EXP-04 | Phase 6 | Complete |
 | EXP-05 | Phase 6 | Complete |
+| MOCKUP-01 | Phase 7 | Pending |
+| STYLE-01 | Phase 8 | Pending |
+| FEATURE-01 | Phase 8 | Pending |
 
 **Coverage:**
-- v1 requirements: 26 total
-- Mapped to phases: 26
-- Unmapped: 0
+- Total requirements: 29 total
+- Completed: 26
+- Milestone 2 pending: 3
 
 ---
 *Requirements defined: 2026-10-08*

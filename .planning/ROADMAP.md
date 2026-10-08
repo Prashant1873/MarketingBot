@@ -104,10 +104,40 @@ Plans:
 - [x] 06-01: Implement local rendering pipeline with Remotion renderer and FFmpeg frame-0 poster baking.
 - [x] 06-02: Implement social share copy generator and final delivery/export panel in Web GUI.
 
+---
+
+### Milestone 2: Synthetic Mockups & Visual Style Transfer
+
+### Phase 7: Dynamic Synthetic App Window & UI Mockup Engine
+**Goal**: Build a procedural UI mockup engine in Remotion that generates a realistic simulated SaaS window (macOS traffic lights, sidebar navigation, dynamic metric widgets, and sparkline graphs) customized to the product domain when no image is uploaded.  
+**Depends on**: Phase 6  
+**Requirements**: MOCKUP-01  
+**Success Criteria**:
+  1. Prompt-only renders display a realistic simulated SaaS/App window with macOS window controls (🔴🟡🟢) and customizable domain themes.
+  2. Mockup includes animated sidebar navigation, status badges, metric KPI cards with sparkline curves, and active tab content.
+  3. Interactive 3D gyro tilt and camera push-in zooms apply smoothly to the synthetic window in ProductRevealScene.
+**Plans**: 1 plan
+
+Plans:
+- [ ] 07-01: Build procedural synthetic app window components and integrate into ProductRevealScene.
+
+### Phase 8: Multimodal Visual Style Transfer & Feature Screen Synthesizer
+**Goal**: Inspect uploaded screenshots/logos with AI vision to extract palette and design tokens, and dynamically synthesize page screens for whatever feature the prompt describes while inheriting the product's brand design system.  
+**Depends on**: Phase 7  
+**Requirements**: STYLE-01, FEATURE-01  
+**Success Criteria**:
+  1. Multimodal AI extracts color palette (primary, secondary, background, dark/light mode) from uploaded images.
+  2. Storyboard generator creates a structured `featureMockup` spec for the specific page/feature described in the prompt.
+  3. ProductRevealScene dynamically themes the synthesized feature screen using the extracted palette so it appears as an authentic part of the user's product.
+**Plans**: 1 plan
+
+Plans:
+- [ ] 08-01: Implement palette extraction adapter and prompt-driven feature screen synthesizer.
+
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
+Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
@@ -117,6 +147,8 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 | 4. Composition Engine & Live Preview | 3/3 | Complete | 2026-10-08 |
 | 5. Audio & Sound FX Pipeline | 2/2 | Complete | 2026-10-08 |
 | 6. Local Render, Poster Baking & Social Delivery | 2/2 | Complete | 2026-10-08 |
+| 7. Dynamic Synthetic App Window & Mockup Engine | 0/1 | Not started | - |
+| 8. Multimodal Visual Style Transfer & Feature Screen | 0/1 | Not started | - |
 
 ---
-*Roadmap defined: 2026-10-08*
+*Roadmap updated: 2026-10-08 for Milestone 2*

@@ -22,9 +22,13 @@ Turn raw product ideas, marketing prompts, and product images into professional,
 - ✓ **SHARE-01**: Automatic social share copy generation matching video tone for Twitter/X, LinkedIn, and Discord — Phase 3
 - ✓ **RENDER-01**: Client-side motion graphics & video rendering engine (Remotion) supporting instant live playback preview — Phase 4
 
-### Active
-- [ ] **AUDIO-01**: Built-in audio direction, royalty-free background music tracks, and motion-matched sound effect triggers — Phase 5
-- [ ] **EXPORT-01**: Full video delivery pipeline: MP4 rendering, settled poster frame extraction (`poster.jpg`), and frame 0 poster baking — Phase 6
+- ✓ **AUDIO-01**: Built-in audio direction, royalty-free background music tracks, and motion-matched sound effect triggers — Phase 5
+- ✓ **EXPORT-01**: Full video delivery pipeline: MP4 rendering, settled poster frame extraction (`poster.jpg`), and frame 0 poster baking — Phase 6
+
+### Active (Milestone 2: Synthetic Mockups & Visual Style Transfer)
+- [ ] **MOCKUP-01**: Dynamic Synthetic App Window Generator — realistic simulated SaaS/App window (macOS traffic lights, sidebar navigation, metric widgets, and sparkline graphs) in prompt-only mode.
+- [ ] **STYLE-01**: Image-to-Theme Style Transfer — extract color palette and design tokens from uploaded screenshots to theme the entire video.
+- [ ] **FEATURE-01**: Prompt-Described Page Feature Synthesizer — generate custom UI page components for whatever feature was described in the prompt while inheriting the uploaded brand's design system.
 
 ### Out of Scope
 

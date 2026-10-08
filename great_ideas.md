@@ -12,3 +12,5 @@ Valuable concepts, design directions, and feature ideas for Marcutie.
 - **Reading-Time Floor**: High pace is achieved through motion and tight transitions, never by flashing unreadable text. Enforce a minimum hold time (>=0.8s for short text, >=0.3s/word for headlines).
 - **Frame-0 Poster Baking**: Social platforms (X, Discord, Slack) generate video preview thumbnails from frame 0. Baking the best settled frame into frame 0 using FFmpeg (`eq(n,0)`) ensures thumbnail previews look intentional and gorgeous.
 - **Automatic Multi-Platform Share Copy**: Generating one-click postable captions tailored to the video's tone for Twitter/X, LinkedIn, and Discord alongside the video render.
+- **Synthetic Dynamic App Screen Generation (Prompt-Only Mode)**: Programmatically rendering a realistic simulated SaaS/App window (macOS title bar, sidebar navigation, metric widgets, and sparkline graphs) customized to the product domain when no image is uploaded.
+- **Image-to-Theme Style Transfer**: Extracting brand color palettes, fonts, and aesthetic styling from uploaded images to theme prompt-generated feature screens so they look like authentic parts of the product.
