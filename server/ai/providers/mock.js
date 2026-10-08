@@ -1,4 +1,9 @@
 import { classifyDeviceFrame } from "../../services/deviceClassifier.js";
+import {
+  getDefaultThemePalette,
+  classifyFeatureArchetype,
+  createDefaultFeatureMockup,
+} from "../../services/paletteExtractor.js";
 
 export async function generateMockStoryboard(params) {
   const {
@@ -10,6 +15,7 @@ export async function generateMockStoryboard(params) {
     hasImage = false,
     imageDimensions = null,
     deviceFrame: explicitDeviceFrame = null,
+    themePalette: explicitThemePalette = null,
   } = params;
 
   const deviceFrame = classifyDeviceFrame({
@@ -18,10 +24,14 @@ export async function generateMockStoryboard(params) {
     override: explicitDeviceFrame,
   });
 
+  const themePalette = explicitThemePalette || getDefaultThemePalette(tone);
+  const archetype = classifyFeatureArchetype(prompt);
+
   // Extract rough title from prompt
   const firstSentence = prompt.split(/[.\n]/)[0].trim();
   const titleWords = firstSentence.split(/\s+/).slice(0, 4).join(" ");
   const productTitle = titleWords || "Marcutie Launch";
+  const featureMockup = createDefaultFeatureMockup(archetype, productTitle);
 
   // Calculate durations according to marketing laws
   let hookDur = 2.5;
@@ -60,6 +70,8 @@ export async function generateMockStoryboard(params) {
       headline: productTitle,
       subtext: firstSentence,
       deviceFrame,
+      themePalette,
+      featureMockup,
       visualEmphasis: hasImage ? "3d_tilt" : "gradient_glow",
       transition: "clean_cut",
     },
@@ -72,7 +84,7 @@ export async function generateMockStoryboard(params) {
       beats: [
         "100% Local processing with zero cloud fees",
         "Lightning fast execution and instant feedback",
-        "Engineered for modern high-converting launches"
+        "Engineered for modern high-converting launches",
       ],
       visualEmphasis: "sequential_cards",
       transition: "slide",
@@ -97,6 +109,8 @@ export async function generateMockStoryboard(params) {
     targetDuration,
     deviceFrame,
     imageDimensions,
+    themePalette,
+    featureMockup,
     scenes,
     audioDirection: {
       musicMood: tone === "cinematic" ? "cinematic" : "upbeat",

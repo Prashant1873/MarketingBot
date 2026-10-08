@@ -25,10 +25,8 @@ Turn raw product ideas, marketing prompts, and product images into professional,
 - ✓ **AUDIO-01**: Built-in audio direction, royalty-free background music tracks, and motion-matched sound effect triggers — Phase 5
 - ✓ **EXPORT-01**: Full video delivery pipeline: MP4 rendering, settled poster frame extraction (`poster.jpg`), and frame 0 poster baking — Phase 6
 - ✓ **MOCKUP-01**: Dynamic Synthetic App Window Generator with Adaptive Device Framing (macOS Chrome landscape vs. Mobile Phone portrait) — Phase 7
-
-### Active (Milestone 2: Synthetic Mockups & Visual Style Transfer)
-- [ ] **STYLE-01**: Image-to-Theme Style Transfer — extract color palette and design tokens from uploaded screenshots to theme the entire video.
-- [ ] **FEATURE-01**: Prompt-Described Page Feature Synthesizer — generate custom UI page components for whatever feature was described in the prompt while inheriting the uploaded brand's design system.
+- ✓ **STYLE-01**: Image-to-Theme Style Transfer — extract color palette and design tokens from uploaded screenshots to theme the entire video — Phase 8
+- ✓ **FEATURE-01**: Prompt-Described Page Feature Synthesizer — generate custom UI page components for whatever feature was described in the prompt while inheriting the uploaded brand's design system — Phase 8
 
 ### Out of Scope
 

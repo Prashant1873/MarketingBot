@@ -1,6 +1,14 @@
-import { Storyboard, StoryboardScene, AspectRatio, Tone, DeviceFrame } from "../types";
+import {
+  Storyboard,
+  StoryboardScene,
+  AspectRatio,
+  Tone,
+  DeviceFrame,
+  ThemePalette,
+  FeatureMockup,
+} from "../types";
 
-export type { DeviceFrame };
+export type { DeviceFrame, ThemePalette, FeatureMockup };
 
 export interface Dimensions {
   width: number;
@@ -50,5 +58,7 @@ export interface SceneComponentProps {
   imageUrl?: string;
   durationInFrames: number;
   deviceFrame?: DeviceFrame;
+  themePalette?: ThemePalette;
+  featureMockup?: FeatureMockup;
 }
 

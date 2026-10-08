@@ -7,6 +7,7 @@ import { generateWithAnthropic } from "../ai/providers/anthropic.js";
 import { generateWithOpenAI } from "../ai/providers/openai.js";
 import { generateMockStoryboard } from "../ai/providers/mock.js";
 import { autoFixStoryboard } from "../ai/validator.js";
+import { extractPaletteFromBuffer } from "../services/paletteExtractor.js";
 
 const router = express.Router();
 const configFile = path.join(process.cwd(), "data", "config.json");
@@ -28,6 +29,8 @@ router.post("/", async (req, res) => {
     imageUrl,
     imageDimensions,
     deviceFrame,
+    themePalette,
+    featureMockup,
     tone = "default",
     customTone = "",
     aspectRatio = "16:9",
@@ -44,9 +47,10 @@ router.post("/", async (req, res) => {
   const provider =
     requestedProvider || config.preferences?.preferredProvider || "gemini";
 
-  // Check if image is provided, load base64 buffer from disk
+  // Check if image is provided, load base64 buffer from disk and extract palette
   let imageBase64 = null;
   let imageMimeType = "image/png";
+  let extractedPalette = null;
 
   if (imageUrl) {
     const filename = path.basename(imageUrl);
@@ -60,11 +64,15 @@ router.post("/", async (req, res) => {
         if (ext === ".jpg" || ext === ".jpeg") imageMimeType = "image/jpeg";
         else if (ext === ".webp") imageMimeType = "image/webp";
         else if (ext === ".gif") imageMimeType = "image/gif";
+
+        extractedPalette = extractPaletteFromBuffer(fileBuffer, tone);
       } catch (err) {
         console.warn("[Storyboard] Could not read uploaded image:", err);
       }
     }
   }
+
+  const resolvedThemePalette = themePalette || extractedPalette || null;
 
   const genParams = {
     prompt: prompt.trim(),
@@ -77,6 +85,8 @@ router.post("/", async (req, res) => {
     hasImage: Boolean(imageBase64),
     imageDimensions: imageDimensions || null,
     deviceFrame: deviceFrame || null,
+    themePalette: resolvedThemePalette,
+    featureMockup: featureMockup || null,
   };
 
   let rawStoryboard = null;
@@ -112,6 +122,12 @@ router.post("/", async (req, res) => {
     if (imageUrl) validatedStoryboard.imageUrl = imageUrl;
     if (imageDimensions) validatedStoryboard.imageDimensions = imageDimensions;
     if (deviceFrame) validatedStoryboard.deviceFrame = deviceFrame;
+    if (resolvedThemePalette && !validatedStoryboard.themePalette) {
+      validatedStoryboard.themePalette = resolvedThemePalette;
+    }
+    if (featureMockup && !validatedStoryboard.featureMockup) {
+      validatedStoryboard.featureMockup = featureMockup;
+    }
 
     res.json({
       success: true,

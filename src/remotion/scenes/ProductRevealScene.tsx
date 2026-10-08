@@ -2,13 +2,15 @@ import { AbsoluteFill, Img, useCurrentFrame, useVideoConfig } from "remotion";
 import { SceneComponentProps } from "../types";
 import { calculateCardSlideUp, calculateGyroTilt, calculateSlamEntrance } from "../animations";
 import { AdaptiveDeviceFrame } from "../components/AdaptiveDeviceFrame";
-import { SyntheticAppWindow } from "../components/SyntheticAppWindow";
+import { FeatureScreenSynthesizer } from "../components/FeatureScreenSynthesizer";
 
 export function ProductRevealScene({
   scene,
   aspectRatio,
   imageUrl,
   deviceFrame,
+  themePalette,
+  featureMockup,
 }: SceneComponentProps) {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
@@ -125,11 +127,11 @@ export function ProductRevealScene({
                 }}
               />
             ) : (
-              <SyntheticAppWindow
+              <FeatureScreenSynthesizer
+                featureMockup={scene.featureMockup || featureMockup}
+                themePalette={scene.themePalette || themePalette}
                 deviceFrame={effectiveDeviceFrame}
                 title={scene.headline}
-                headline={scene.subtext || "Next Generation Platform"}
-                subtext="Engineered for high performance"
               />
             )}
           </AdaptiveDeviceFrame>

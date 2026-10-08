@@ -65,6 +65,40 @@ export interface TonePreset {
   iconName: string;
 }
 
+export interface ThemePalette {
+  primary: string;
+  secondary: string;
+  accent: string;
+  background: string;
+  surface: string;
+  text: string;
+  isDark: boolean;
+}
+
+export type FeatureType =
+  | "analytics"
+  | "kanban"
+  | "chat"
+  | "feed"
+  | "checkout"
+  | "settings"
+  | "generic";
+
+export interface FeatureMockupItem {
+  label: string;
+  value?: string;
+  badge?: string;
+  status?: string;
+  color?: string;
+}
+
+export interface FeatureMockup {
+  featureType: FeatureType;
+  title: string;
+  subtitle?: string;
+  items?: FeatureMockupItem[];
+}
+
 export interface StoryboardScene {
   id: string;
   type: "hook" | "product_reveal" | "highlight_beats" | "outro" | string;
@@ -76,6 +110,8 @@ export interface StoryboardScene {
   visualEmphasis?: string;
   transition?: string;
   deviceFrame?: DeviceFrame;
+  themePalette?: ThemePalette;
+  featureMockup?: FeatureMockup;
 }
 
 export interface AudioDirection {
@@ -99,6 +135,8 @@ export interface Storyboard {
   imageUrl?: string;
   deviceFrame?: DeviceFrame;
   imageDimensions?: ImageDimensions;
+  themePalette?: ThemePalette;
+  featureMockup?: FeatureMockup;
   scenes: StoryboardScene[];
   audioDirection: AudioDirection;
   shareCopy: ShareCopy;

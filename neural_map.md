@@ -117,3 +117,25 @@ interface Storyboard {
    [ Final Device Framing ] ──► "macos" (Chrome window) OR "mobile" (iPhone bezel)
 ```
 
+## Brand Style Transfer & Feature Synthesizer Logic Flow
+
+```
+[ Uploaded Screenshot / Photo ]
+              │
+              ▼
+    [ Palette Extractor ] (Buffer sampling & hue quantization)
+              │
+              ▼
+   { primary, secondary, accent, surface, text }
+              │
+              ├────────────────────────────────────────┐
+              ▼                                        ▼
+   [ Prompt Feature Classifier ]             [ FeatureScreenSynthesizer ]
+   (Detects kanban, chat, checkout,          (Renders themed UI mockup into
+    analytics, feed, settings)                AdaptiveDeviceFrame inside
+              │                               ProductRevealScene)
+              ▼                                        │
+   [ FeatureMockup Contract ]                          ▼
+   (title, subtitle, items, badges) ──────────► [ Live Video Scene ]
+```
+

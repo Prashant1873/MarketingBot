@@ -8,7 +8,16 @@ export function MarcutieComposition({
   audioConfig,
   fps = 30,
 }: RemotionCompositionProps) {
-  const { scenes, aspectRatio, tone, imageUrl, targetDuration, deviceFrame } = storyboard;
+  const {
+    scenes,
+    aspectRatio,
+    tone,
+    imageUrl,
+    targetDuration,
+    deviceFrame,
+    themePalette,
+    featureMockup,
+  } = storyboard;
 
   // Calculate cumulative start frames for exact sequential alignment
   let currentStartFrame = 0;
@@ -75,6 +84,8 @@ export function MarcutieComposition({
                       imageUrl={imageUrl}
                       durationInFrames={durationInFrames}
                       deviceFrame={scene.deviceFrame || deviceFrame}
+                      themePalette={scene.themePalette || themePalette}
+                      featureMockup={scene.featureMockup || featureMockup}
                     />
                   );
                 case "highlight_beats":

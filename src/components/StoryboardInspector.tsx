@@ -16,8 +16,16 @@ import {
   Info,
   Monitor,
   Smartphone,
+  Palette,
+  BarChart2,
+  LayoutGrid,
+  MessageSquare,
+  ShoppingCart,
+  Rss,
+  Sliders,
 } from "lucide-react";
-import { Storyboard, StoryboardScene } from "../types";
+import { Storyboard, StoryboardScene, FeatureType, ThemePalette } from "../types";
+import { createDefaultFeatureMockup, PRESET_THEME_PALETTES } from "../utils/featureMockups";
 
 interface StoryboardInspectorProps {
   storyboard: Storyboard;
@@ -55,6 +63,55 @@ export function StoryboardInspector({
     onUpdateStoryboard({
       ...storyboard,
       scenes: nextScenes,
+    });
+  };
+
+  const currentPalette: ThemePalette = storyboard.themePalette || {
+    primary: "#6366f1",
+    secondary: "#38bdf8",
+    accent: "#10b981",
+    background: "#090d16",
+    surface: "#131b2e",
+    text: "#f8fafc",
+    isDark: true,
+  };
+
+  const handleColorChange = (key: keyof ThemePalette, val: string) => {
+    const updatedPalette: ThemePalette = {
+      ...currentPalette,
+      [key]: val,
+    };
+    onUpdateStoryboard({
+      ...storyboard,
+      themePalette: updatedPalette,
+      scenes: storyboard.scenes.map((s) =>
+        s.type === "product_reveal" ? { ...s, themePalette: updatedPalette } : s
+      ),
+    });
+  };
+
+  const handleApplyPresetPalette = (presetKey: string) => {
+    const preset = PRESET_THEME_PALETTES[presetKey];
+    if (!preset) return;
+    onUpdateStoryboard({
+      ...storyboard,
+      themePalette: preset,
+      scenes: storyboard.scenes.map((s) =>
+        s.type === "product_reveal" ? { ...s, themePalette: preset } : s
+      ),
+    });
+  };
+
+  const handleFeatureTypeChange = (newType: FeatureType) => {
+    const currentMockup = storyboard.featureMockup;
+    const baseTitle = currentMockup?.title || storyboard.title || "Core Feature";
+    const nextMockup = createDefaultFeatureMockup(newType, baseTitle);
+    onUpdateStoryboard({
+      ...storyboard,
+      featureMockup: nextMockup,
+      scenes: storyboard.scenes.map((s) =>
+        s.type === "product_reveal" ? { ...s, featureMockup: nextMockup } : s
+      ),
     });
   };
 
@@ -324,6 +381,198 @@ export function StoryboardInspector({
               <Info size={13} /> Scene durations sum to {currentTotalDuration.toFixed(1)}s (target is {storyboard.targetDuration}s)
             </span>
           )}
+        </div>
+      </div>
+
+      {/* Brand Style Transfer & Prompt Feature Synthesizer (Phase 8) */}
+      <div
+        className="glass-panel"
+        style={{
+          padding: "18px 24px",
+          display: "flex",
+          flexDirection: "column",
+          gap: "16px",
+          border: "1px solid var(--border-color)",
+          background: "rgba(10, 14, 26, 0.75)",
+        }}
+      >
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            flexWrap: "wrap",
+            gap: "12px",
+            borderBottom: "1px solid rgba(255, 255, 255, 0.06)",
+            paddingBottom: "12px",
+          }}
+        >
+          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+            <span
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "5px",
+                padding: "3px 8px",
+                borderRadius: "6px",
+                fontSize: "11px",
+                fontWeight: "700",
+                background: "rgba(99, 102, 241, 0.2)",
+                color: "#818cf8",
+                textTransform: "uppercase",
+              }}
+            >
+              <Palette size={12} /> Style Transfer
+            </span>
+            <span style={{ fontSize: "13px", fontWeight: "700", color: "var(--text-primary)" }}>
+              Brand Tokens & Feature Synthesizer
+            </span>
+          </div>
+          <span style={{ fontSize: "11px", color: "var(--text-muted)" }}>
+            Theme extracted from screenshot • Custom page screen synthesized from prompt
+          </span>
+        </div>
+
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+            gap: "20px",
+            alignItems: "flex-start",
+          }}
+        >
+          {/* Left: Brand Color Palette Controls */}
+          <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+              <span style={{ fontSize: "12px", fontWeight: "600", color: "var(--text-secondary)" }}>
+                Brand Color Swatches:
+              </span>
+              <div style={{ display: "flex", gap: "4px" }}>
+                {Object.keys(PRESET_THEME_PALETTES).map((presetKey) => (
+                  <button
+                    key={presetKey}
+                    type="button"
+                    onClick={() => handleApplyPresetPalette(presetKey)}
+                    style={{
+                      fontSize: "10px",
+                      textTransform: "capitalize",
+                      padding: "2px 6px",
+                      borderRadius: "4px",
+                      background: "rgba(255, 255, 255, 0.05)",
+                      border: "1px solid var(--border-subtle)",
+                      color: "var(--text-secondary)",
+                      cursor: "pointer",
+                    }}
+                    title={`Apply ${presetKey} tone palette`}
+                  >
+                    {presetKey}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div style={{ display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap" }}>
+              {[
+                { key: "primary" as const, label: "Primary" },
+                { key: "secondary" as const, label: "Secondary" },
+                { key: "accent" as const, label: "Accent" },
+                { key: "surface" as const, label: "Surface" },
+              ].map(({ key, label }) => {
+                const colorVal = currentPalette[key];
+                return (
+                  <label
+                    key={key}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "6px",
+                      background: "rgba(255, 255, 255, 0.04)",
+                      padding: "4px 8px",
+                      borderRadius: "6px",
+                      border: "1px solid var(--border-subtle)",
+                      fontSize: "11px",
+                      cursor: "pointer",
+                    }}
+                  >
+                    <input
+                      type="color"
+                      value={colorVal}
+                      onChange={(e) => handleColorChange(key, e.target.value)}
+                      style={{
+                        width: "18px",
+                        height: "18px",
+                        border: "none",
+                        borderRadius: "4px",
+                        cursor: "pointer",
+                        background: "transparent",
+                        padding: 0,
+                      }}
+                    />
+                    <span style={{ color: "var(--text-secondary)", fontWeight: "500" }}>{label}</span>
+                    <span style={{ fontFamily: "monospace", fontSize: "10px", opacity: 0.8 }}>
+                      {colorVal}
+                    </span>
+                  </label>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Right: Synthesized Feature Screen Archetype Switcher */}
+          <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+              <span style={{ fontSize: "12px", fontWeight: "600", color: "var(--text-secondary)" }}>
+                Feature Screen Archetype:
+              </span>
+              <span
+                style={{
+                  fontSize: "11px",
+                  color: "#818cf8",
+                  fontWeight: "600",
+                  fontFamily: "monospace",
+                }}
+              >
+                {storyboard.featureMockup?.title || "Core Feature"}
+              </span>
+            </div>
+
+            <div style={{ display: "flex", gap: "6px", flexWrap: "wrap" }}>
+              {[
+                { type: "analytics" as const, label: "Analytics", icon: BarChart2 },
+                { type: "kanban" as const, label: "Kanban", icon: LayoutGrid },
+                { type: "chat" as const, label: "AI Chat", icon: MessageSquare },
+                { type: "checkout" as const, label: "Checkout", icon: ShoppingCart },
+                { type: "feed" as const, label: "Feed", icon: Rss },
+                { type: "settings" as const, label: "Settings", icon: Sliders },
+              ].map(({ type, label, icon: Icon }) => {
+                const isSelected = (storyboard.featureMockup?.featureType || "analytics") === type;
+                return (
+                  <button
+                    key={type}
+                    type="button"
+                    onClick={() => handleFeatureTypeChange(type)}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "5px",
+                      padding: "5px 10px",
+                      borderRadius: "6px",
+                      border: isSelected ? "1px solid rgba(99, 102, 241, 0.5)" : "1px solid var(--border-subtle)",
+                      background: isSelected ? "rgba(99, 102, 241, 0.25)" : "rgba(255, 255, 255, 0.04)",
+                      color: isSelected ? "#818cf8" : "var(--text-secondary)",
+                      fontSize: "11px",
+                      fontWeight: isSelected ? "700" : "500",
+                      cursor: "pointer",
+                      transition: "all 0.15s ease",
+                    }}
+                  >
+                    <Icon size={12} />
+                    {label}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
         </div>
       </div>
 

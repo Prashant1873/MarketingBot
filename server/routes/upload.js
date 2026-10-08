@@ -3,6 +3,7 @@ import multer from "multer";
 import path from "path";
 import fs from "fs";
 import crypto from "crypto";
+import { extractPaletteFromBuffer } from "../services/paletteExtractor.js";
 
 const router = express.Router();
 
@@ -115,6 +116,13 @@ router.post("/", (req, res, next) => {
     }
 
     const dimensions = getImageDimensions(req.file.path);
+    let palette = null;
+    try {
+      const buffer = fs.readFileSync(req.file.path);
+      palette = extractPaletteFromBuffer(buffer);
+    } catch {
+      // Graceful fallback
+    }
 
     res.json({
       success: true,
@@ -123,6 +131,7 @@ router.post("/", (req, res, next) => {
       size: req.file.size,
       mimetype: req.file.mimetype,
       dimensions,
+      palette,
     });
   });
 });

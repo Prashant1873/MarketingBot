@@ -31,6 +31,14 @@ CRITICAL MARKETING LAWS YOU MUST OBEY:
    - "deviceFrame" MUST be "mobile" if the pitch describes an iOS/Android mobile app, smartphone tool, App Store launch, or portrait phone experience.
    - "deviceFrame" MUST be "macos" if the pitch describes a SaaS platform, dashboard, desktop tool, Chrome browser extension, or web app.
 
+9. VISUAL STYLE TRANSFER & FEATURE SYNTHESIS:
+   - "themePalette": Extract or harmonize brand colors: "primary", "secondary", "accent", "background", "surface", "text", "isDark". If product visual is attached, match its brand palette!
+   - "featureMockup": Structure the specific feature/page described in the pitch:
+     - "featureType": "analytics | kanban | chat | feed | checkout | settings | generic"
+     - "title": Short feature name (e.g. "Sprint Board", "AI Chat", "Revenue Metrics", "Live Feed")
+     - "subtitle": 1-line feature capability
+     - "items": Array of 3 specific mock items with label, value/badge/status.
+
 OUTPUT FORMAT:
 Return strictly a valid JSON object matching this schema without markdown codeblocks or preamble:
 {
@@ -40,6 +48,23 @@ Return strictly a valid JSON object matching this schema without markdown codebl
   "aspectRatio": "16:9 | 9:16 | 1:1",
   "targetDuration": number,
   "deviceFrame": "macos | mobile",
+  "themePalette": {
+    "primary": "string (hex color)",
+    "secondary": "string (hex color)",
+    "accent": "string (hex color)",
+    "background": "string (hex color)",
+    "surface": "string (hex color)",
+    "text": "string (hex color)",
+    "isDark": true
+  },
+  "featureMockup": {
+    "featureType": "analytics | kanban | chat | feed | checkout | settings | generic",
+    "title": "string",
+    "subtitle": "string",
+    "items": [
+      { "label": "string", "value": "string", "badge": "string", "status": "string" }
+    ]
+  },
   "scenes": [
     {
       "id": "scene-1",

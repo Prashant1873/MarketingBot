@@ -1,4 +1,9 @@
 import { classifyDeviceFrame } from "../services/deviceClassifier.js";
+import {
+  getDefaultThemePalette,
+  classifyFeatureArchetype,
+  createDefaultFeatureMockup,
+} from "../services/paletteExtractor.js";
 
 export function validateStoryboard(storyboard, targetDuration = 20) {
   const errors = [];
@@ -137,13 +142,26 @@ export function autoFixStoryboard(storyboard, targetDuration = 20) {
     });
   }
 
+  // 6. Ensure themePalette defaults
+  if (!fixed.themePalette || !fixed.themePalette.primary) {
+    fixed.themePalette = getDefaultThemePalette(fixed.tone || "default");
+  }
+
+  // 7. Ensure featureMockup defaults
+  if (!fixed.featureMockup || !fixed.featureMockup.featureType) {
+    const archetype = classifyFeatureArchetype(`${fixed.title || ""} ${fixed.tagline || ""}`);
+    fixed.featureMockup = createDefaultFeatureMockup(archetype, fixed.title || "Core Feature");
+  }
+
   for (const scene of fixed.scenes) {
-    if (scene.type === "product_reveal" && !scene.deviceFrame) {
-      scene.deviceFrame = fixed.deviceFrame;
+    if (scene.type === "product_reveal") {
+      if (!scene.deviceFrame) scene.deviceFrame = fixed.deviceFrame;
+      if (!scene.themePalette) scene.themePalette = fixed.themePalette;
+      if (!scene.featureMockup) scene.featureMockup = fixed.featureMockup;
     }
   }
 
-  // 6. Ensure share copy defaults
+  // 8. Ensure share copy defaults
   if (!fixed.shareCopy) fixed.shareCopy = {};
   const fallbackPitch = fixed.tagline || fixed.title || "Check this out";
   if (!fixed.shareCopy.twitter) {
