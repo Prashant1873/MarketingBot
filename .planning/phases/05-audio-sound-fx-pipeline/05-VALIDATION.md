@@ -1,10 +1,11 @@
 ---
 phase: 5
 slug: audio-sound-fx-pipeline
-status: draft
+status: validated
 nyquist_compliant: true
-wave_0_complete: false
+wave_0_complete: true
 created: 2026-10-08
+validated_at: 2026-10-08
 ---
 
 # Phase 5 — Validation Strategy
@@ -38,10 +39,10 @@ created: 2026-10-08
 
 | Task ID | Plan | Wave | Requirement | Threat Ref | Secure Behavior | Test Type | Automated Command | File Exists | Status |
 |---------|------|------|-------------|------------|-----------------|-----------|-------------------|-------------|--------|
-| 05-01-01 | 01 | 1 | AUD-01, AUD-02 | — | Audio catalog, metadata index, and /api/assets/audio | unit | `node --test tests/audio.test.js` | ❌ W0 | ⬜ pending |
-| 05-01-02 | 01 | 1 | AUD-01 | — | AudioControls component for track auditioning & volume | build | `npm run build` | ❌ W0 | ⬜ pending |
-| 05-02-01 | 02 | 2 | AUD-03 | — | Remotion MarcutieAudioMixer with ducking & SFX cues | unit | `node --test tests/audio.test.js` | ❌ W0 | ⬜ pending |
-| 05-02-02 | 02 | 2 | AUD-01, AUD-03 | — | End-to-end audio mixer integration in player & App | build | `npm test && npm run build` | ❌ W0 | ⬜ pending |
+| 05-01-01 | 01 | 1 | AUD-01, AUD-02 | — | Audio catalog, metadata index, and /api/assets/audio | unit | `node --test tests/audio.test.js` | ✅ | ✅ green |
+| 05-01-02 | 01 | 1 | AUD-01 | — | AudioControls component for track auditioning & volume | build | `npm run build` | ✅ | ✅ green |
+| 05-02-01 | 02 | 2 | AUD-03 | — | Remotion MarcutieAudioMixer with ducking & SFX cues | unit | `node --test tests/audio.test.js` | ✅ | ✅ green |
+| 05-02-02 | 02 | 2 | AUD-01, AUD-03 | — | End-to-end audio mixer integration in player & App | build | `npm test && npm run build` | ✅ | ✅ green |
 
 *Status: ⬜ pending · ✅ green · ❌ red · ⚠️ flaky*
 
@@ -49,7 +50,7 @@ created: 2026-10-08
 
 ## Wave 0 Requirements
 
-- [ ] `tests/audio.test.js` — test suite for audio catalog, tone recommendation mapping, volume curves, and SFX cue math
+- [x] `tests/audio.test.js` — test suite for audio catalog, tone recommendation mapping, volume curves, and SFX cue math
 
 ---
 
@@ -60,4 +61,5 @@ created: 2026-10-08
 - [x] Zero watch-mode flags
 - [x] `nyquist_compliant: true` set in frontmatter
 
-**Approval:** pending 2026-10-08
+**Approval:** validated 2026-10-08
+

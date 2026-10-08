@@ -21,9 +21,24 @@ export function framesToSeconds(frames: number, fps: number = 30): string {
 
 export interface RemotionCompositionProps {
   storyboard: Storyboard;
+  audioConfig?: {
+    selectedMusicTrack?: string;
+    musicVolume?: number;
+    sfxVolume?: number;
+    isMuted?: boolean;
+  };
   fps?: number;
   width?: number;
   height?: number;
+}
+
+export interface AudioMixerProps {
+  musicUrl: string;
+  musicVolume?: number;
+  sfxVolume?: number;
+  isMuted?: boolean;
+  scenes: StoryboardScene[];
+  totalDurationFrames: number;
 }
 
 export interface SceneComponentProps {

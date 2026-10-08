@@ -10,7 +10,7 @@ import { SettingsModal } from "./components/SettingsModal";
 import { StoryboardInspector } from "./components/StoryboardInspector";
 import { VideoPlayerPreview, VideoPlayerPreviewHandle } from "./components/VideoPlayerPreview";
 import { useConfig } from "./hooks/useConfig";
-import { Tone, AspectRatio, Duration, Storyboard } from "./types";
+import { Tone, AspectRatio, Duration, Storyboard, AudioConfig } from "./types";
 import { secondsToFrames } from "./remotion/types";
 
 export default function App() {
@@ -28,6 +28,14 @@ export default function App() {
   const [customTone, setCustomTone] = useState("");
   const [aspectRatio, setAspectRatio] = useState<AspectRatio>("16:9");
   const [duration, setDuration] = useState<Duration>(20);
+
+  // Audio Configuration State
+  const [audioConfig, setAudioConfig] = useState<AudioConfig>({
+    selectedMusicTrack: "pulse-launch-theme",
+    musicVolume: 0.8,
+    sfxVolume: 0.9,
+    isMuted: false,
+  });
 
   // Storyboard Generation State
   const [isGenerating, setIsGenerating] = useState(false);
@@ -106,6 +114,11 @@ export default function App() {
       setStoryboard(data.storyboard);
       setProviderUsed(data.providerUsed);
       setIsMock(Boolean(data.isMock));
+
+      if (data.storyboard.audioDirection?.trackRecommendation) {
+        const trackRec = data.storyboard.audioDirection.trackRecommendation.replace(/\.wav$/i, "");
+        setAudioConfig((prev) => ({ ...prev, selectedMusicTrack: trackRec }));
+      }
 
       // Smooth scroll to storyboard inspector
       setTimeout(() => {
@@ -228,10 +241,12 @@ export default function App() {
         <div ref={inspectorRef} style={{ marginTop: "40px", display: "flex", flexDirection: "column", gap: "32px" }}>
           <div style={{ height: "1px", background: "var(--border-color)", margin: "8px 0" }} />
 
-          {/* Real-Time Live Remotion Player */}
+          {/* Real-Time Live Remotion Player with Audio Controls */}
           <VideoPlayerPreview
             ref={playerRef}
             storyboard={storyboard}
+            audioConfig={audioConfig}
+            onAudioConfigChange={setAudioConfig}
             onAspectRatioChange={(ratio) => {
               setAspectRatio(ratio);
               setStoryboard((prev) => (prev ? { ...prev, aspectRatio: ratio } : null));

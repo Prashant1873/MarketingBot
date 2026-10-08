@@ -1,9 +1,10 @@
-import React, { useRef, useImperativeHandle, forwardRef } from "react";
+import React, { useState, useRef, useImperativeHandle, forwardRef } from "react";
 import { Player, PlayerRef } from "@remotion/player";
-import { Film, Sparkles, Monitor, Smartphone, Square } from "lucide-react";
+import { Film, Sparkles, Monitor, Smartphone, Square, Music, ChevronDown, ChevronUp } from "lucide-react";
 import { MarcutieComposition } from "../remotion/MarcutieComposition";
 import { AspectRatioDimensions, secondsToFrames } from "../remotion/types";
-import { Storyboard, AspectRatio } from "../types";
+import { Storyboard, AspectRatio, AudioConfig } from "../types";
+import { AudioControls } from "./AudioControls";
 
 export interface VideoPlayerPreviewHandle {
   seekToFrame: (frame: number) => void;
@@ -13,13 +14,30 @@ export interface VideoPlayerPreviewHandle {
 
 interface VideoPlayerPreviewProps {
   storyboard: Storyboard;
+  audioConfig?: AudioConfig;
+  onAudioConfigChange?: (config: AudioConfig) => void;
   onAspectRatioChange?: (ratio: AspectRatio) => void;
   onProceedToExport?: () => void;
 }
 
 export const VideoPlayerPreview = forwardRef<VideoPlayerPreviewHandle, VideoPlayerPreviewProps>(
-  ({ storyboard, onAspectRatioChange, onProceedToExport }, ref) => {
+  (
+    {
+      storyboard,
+      audioConfig = {
+        selectedMusicTrack: "pulse-launch-theme",
+        musicVolume: 0.8,
+        sfxVolume: 0.9,
+        isMuted: false,
+      },
+      onAudioConfigChange,
+      onAspectRatioChange,
+      onProceedToExport,
+    },
+    ref
+  ) => {
     const internalPlayerRef = useRef<PlayerRef>(null);
+    const [isAudioDrawerOpen, setIsAudioDrawerOpen] = useState(false);
 
     useImperativeHandle(ref, () => ({
       seekToFrame: (frame: number) => {
@@ -101,44 +119,77 @@ export const VideoPlayerPreview = forwardRef<VideoPlayerPreviewHandle, VideoPlay
             </div>
           </div>
 
-          {/* Quick Aspect Ratio Selector */}
-          <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-            <span style={{ fontSize: "11px", color: "var(--text-muted)", marginRight: "4px" }}>
-              Canvas:
-            </span>
-            {(
-              [
-                { id: "16:9", icon: <Monitor size={12} />, label: "16:9" },
-                { id: "9:16", icon: <Smartphone size={12} />, label: "9:16" },
-                { id: "1:1", icon: <Square size={12} />, label: "1:1" },
-              ] as const
-            ).map((opt) => (
+          {/* Quick Canvas & Audio Toggles */}
+          <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+            {/* Audio Drawer Button */}
+            {onAudioConfigChange && (
               <button
-                key={opt.id}
-                onClick={() => onAspectRatioChange?.(opt.id)}
+                onClick={() => setIsAudioDrawerOpen(!isAudioDrawerOpen)}
                 style={{
                   display: "flex",
                   alignItems: "center",
-                  gap: "4px",
-                  padding: "4px 10px",
+                  gap: "6px",
+                  padding: "5px 12px",
                   borderRadius: "6px",
                   fontSize: "11px",
                   fontWeight: "600",
-                  border: "none",
+                  border: "1px solid var(--border-color)",
                   cursor: "pointer",
-                  background:
-                    storyboard.aspectRatio === opt.id
-                      ? "var(--accent-primary)"
-                      : "rgba(255, 255, 255, 0.05)",
-                  color: storyboard.aspectRatio === opt.id ? "#ffffff" : "var(--text-secondary)",
+                  background: isAudioDrawerOpen ? "rgba(168, 85, 247, 0.2)" : "rgba(255, 255, 255, 0.05)",
+                  color: isAudioDrawerOpen ? "var(--accent-secondary)" : "var(--text-primary)",
                 }}
               >
-                {opt.icon}
-                <span>{opt.label}</span>
+                <Music size={13} />
+                <span>Audio Design</span>
+                {isAudioDrawerOpen ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
               </button>
-            ))}
+            )}
+
+            {/* Aspect Ratio Selector */}
+            <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+              {(
+                [
+                  { id: "16:9", icon: <Monitor size={12} />, label: "16:9" },
+                  { id: "9:16", icon: <Smartphone size={12} />, label: "9:16" },
+                  { id: "1:1", icon: <Square size={12} />, label: "1:1" },
+                ] as const
+              ).map((opt) => (
+                <button
+                  key={opt.id}
+                  onClick={() => onAspectRatioChange?.(opt.id)}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "4px",
+                    padding: "4px 10px",
+                    borderRadius: "6px",
+                    fontSize: "11px",
+                    fontWeight: "600",
+                    border: "none",
+                    cursor: "pointer",
+                    background:
+                      storyboard.aspectRatio === opt.id
+                        ? "var(--accent-primary)"
+                        : "rgba(255, 255, 255, 0.05)",
+                    color: storyboard.aspectRatio === opt.id ? "#ffffff" : "var(--text-secondary)",
+                  }}
+                >
+                  {opt.icon}
+                  <span>{opt.label}</span>
+                </button>
+              ))}
+            </div>
           </div>
         </div>
+
+        {/* Expandable Audio Settings Panel */}
+        {isAudioDrawerOpen && onAudioConfigChange && (
+          <AudioControls
+            audioConfig={audioConfig}
+            onAudioConfigChange={onAudioConfigChange}
+            storyboardTone={storyboard.tone}
+          />
+        )}
 
         {/* Video Player Display Screen */}
         <div
@@ -166,7 +217,7 @@ export const VideoPlayerPreview = forwardRef<VideoPlayerPreviewHandle, VideoPlay
             <Player
               ref={internalPlayerRef}
               component={MarcutieComposition}
-              inputProps={{ storyboard }}
+              inputProps={{ storyboard, audioConfig }}
               durationInFrames={durationInFrames}
               fps={30}
               compositionWidth={dimensions.width}

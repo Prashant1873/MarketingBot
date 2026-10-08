@@ -41,9 +41,9 @@
 
 ### Audio & Sound FX (AUD)
 
-- [ ] **AUD-01**: Curated bundled CC0 background music tracks matched to marketing tones.
-- [ ] **AUD-02**: Sound effect library integration (typing ticks, interface clicks, pops, whooshes, impacts).
-- [ ] **AUD-03**: Audio timeline mixer syncing background music fade-outs and triggering SFX on visual entrance events.
+- [x] **AUD-01**: Curated bundled CC0 background music tracks matched to marketing tones.
+- [x] **AUD-02**: Sound effect library integration (typing ticks, interface clicks, pops, whooshes, impacts).
+- [x] **AUD-03**: Audio timeline mixer syncing background music fade-outs and triggering SFX on visual entrance events.
 
 ### Local Render & Delivery Pipeline (EXP)
 

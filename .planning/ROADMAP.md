@@ -10,7 +10,7 @@ Marcutie is built in 6 phases, moving from the local server scaffold and modern 
 - [x] **Phase 2: Web GUI & Input Studio** - Premium dark-mode interface, prompt & image inputs, tone/aspect selectors, and BYOK settings modal.
 - [x] **Phase 3: BYOK Multimodal AI Storyboard Engine** - Gemini/Claude/OpenAI integrations, prompt & image analysis, structured storyboard JSON generation, and marketing laws validation.
 - [x] **Phase 4: Composition Engine & Live Preview** - Remotion animated scene components (Hook, Reveal, Highlights, Outro) and embedded live scrubbing player.
-- [ ] **Phase 5: Audio & Sound FX Pipeline** - Bundled CC0 music library, motion-matched sound effect triggers, and audio ducking.
+- [x] **Phase 5: Audio & Sound FX Pipeline** - Bundled CC0 music library, motion-matched sound effect triggers, and audio ducking.
 - [ ] **Phase 6: Local Render, Poster Baking & Social Delivery** - Local MP4 rendering, settled poster frame extraction, frame-0 poster baking, and one-click share copy generation.
 
 ## Phase Details
@@ -86,8 +86,8 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 05-01: Bundle and index curated CC0 music and SFX libraries with category metadata.
-- [ ] 05-02: Implement Remotion audio timeline mixer syncing music beds and SFX hits to scene keyframes.
+- [x] 05-01: Bundle and index curated CC0 music and SFX libraries with category metadata.
+- [x] 05-02: Implement Remotion audio timeline mixer syncing music beds and SFX hits to scene keyframes.
 
 ### Phase 6: Local Render, Poster Baking & Social Delivery
 **Goal**: Implement local MP4 video rendering, frame-0 poster baking, share copy generation, and export UI.  
@@ -115,7 +115,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 | 2. Web GUI & Input Studio | 2/2 | Complete | 2026-10-08 |
 | 3. BYOK Multimodal AI Storyboard Engine | 2/2 | Complete | 2026-10-08 |
 | 4. Composition Engine & Live Preview | 3/3 | Complete | 2026-10-08 |
-| 5. Audio & Sound FX Pipeline | 0/2 | Not started | - |
+| 5. Audio & Sound FX Pipeline | 2/2 | Complete | 2026-10-08 |
 | 6. Local Render, Poster Baking & Social Delivery | 0/2 | Not started | - |
 
 ---
