@@ -14,6 +14,8 @@ import {
   RotateCcw,
   CheckCircle2,
   Info,
+  Monitor,
+  Smartphone,
 } from "lucide-react";
 import { Storyboard, StoryboardScene } from "../types";
 
@@ -152,8 +154,113 @@ export function StoryboardInspector({
           </p>
         </div>
 
-        {/* Action Controls */}
-        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+        {/* Action Controls & Device Framing */}
+        <div style={{ display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap" }}>
+          {/* Adaptive Device Framing Switcher */}
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "4px",
+              background: "rgba(255, 255, 255, 0.04)",
+              padding: "4px",
+              borderRadius: "10px",
+              border: "1px solid var(--border-subtle)",
+            }}
+          >
+            <span
+              style={{
+                fontSize: "11px",
+                color: "var(--text-muted)",
+                fontWeight: "600",
+                textTransform: "uppercase",
+                padding: "0 6px",
+              }}
+            >
+              Frame
+            </span>
+            <button
+              type="button"
+              onClick={() => {
+                const updated: Storyboard = {
+                  ...storyboard,
+                  deviceFrame: "macos",
+                  scenes: storyboard.scenes.map((s) =>
+                    s.type === "product_reveal" ? { ...s, deviceFrame: "macos" } : s
+                  ),
+                };
+                onUpdateStoryboard(updated);
+              }}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "5px",
+                padding: "5px 10px",
+                borderRadius: "6px",
+                border: "none",
+                cursor: "pointer",
+                fontSize: "12px",
+                fontWeight: "600",
+                background:
+                  (storyboard.deviceFrame || "macos") === "macos"
+                    ? "rgba(99, 102, 241, 0.25)"
+                    : "transparent",
+                color:
+                  (storyboard.deviceFrame || "macos") === "macos"
+                    ? "#818cf8"
+                    : "var(--text-secondary)",
+                boxShadow:
+                  (storyboard.deviceFrame || "macos") === "macos"
+                    ? "0 0 0 1px rgba(99, 102, 241, 0.4)"
+                    : "none",
+                transition: "all 0.15s ease",
+              }}
+              title="macOS Chrome Landscape Browser Window"
+            >
+              <Monitor size={13} /> macOS Chrome
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                const updated: Storyboard = {
+                  ...storyboard,
+                  deviceFrame: "mobile",
+                  scenes: storyboard.scenes.map((s) =>
+                    s.type === "product_reveal" ? { ...s, deviceFrame: "mobile" } : s
+                  ),
+                };
+                onUpdateStoryboard(updated);
+              }}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "5px",
+                padding: "5px 10px",
+                borderRadius: "6px",
+                border: "none",
+                cursor: "pointer",
+                fontSize: "12px",
+                fontWeight: "600",
+                background:
+                  storyboard.deviceFrame === "mobile"
+                    ? "rgba(99, 102, 241, 0.25)"
+                    : "transparent",
+                color:
+                  storyboard.deviceFrame === "mobile"
+                    ? "#818cf8"
+                    : "var(--text-secondary)",
+                boxShadow:
+                  storyboard.deviceFrame === "mobile"
+                    ? "0 0 0 1px rgba(99, 102, 241, 0.4)"
+                    : "none",
+                transition: "all 0.15s ease",
+              }}
+              title="Mobile Phone Portrait Frame with Dynamic Island"
+            >
+              <Smartphone size={13} /> Mobile Phone
+            </button>
+          </div>
+
           <button
             onClick={onRegenerate}
             className="btn-secondary"

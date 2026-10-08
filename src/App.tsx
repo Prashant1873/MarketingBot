@@ -11,7 +11,7 @@ import { StoryboardInspector } from "./components/StoryboardInspector";
 import { VideoPlayerPreview, VideoPlayerPreviewHandle } from "./components/VideoPlayerPreview";
 import { ExportModal } from "./components/ExportModal";
 import { useConfig } from "./hooks/useConfig";
-import { Tone, AspectRatio, Duration, Storyboard, AudioConfig } from "./types";
+import { Tone, AspectRatio, Duration, Storyboard, AudioConfig, ImageDimensions } from "./types";
 import { secondsToFrames } from "./remotion/types";
 
 export default function App() {
@@ -25,6 +25,7 @@ export default function App() {
   const [prompt, setPrompt] = useState("");
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [imageFilename, setImageFilename] = useState<string | null>(null);
+  const [imageDimensions, setImageDimensions] = useState<ImageDimensions | null>(null);
   const [tone, setTone] = useState<Tone>("default");
   const [customTone, setCustomTone] = useState("");
   const [aspectRatio, setAspectRatio] = useState<AspectRatio>("16:9");
@@ -100,6 +101,7 @@ export default function App() {
         body: JSON.stringify({
           prompt,
           imageUrl,
+          imageDimensions,
           tone,
           customTone,
           aspectRatio,
@@ -152,9 +154,10 @@ export default function App() {
           <ImageDropzone
             imageUrl={imageUrl}
             imageFilename={imageFilename}
-            onImageChange={(url, filename) => {
+            onImageChange={(url, filename, dims) => {
               setImageUrl(url);
               setImageFilename(filename);
+              setImageDimensions(dims || null);
             }}
           />
         </div>

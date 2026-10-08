@@ -108,18 +108,21 @@ Plans:
 
 ### Milestone 2: Synthetic Mockups & Visual Style Transfer
 
-### Phase 7: Dynamic Synthetic App Window & UI Mockup Engine
-**Goal**: Build a procedural UI mockup engine in Remotion that generates a realistic simulated SaaS window (macOS traffic lights, sidebar navigation, dynamic metric widgets, and sparkline graphs) customized to the product domain when no image is uploaded.  
+### Phase 7: Dynamic Synthetic App Window & Adaptive Device Engine
+**Goal**: Build a procedural UI mockup engine in Remotion with adaptive device framing: intelligently decide whether to render a macOS Chrome window (landscape) or a Mobile Phone frame (portrait) based on prompt context and uploaded photo dimensions, complete with window controls, mobile bezel, and procedural widgets when no image is uploaded.  
 **Depends on**: Phase 6  
 **Requirements**: MOCKUP-01  
 **Success Criteria**:
-  1. Prompt-only renders display a realistic simulated SaaS/App window with macOS window controls (🔴🟡🟢) and customizable domain themes.
-  2. Mockup includes animated sidebar navigation, status badges, metric KPI cards with sparkline curves, and active tab content.
-  3. Interactive 3D gyro tilt and camera push-in zooms apply smoothly to the synthetic window in ProductRevealScene.
-**Plans**: 1 plan
+  1. Adaptive device classifier decides between macOS Chrome (landscape) and Mobile Phone (portrait) based on prompt keyword analysis ("iOS/mobile/iPhone" vs "SaaS/dashboard/desktop") and uploaded image aspect ratio.
+  2. Realistic macOS Chrome window component with traffic light controls (🔴🟡🟢), URL pill, desktop sidebar, and procedural SaaS KPI widgets.
+  3. Realistic Mobile Phone bezel component with dynamic island / notch, top status bar (9:41), bottom gesture pill, and procedural mobile app UI.
+  4. Both uploaded visuals and prompt-only synthetic mockups adapt to the detected device framing inside ProductRevealScene.
+  5. Storyboard Inspector allows manual inspection and switching between macOS Chrome and Mobile Phone framing.
+**Plans**: 2 plans
 
 Plans:
-- [ ] 07-01: Build procedural synthetic app window components and integrate into ProductRevealScene.
+- [x] 07-01: Build adaptive device classifier, image aspect ratio detector, and storyboard deviceFrame schema integration.
+- [x] 07-02: Build Remotion AdaptiveDeviceFrame, SyntheticAppWindow procedural mockup engine, and ProductRevealScene integration.
 
 ### Phase 8: Multimodal Visual Style Transfer & Feature Screen Synthesizer
 **Goal**: Inspect uploaded screenshots/logos with AI vision to extract palette and design tokens, and dynamically synthesize page screens for whatever feature the prompt describes while inheriting the product's brand design system.  
@@ -147,7 +150,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 | 4. Composition Engine & Live Preview | 3/3 | Complete | 2026-10-08 |
 | 5. Audio & Sound FX Pipeline | 2/2 | Complete | 2026-10-08 |
 | 6. Local Render, Poster Baking & Social Delivery | 2/2 | Complete | 2026-10-08 |
-| 7. Dynamic Synthetic App Window & Mockup Engine | 0/1 | Not started | - |
+| 7. Dynamic Synthetic App Window & Adaptive Device Engine | 2/2 | Complete | 2026-10-08 |
 | 8. Multimodal Visual Style Transfer & Feature Screen | 0/1 | Not started | - |
 
 ---

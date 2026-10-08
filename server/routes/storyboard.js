@@ -26,6 +26,8 @@ router.post("/", async (req, res) => {
   const {
     prompt,
     imageUrl,
+    imageDimensions,
+    deviceFrame,
     tone = "default",
     customTone = "",
     aspectRatio = "16:9",
@@ -73,6 +75,8 @@ router.post("/", async (req, res) => {
     imageBase64,
     imageMimeType,
     hasImage: Boolean(imageBase64),
+    imageDimensions: imageDimensions || null,
+    deviceFrame: deviceFrame || null,
   };
 
   let rawStoryboard = null;
@@ -106,6 +110,8 @@ router.post("/", async (req, res) => {
     validatedStoryboard.aspectRatio = aspectRatio;
     validatedStoryboard.targetDuration = Number(duration) || 20;
     if (imageUrl) validatedStoryboard.imageUrl = imageUrl;
+    if (imageDimensions) validatedStoryboard.imageDimensions = imageDimensions;
+    if (deviceFrame) validatedStoryboard.deviceFrame = deviceFrame;
 
     res.json({
       success: true,

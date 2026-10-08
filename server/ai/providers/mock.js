@@ -1,5 +1,22 @@
+import { classifyDeviceFrame } from "../../services/deviceClassifier.js";
+
 export async function generateMockStoryboard(params) {
-  const { prompt, tone = "default", customTone = "", aspectRatio = "16:9", targetDuration = 20, hasImage = false } = params;
+  const {
+    prompt,
+    tone = "default",
+    customTone = "",
+    aspectRatio = "16:9",
+    targetDuration = 20,
+    hasImage = false,
+    imageDimensions = null,
+    deviceFrame: explicitDeviceFrame = null,
+  } = params;
+
+  const deviceFrame = classifyDeviceFrame({
+    prompt,
+    imageDimensions,
+    override: explicitDeviceFrame,
+  });
 
   // Extract rough title from prompt
   const firstSentence = prompt.split(/[.\n]/)[0].trim();
@@ -42,6 +59,7 @@ export async function generateMockStoryboard(params) {
       duration: revealDur,
       headline: productTitle,
       subtext: firstSentence,
+      deviceFrame,
       visualEmphasis: hasImage ? "3d_tilt" : "gradient_glow",
       transition: "clean_cut",
     },
@@ -77,6 +95,8 @@ export async function generateMockStoryboard(params) {
     tone,
     aspectRatio,
     targetDuration,
+    deviceFrame,
+    imageDimensions,
     scenes,
     audioDirection: {
       musicMood: tone === "cinematic" ? "cinematic" : "upbeat",

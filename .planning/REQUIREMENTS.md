@@ -53,7 +53,7 @@
 - [x] **EXP-04**: Social share copy generator producing ready-to-post captions for Twitter/X, LinkedIn, and Discord.
 ### Milestone 2: Synthetic Mockups & Visual Style Transfer
 
-- [ ] **MOCKUP-01**: Procedural synthetic app window generator (macOS title bar with traffic lights, sidebar navigation, metric widgets, and sparkline graphs) for prompt-only mode.
+- [x] **MOCKUP-01**: Procedural synthetic app window generator with adaptive device framing: automatically detects whether to render a macOS Chrome window (landscape dimensions, traffic light controls 🔴🟡🟢, URL bar, desktop sidebar and metrics) or a Mobile Phone frame (portrait dimensions, curved bezel, dynamic island/notch, status bar, mobile widgets) based on prompt keyword analysis ("iOS/mobile/iPhone" vs "SaaS/dashboard/desktop") and uploaded photo aspect ratio (portrait phone capture vs landscape laptop screen), with manual override.
 - [ ] **STYLE-01**: Image-to-Theme style transfer extracting color palette (primary, secondary, background, dark/light) and visual tone from uploaded images to theme video elements.
 - [ ] **FEATURE-01**: Prompt-described page feature synthesizer dynamically creating custom UI screens for whatever specific page/feature was described in the prompt while inheriting the brand design system.
 
@@ -103,14 +103,14 @@
 | EXP-03 | Phase 6 | Complete |
 | EXP-04 | Phase 6 | Complete |
 | EXP-05 | Phase 6 | Complete |
-| MOCKUP-01 | Phase 7 | Pending |
+| MOCKUP-01 | Phase 7 | Complete |
 | STYLE-01 | Phase 8 | Pending |
 | FEATURE-01 | Phase 8 | Pending |
 
 **Coverage:**
 - Total requirements: 29 total
-- Completed: 26
-- Milestone 2 pending: 3
+- Completed: 27
+- Milestone 2 pending: 2
 
 ---
 *Requirements defined: 2026-10-08*

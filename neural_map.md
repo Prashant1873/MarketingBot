@@ -68,12 +68,16 @@
 ## Data Schema: Storyboard JSON Contract
 
 ```typescript
+type DeviceFrame = "macos" | "mobile";
+
 interface Storyboard {
   title: string;
   tone: "default" | "polished" | "yc-parody" | "chaotic" | "deadpan" | "cinematic" | "app-store";
   aspectRatio: "16:9" | "9:16" | "1:1";
   totalDurationFrames: number;
   fps: number; // default 30
+  deviceFrame?: DeviceFrame; // "macos" (landscape Chrome) | "mobile" (portrait smartphone)
+  imageDimensions?: { width: number; height: number; aspectRatio: number };
   audio: {
     musicTrack: string;
     volume: number;
@@ -92,3 +96,24 @@ interface Storyboard {
   };
 }
 ```
+
+## Adaptive Device Classifier Logic Flow
+
+```
+[ User Input (Prompt + Uploaded Image) ]
+               │
+               ├─────────────────────────────────────────────┐
+               ▼                                             ▼
+     [ Has Uploaded Image? ]                       [ Prompt Keyword Scan ]
+     ├── Yes: Compute Aspect Ratio                 ├── Mobile keywords (iOS, Android, iPhone, App Store, tap, swipe)
+     │   ├── Ratio < 0.95 (Portrait/Phone)         └── Desktop keywords (SaaS, dashboard, Chrome, web app, admin)
+     │   │   └── Result: "mobile"
+     │   └── Ratio > 1.05 (Landscape/Laptop)
+     │       └── Result: "macos"
+     └── No / Square (~1.0):
+         └── Evaluate Prompt Keyword Score (mobile > desktop ? "mobile" : "macos")
+               │
+               ▼
+   [ Final Device Framing ] ──► "macos" (Chrome window) OR "mobile" (iPhone bezel)
+```
+

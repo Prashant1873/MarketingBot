@@ -1,3 +1,5 @@
+import { classifyDeviceFrame } from "../services/deviceClassifier.js";
+
 export function validateStoryboard(storyboard, targetDuration = 20) {
   const errors = [];
 
@@ -127,7 +129,21 @@ export function autoFixStoryboard(storyboard, targetDuration = 20) {
     fixed.audioDirection.sfxCues = ["click.wav", "whoosh.wav", "heavy_slam.wav"];
   }
 
-  // 5. Ensure share copy defaults
+  // 5. Ensure deviceFrame defaults
+  if (fixed.deviceFrame !== "macos" && fixed.deviceFrame !== "mobile") {
+    fixed.deviceFrame = classifyDeviceFrame({
+      prompt: `${fixed.title || ""} ${fixed.tagline || ""}`,
+      imageDimensions: fixed.imageDimensions,
+    });
+  }
+
+  for (const scene of fixed.scenes) {
+    if (scene.type === "product_reveal" && !scene.deviceFrame) {
+      scene.deviceFrame = fixed.deviceFrame;
+    }
+  }
+
+  // 6. Ensure share copy defaults
   if (!fixed.shareCopy) fixed.shareCopy = {};
   const fallbackPitch = fixed.tagline || fixed.title || "Check this out";
   if (!fixed.shareCopy.twitter) {
@@ -142,3 +158,4 @@ export function autoFixStoryboard(storyboard, targetDuration = 20) {
 
   return fixed;
 }
+

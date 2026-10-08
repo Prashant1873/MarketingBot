@@ -1,4 +1,6 @@
-import { Storyboard, StoryboardScene, AspectRatio, Tone } from "../types";
+import { Storyboard, StoryboardScene, AspectRatio, Tone, DeviceFrame } from "../types";
+
+export type { DeviceFrame };
 
 export interface Dimensions {
   width: number;
@@ -47,4 +49,6 @@ export interface SceneComponentProps {
   tone: Tone;
   imageUrl?: string;
   durationInFrames: number;
+  deviceFrame?: DeviceFrame;
 }
+

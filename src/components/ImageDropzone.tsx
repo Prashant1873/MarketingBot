@@ -1,10 +1,11 @@
 import React, { useState, useRef } from "react";
 import { UploadCloud, Image as ImageIcon, X, AlertCircle, Loader2 } from "lucide-react";
+import { ImageDimensions } from "../types";
 
 interface ImageDropzoneProps {
   imageUrl: string | null;
   imageFilename: string | null;
-  onImageChange: (url: string | null, filename: string | null) => void;
+  onImageChange: (url: string | null, filename: string | null, dimensions?: ImageDimensions | null) => void;
 }
 
 export const ImageDropzone: React.FC<ImageDropzoneProps> = ({
@@ -71,7 +72,28 @@ export const ImageDropzone: React.FC<ImageDropzoneProps> = ({
         throw new Error(data.error || "Upload failed");
       }
 
-      onImageChange(data.url, data.filename);
+      let dims: ImageDimensions | null = data.dimensions || null;
+      if (!dims) {
+        try {
+          const img = new Image();
+          await new Promise<void>((resolve) => {
+            img.onload = () => {
+              dims = {
+                width: img.naturalWidth,
+                height: img.naturalHeight,
+                aspectRatio: Number((img.naturalWidth / img.naturalHeight).toFixed(3)),
+              };
+              resolve();
+            };
+            img.onerror = () => resolve();
+            img.src = data.url;
+          });
+        } catch {
+          // ignore
+        }
+      }
+
+      onImageChange(data.url, data.filename, dims);
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Error uploading image";
       setError(msg);
@@ -83,7 +105,7 @@ export const ImageDropzone: React.FC<ImageDropzoneProps> = ({
 
   const handleRemove = (e: React.MouseEvent) => {
     e.stopPropagation();
-    onImageChange(null, null);
+    onImageChange(null, null, null);
     setError(null);
   };
 

@@ -27,6 +27,10 @@ CRITICAL MARKETING LAWS YOU MUST OBEY:
 7. SOCIAL SHARE COPY:
    - Provide ready-to-post, punchy captions for Twitter/X, LinkedIn, and Discord matching the tone.
 
+8. ADAPTIVE DEVICE FRAMING:
+   - "deviceFrame" MUST be "mobile" if the pitch describes an iOS/Android mobile app, smartphone tool, App Store launch, or portrait phone experience.
+   - "deviceFrame" MUST be "macos" if the pitch describes a SaaS platform, dashboard, desktop tool, Chrome browser extension, or web app.
+
 OUTPUT FORMAT:
 Return strictly a valid JSON object matching this schema without markdown codeblocks or preamble:
 {
@@ -35,6 +39,7 @@ Return strictly a valid JSON object matching this schema without markdown codebl
   "tone": "default | polished | yc-parody | chaotic | deadpan | cinematic | app-store",
   "aspectRatio": "16:9 | 9:16 | 1:1",
   "targetDuration": number,
+  "deviceFrame": "macos | mobile",
   "scenes": [
     {
       "id": "scene-1",
@@ -52,7 +57,8 @@ Return strictly a valid JSON object matching this schema without markdown codebl
       "headline": "string",
       "subtext": "string",
       "visualEmphasis": "camera_pan | 3d_tilt | cutout_zoom",
-      "transition": "clean_cut | slide"
+      "transition": "clean_cut | slide",
+      "deviceFrame": "macos | mobile"
     },
     {
       "id": "scene-3",
@@ -88,7 +94,7 @@ Return strictly a valid JSON object matching this schema without markdown codebl
 }`;
 
 export function buildUserPrompt(params) {
-  const { prompt, tone, customTone, aspectRatio, targetDuration, hasImage } = params;
+  const { prompt, tone, customTone, aspectRatio, targetDuration, hasImage, deviceFrame } = params;
 
   return `Generate a launch video storyboard for:
 Product / Marketing Pitch:
@@ -100,7 +106,8 @@ Video Configuration:
 - Tone Preset: ${tone} ${customTone ? `(Custom Direction: ${customTone})` : ""}
 - Target Duration: ${targetDuration} seconds (MUST SUM EXACTLY TO ${targetDuration}s)
 - Aspect Ratio: ${aspectRatio}
-- Product Visual Attached: ${hasImage ? "Yes (Include a dynamic product_reveal scene featuring camera pans/3D tilt on the visual)" : "No (Use kinetic typography and graphic cards)"}
+- Preferred Device Framing: ${deviceFrame || "Auto-detect (macos for desktop/SaaS, mobile for iOS/Android apps)"}
+- Product Visual Attached: ${hasImage ? "Yes (Include a dynamic product_reveal scene featuring camera pans/3D tilt on the visual)" : "No (Use realistic simulated SaaS/App window with metric widgets)"}
 
 Ensure the first scene is a 2.0s-3.0s HOOK. Return strictly JSON.`;
 }

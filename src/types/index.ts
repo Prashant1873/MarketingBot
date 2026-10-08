@@ -38,14 +38,24 @@ export interface ConfigResponse {
   };
 }
 
+export type DeviceFrame = "macos" | "mobile";
+
+export interface ImageDimensions {
+  width: number;
+  height: number;
+  aspectRatio: number;
+}
+
 export interface ProjectInput {
   prompt: string;
   imageUrl: string | null;
   imageFilename: string | null;
+  imageDimensions?: ImageDimensions | null;
   tone: Tone;
   customTone: string;
   aspectRatio: AspectRatio;
   duration: Duration;
+  deviceFrame?: DeviceFrame;
 }
 
 export interface TonePreset {
@@ -65,6 +75,7 @@ export interface StoryboardScene {
   beats?: string[];
   visualEmphasis?: string;
   transition?: string;
+  deviceFrame?: DeviceFrame;
 }
 
 export interface AudioDirection {
@@ -86,6 +97,8 @@ export interface Storyboard {
   aspectRatio: AspectRatio;
   targetDuration: number;
   imageUrl?: string;
+  deviceFrame?: DeviceFrame;
+  imageDimensions?: ImageDimensions;
   scenes: StoryboardScene[];
   audioDirection: AudioDirection;
   shareCopy: ShareCopy;

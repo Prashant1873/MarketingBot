@@ -1,8 +1,15 @@
 import { AbsoluteFill, Img, useCurrentFrame, useVideoConfig } from "remotion";
 import { SceneComponentProps } from "../types";
 import { calculateCardSlideUp, calculateGyroTilt, calculateSlamEntrance } from "../animations";
+import { AdaptiveDeviceFrame } from "../components/AdaptiveDeviceFrame";
+import { SyntheticAppWindow } from "../components/SyntheticAppWindow";
 
-export function ProductRevealScene({ scene, aspectRatio, imageUrl }: SceneComponentProps) {
+export function ProductRevealScene({
+  scene,
+  aspectRatio,
+  imageUrl,
+  deviceFrame,
+}: SceneComponentProps) {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
 
@@ -15,9 +22,8 @@ export function ProductRevealScene({ scene, aspectRatio, imageUrl }: SceneCompon
   const pushZoom = 1 + (frame / (fps * 6)) * 0.08;
 
   const isVertical = aspectRatio === "9:16";
-  const titleSize = isVertical ? "48px" : aspectRatio === "1:1" ? "46px" : "58px";
-  const cardWidth = isVertical ? "780px" : aspectRatio === "1:1" ? "740px" : "820px";
-  const cardHeight = isVertical ? "920px" : aspectRatio === "1:1" ? "680px" : "560px";
+  const titleSize = isVertical ? "48px" : aspectRatio === "1:1" ? "46px" : "56px";
+  const effectiveDeviceFrame = scene.deviceFrame || deviceFrame || "macos";
 
   return (
     <AbsoluteFill
@@ -50,7 +56,7 @@ export function ProductRevealScene({ scene, aspectRatio, imageUrl }: SceneCompon
           textAlign: "center",
           maxWidth: "1200px",
           padding: "0 40px",
-          marginBottom: isVertical ? "40px" : "32px",
+          marginBottom: isVertical ? "32px" : "24px",
           zIndex: 10,
           transform: `translateY(${headerAnim.translateY}px)`,
           opacity: headerAnim.opacity,
@@ -59,12 +65,12 @@ export function ProductRevealScene({ scene, aspectRatio, imageUrl }: SceneCompon
         <div
           style={{
             display: "inline-block",
-            fontSize: "14px",
+            fontSize: "13px",
             fontWeight: "700",
             textTransform: "uppercase",
             letterSpacing: "2px",
             color: "#818cf8",
-            marginBottom: "10px",
+            marginBottom: "8px",
           }}
         >
           {scene.visualEmphasis || "INTRODUCING"}
@@ -84,7 +90,7 @@ export function ProductRevealScene({ scene, aspectRatio, imageUrl }: SceneCompon
         </h2>
       </div>
 
-      {/* 3D Floating Product Card Container */}
+      {/* 3D Floating Adaptive Product Card Container */}
       <div
         style={{
           transform: `scale(${cardAnim.scale * pushZoom})`,
@@ -94,69 +100,39 @@ export function ProductRevealScene({ scene, aspectRatio, imageUrl }: SceneCompon
       >
         <div
           style={{
-            width: cardWidth,
-            height: cardHeight,
-            borderRadius: "24px",
-            background: "rgba(13, 19, 34, 0.75)",
-            backdropFilter: "blur(20px)",
-            border: "1px solid rgba(255, 255, 255, 0.15)",
-            boxShadow: "0 30px 80px rgba(0, 0, 0, 0.7), 0 0 50px rgba(99, 102, 241, 0.35)",
-            overflow: "hidden",
+            transform: gyro.transform,
+            transition: "transform 0.1s ease-out",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            transform: gyro.transform,
-            transition: "transform 0.1s ease-out",
           }}
         >
-          {imageUrl ? (
-            <Img
-              src={imageUrl}
-              style={{
-                width: "100%",
-                height: "100%",
-                objectFit: "contain",
-                padding: "24px",
-              }}
-            />
-          ) : (
-            /* Sleek Mockup Device Frame if prompt-only mode */
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                justifyContent: "center",
-                gap: "16px",
-                padding: "40px",
-                textAlign: "center",
-              }}
-            >
-              <div
+          <AdaptiveDeviceFrame
+            deviceFrame={effectiveDeviceFrame}
+            aspectRatio={aspectRatio}
+            productTitle={scene.headline}
+          >
+            {imageUrl ? (
+              <Img
+                src={imageUrl}
                 style={{
-                  width: "80px",
-                  height: "80px",
-                  borderRadius: "20px",
-                  background: "linear-gradient(135deg, #6366f1 0%, #a855f7 100%)",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  fontSize: "36px",
-                  boxShadow: "0 10px 30px rgba(99, 102, 241, 0.5)",
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "contain",
+                  background: "#080b12",
+                  padding: effectiveDeviceFrame === "mobile" ? "8px" : "16px",
+                  boxSizing: "border-box",
                 }}
-              >
-                ✨
-              </div>
-              <div style={{ fontSize: "28px", fontWeight: "800", color: "#ffffff" }}>
-                {scene.headline}
-              </div>
-              {scene.subtext && (
-                <div style={{ fontSize: "16px", color: "#94a3b8", maxWidth: "480px" }}>
-                  {scene.subtext}
-                </div>
-              )}
-            </div>
-          )}
+              />
+            ) : (
+              <SyntheticAppWindow
+                deviceFrame={effectiveDeviceFrame}
+                title={scene.headline}
+                headline={scene.subtext || "Next Generation Platform"}
+                subtext="Engineered for high performance"
+              />
+            )}
+          </AdaptiveDeviceFrame>
         </div>
       </div>
     </AbsoluteFill>
