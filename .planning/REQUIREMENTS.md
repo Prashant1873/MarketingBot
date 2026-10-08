@@ -47,11 +47,11 @@
 
 ### Local Render & Delivery Pipeline (EXP)
 
-- [ ] **EXP-01**: Local MP4 rendering via Remotion renderer at 1080p 30fps.
-- [ ] **EXP-02**: Automatic settled poster frame extraction (`poster.jpg`) at the peak visual moment.
-- [ ] **EXP-03**: Frame 0 poster baking into the exported MP4 so social platforms display the poster as the idle thumbnail.
-- [ ] **EXP-04**: Social share copy generator producing ready-to-post captions for Twitter/X, LinkedIn, and Discord.
-- [ ] **EXP-05**: Download and export management panel in the GUI with render progress indicators.
+- [x] **EXP-01**: Local MP4 rendering via Remotion renderer at 1080p 30fps.
+- [x] **EXP-02**: Automatic settled poster frame extraction (`poster.jpg`) at the peak visual moment.
+- [x] **EXP-03**: Frame 0 poster baking into the exported MP4 so social platforms display the poster as the idle thumbnail.
+- [x] **EXP-04**: Social share copy generator producing ready-to-post captions for Twitter/X, LinkedIn, and Discord.
+- [x] **EXP-05**: Download and export management panel in the GUI with render progress indicators.
 
 ## v2 Requirements (Deferred)
 
@@ -80,25 +80,25 @@
 | GUI-02 | Phase 2 | Complete |
 | GUI-03 | Phase 2 | Complete |
 | GUI-04 | Phase 2 | Complete |
-| AI-01 | Phase 3 | Pending |
-| AI-02 | Phase 3 | Pending |
-| AI-03 | Phase 3 | Pending |
-| AI-04 | Phase 3 | Pending |
-| COMP-01 | Phase 4 | Pending |
-| COMP-02 | Phase 4 | Pending |
-| COMP-03 | Phase 4 | Pending |
-| COMP-04 | Phase 4 | Pending |
-| COMP-05 | Phase 4 | Pending |
-| GUI-05 | Phase 4 | Pending |
-| GUI-06 | Phase 4 | Pending |
-| AUD-01 | Phase 5 | Pending |
-| AUD-02 | Phase 5 | Pending |
-| AUD-03 | Phase 5 | Pending |
-| EXP-01 | Phase 6 | Pending |
-| EXP-02 | Phase 6 | Pending |
-| EXP-03 | Phase 6 | Pending |
-| EXP-04 | Phase 6 | Pending |
-| EXP-05 | Phase 6 | Pending |
+| AI-01 | Phase 3 | Complete |
+| AI-02 | Phase 3 | Complete |
+| AI-03 | Phase 3 | Complete |
+| AI-04 | Phase 3 | Complete |
+| COMP-01 | Phase 4 | Complete |
+| COMP-02 | Phase 4 | Complete |
+| COMP-03 | Phase 4 | Complete |
+| COMP-04 | Phase 4 | Complete |
+| COMP-05 | Phase 4 | Complete |
+| GUI-05 | Phase 4 | Complete |
+| GUI-06 | Phase 4 | Complete |
+| AUD-01 | Phase 5 | Complete |
+| AUD-02 | Phase 5 | Complete |
+| AUD-03 | Phase 5 | Complete |
+| EXP-01 | Phase 6 | Complete |
+| EXP-02 | Phase 6 | Complete |
+| EXP-03 | Phase 6 | Complete |
+| EXP-04 | Phase 6 | Complete |
+| EXP-05 | Phase 6 | Complete |
 
 **Coverage:**
 - v1 requirements: 26 total

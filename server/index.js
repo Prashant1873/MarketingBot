@@ -7,6 +7,7 @@ import uploadRouter from "./routes/upload.js";
 import assetsRouter from "./routes/assets.js";
 import configRouter from "./routes/config.js";
 import storyboardRouter from "./routes/storyboard.js";
+import renderRouter from "./routes/render.js";
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -14,10 +15,12 @@ const PORT = process.env.PORT || 3001;
 // Ensure directories exist
 const uploadDir = path.join(process.cwd(), "data", "uploads");
 const outputDir = path.join(process.cwd(), "data", "outputs");
+const rendersDir = path.join(process.cwd(), "data", "renders");
 const assetsDir = path.join(process.cwd(), "assets");
 
 if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
 if (!fs.existsSync(outputDir)) fs.mkdirSync(outputDir, { recursive: true });
+if (!fs.existsSync(rendersDir)) fs.mkdirSync(rendersDir, { recursive: true });
 if (!fs.existsSync(assetsDir)) fs.mkdirSync(assetsDir, { recursive: true });
 
 // Middleware
@@ -28,6 +31,7 @@ app.use(express.urlencoded({ extended: true }));
 // Static asset delivery
 app.use("/uploads", express.static(uploadDir));
 app.use("/assets", express.static(assetsDir));
+app.use("/renders", express.static(rendersDir));
 
 // System health check
 app.get("/api/health", (_req, res) => {
@@ -44,6 +48,7 @@ app.use("/api/upload", uploadRouter);
 app.use("/api/assets", assetsRouter);
 app.use("/api/config", configRouter);
 app.use("/api/generate-storyboard", storyboardRouter);
+app.use("/api/render", renderRouter);
 
 import { fileURLToPath } from "url";
 

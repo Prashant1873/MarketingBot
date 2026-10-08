@@ -179,6 +179,26 @@ export const VideoPlayerPreview = forwardRef<VideoPlayerPreviewHandle, VideoPlay
                 </button>
               ))}
             </div>
+
+            {onProceedToExport && (
+              <button
+                onClick={onProceedToExport}
+                className="btn-primary"
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "6px",
+                  padding: "5px 12px",
+                  borderRadius: "6px",
+                  fontSize: "11px",
+                  fontWeight: "600",
+                  cursor: "pointer",
+                }}
+              >
+                <Sparkles size={12} />
+                <span>Export MP4</span>
+              </button>
+            )}
           </div>
         </div>
 

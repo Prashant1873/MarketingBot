@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { Play, Sparkles, Key, CheckCircle2, ShieldAlert, Loader2, AlertCircle } from "lucide-react";
+import { Play, Sparkles, Key, CheckCircle2, ShieldAlert, Loader2, AlertCircle, Film } from "lucide-react";
 
 import { Header } from "./components/Header";
 import { PromptInput } from "./components/PromptInput";
@@ -9,6 +9,7 @@ import { FormatControls } from "./components/FormatControls";
 import { SettingsModal } from "./components/SettingsModal";
 import { StoryboardInspector } from "./components/StoryboardInspector";
 import { VideoPlayerPreview, VideoPlayerPreviewHandle } from "./components/VideoPlayerPreview";
+import { ExportModal } from "./components/ExportModal";
 import { useConfig } from "./hooks/useConfig";
 import { Tone, AspectRatio, Duration, Storyboard, AudioConfig } from "./types";
 import { secondsToFrames } from "./remotion/types";
@@ -43,6 +44,7 @@ export default function App() {
   const [storyboard, setStoryboard] = useState<Storyboard | null>(null);
   const [providerUsed, setProviderUsed] = useState("gemini");
   const [isMock, setIsMock] = useState(false);
+  const [isExportModalOpen, setIsExportModalOpen] = useState(false);
 
   const inspectorRef = useRef<HTMLDivElement>(null);
   const playerRef = useRef<VideoPlayerPreviewHandle>(null);
@@ -251,6 +253,7 @@ export default function App() {
               setAspectRatio(ratio);
               setStoryboard((prev) => (prev ? { ...prev, aspectRatio: ratio } : null));
             }}
+            onProceedToExport={() => setIsExportModalOpen(true)}
           />
 
           {/* Interactive Storyboard Inspector & Scene Tweaker */}
@@ -348,6 +351,27 @@ export default function App() {
             </button>
           )}
 
+          {storyboard && (
+            <button
+              onClick={() => setIsExportModalOpen(true)}
+              className="btn-primary"
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "8px",
+                padding: "10px 20px",
+                fontSize: "13px",
+                borderRadius: "var(--radius-md)",
+                background: "linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%)",
+                boxShadow: "0 0 20px rgba(124, 58, 237, 0.4)",
+                cursor: "pointer",
+              }}
+            >
+              <Film size={15} />
+              <span>Export Local MP4</span>
+            </button>
+          )}
+
           <button
             onClick={handleGenerate}
             disabled={!prompt.trim() || isGenerating}
@@ -382,6 +406,15 @@ export default function App() {
         currentPreferences={config?.preferences}
         onSave={saveConfig}
       />
+
+      {/* Export & Render Delivery Modal */}
+      {storyboard && (
+        <ExportModal
+          isOpen={isExportModalOpen}
+          onClose={() => setIsExportModalOpen(false)}
+          storyboard={storyboard}
+        />
+      )}
     </div>
   );
 }

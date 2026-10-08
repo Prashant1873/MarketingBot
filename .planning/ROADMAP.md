@@ -11,7 +11,7 @@ Marcutie is built in 6 phases, moving from the local server scaffold and modern 
 - [x] **Phase 3: BYOK Multimodal AI Storyboard Engine** - Gemini/Claude/OpenAI integrations, prompt & image analysis, structured storyboard JSON generation, and marketing laws validation.
 - [x] **Phase 4: Composition Engine & Live Preview** - Remotion animated scene components (Hook, Reveal, Highlights, Outro) and embedded live scrubbing player.
 - [x] **Phase 5: Audio & Sound FX Pipeline** - Bundled CC0 music library, motion-matched sound effect triggers, and audio ducking.
-- [ ] **Phase 6: Local Render, Poster Baking & Social Delivery** - Local MP4 rendering, settled poster frame extraction, frame-0 poster baking, and one-click share copy generation.
+- [x] **Phase 6: Local Render, Poster Baking & Social Delivery** - Local MP4 rendering, settled poster frame extraction, frame-0 poster baking, and one-click share copy generation.
 
 ## Phase Details
 
@@ -101,8 +101,8 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 06-01: Implement local rendering pipeline with Remotion renderer and FFmpeg frame-0 poster baking.
-- [ ] 06-02: Implement social share copy generator and final delivery/export panel in Web GUI.
+- [x] 06-01: Implement local rendering pipeline with Remotion renderer and FFmpeg frame-0 poster baking.
+- [x] 06-02: Implement social share copy generator and final delivery/export panel in Web GUI.
 
 ## Progress
 
@@ -116,7 +116,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 | 3. BYOK Multimodal AI Storyboard Engine | 2/2 | Complete | 2026-10-08 |
 | 4. Composition Engine & Live Preview | 3/3 | Complete | 2026-10-08 |
 | 5. Audio & Sound FX Pipeline | 2/2 | Complete | 2026-10-08 |
-| 6. Local Render, Poster Baking & Social Delivery | 0/2 | Not started | - |
+| 6. Local Render, Poster Baking & Social Delivery | 2/2 | Complete | 2026-10-08 |
 
 ---
 *Roadmap defined: 2026-10-08*
