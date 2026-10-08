@@ -1,5 +1,11 @@
 import { SYSTEM_PROMPT, buildUserPrompt } from "../prompts.js";
 
+const CANDIDATE_MODELS = [
+  "gemini-flash-latest",
+  "gemini-3.5-flash",
+  "gemini-3.8-flash",
+];
+
 export async function generateWithGemini(params, apiKey) {
   if (!apiKey) throw new Error("Gemini API key is required.");
 
@@ -17,8 +23,6 @@ export async function generateWithGemini(params, apiKey) {
     });
   }
 
-  const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
-
   const payload = {
     system_instruction: {
       parts: [{ text: SYSTEM_PROMPT }],
@@ -35,22 +39,34 @@ export async function generateWithGemini(params, apiKey) {
     },
   };
 
-  const res = await fetch(endpoint, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload),
-  });
+  let lastError = null;
 
-  if (!res.ok) {
-    const errorText = await res.text();
-    throw new Error(`Gemini API error (${res.status}): ${errorText}`);
+  for (const model of CANDIDATE_MODELS) {
+    try {
+      const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+      const res = await fetch(endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      if (!res.ok) {
+        const errorText = await res.text();
+        throw new Error(`Gemini API error (${res.status}): ${errorText}`);
+      }
+
+      const data = await res.json();
+      const textResponse = data.candidates?.[0]?.content?.parts?.[0]?.text;
+      if (!textResponse) {
+        throw new Error("No response content received from Gemini.");
+      }
+
+      return JSON.parse(textResponse);
+    } catch (err) {
+      lastError = err;
+      console.warn(`[Gemini] Model ${model} failed (${err.message}). Trying next candidate model...`);
+    }
   }
 
-  const data = await res.json();
-  const textResponse = data.candidates?.[0]?.content?.parts?.[0]?.text;
-  if (!textResponse) {
-    throw new Error("No response content received from Gemini.");
-  }
-
-  return JSON.parse(textResponse);
+  throw lastError || new Error("All Gemini candidate models failed.");
 }
