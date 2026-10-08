@@ -1,10 +1,11 @@
 ---
 phase: 4
 slug: composition-engine-live-preview
-status: draft
+status: validated
 nyquist_compliant: true
-wave_0_complete: false
+wave_0_complete: true
 created: 2026-10-08
+validated_at: 2026-10-08
 ---
 
 # Phase 4 — Validation Strategy
@@ -38,12 +39,12 @@ created: 2026-10-08
 
 | Task ID | Plan | Wave | Requirement | Threat Ref | Secure Behavior | Test Type | Automated Command | File Exists | Status |
 |---------|------|------|-------------|------------|-----------------|-----------|-------------------|-------------|--------|
-| 04-01-01 | 01 | 1 | COMP-01 | — | Remotion types, aspect ratios, and animation math | unit | `node --test tests/composition.test.js` | ❌ W0 | ⬜ pending |
-| 04-01-02 | 01 | 1 | COMP-02, COMP-03 | — | HookScene, ProductRevealScene, and MarcutieComposition | build | `npm run build` | ❌ W0 | ⬜ pending |
-| 04-02-01 | 02 | 2 | COMP-04, COMP-05 | — | HighlightScene, OutroScene, and scenes index | build | `npm run build` | ❌ W0 | ⬜ pending |
-| 04-02-02 | 02 | 2 | COMP-01, COMP-05 | — | MarcutieComposition integration & full storyboard tests | unit | `npm test` | ❌ W0 | ⬜ pending |
-| 04-03-01 | 03 | 3 | GUI-06 | — | VideoPlayerPreview component with @remotion/player | build | `npm run build` | ❌ W0 | ⬜ pending |
-| 04-03-02 | 03 | 3 | GUI-05, GUI-06 | — | App.tsx integration, live scrubbing, and reactive edits | build | `npm test && npm run build` | ❌ W0 | ⬜ pending |
+| 04-01-01 | 01 | 1 | COMP-01 | — | Remotion types, aspect ratios, and animation math | unit | `node --test tests/composition.test.js` | ✅ | ✅ green |
+| 04-01-02 | 01 | 1 | COMP-02, COMP-03 | — | HookScene, ProductRevealScene, and MarcutieComposition | build | `npm run build` | ✅ | ✅ green |
+| 04-02-01 | 02 | 2 | COMP-04, COMP-05 | — | HighlightScene, OutroScene, and scenes index | build | `npm run build` | ✅ | ✅ green |
+| 04-02-02 | 02 | 2 | COMP-01, COMP-05 | — | MarcutieComposition integration & full storyboard tests | unit | `npm test` | ✅ | ✅ green |
+| 04-03-01 | 03 | 3 | GUI-06 | — | VideoPlayerPreview component with @remotion/player | build | `npm run build` | ✅ | ✅ green |
+| 04-03-02 | 03 | 3 | GUI-05, GUI-06 | — | App.tsx integration, live scrubbing, and reactive edits | build | `npm test && npm run build` | ✅ | ✅ green |
 
 *Status: ⬜ pending · ✅ green · ❌ red · ⚠️ flaky*
 
@@ -51,7 +52,7 @@ created: 2026-10-08
 
 ## Wave 0 Requirements
 
-- [ ] `tests/composition.test.js` — test suite for Remotion frame math, aspect ratio resolutions, and sequence timing
+- [x] `tests/composition.test.js` — test suite for Remotion frame math, aspect ratio resolutions, and sequence timing
 
 ---
 
@@ -62,4 +63,5 @@ created: 2026-10-08
 - [x] Zero watch-mode flags
 - [x] `nyquist_compliant: true` set in frontmatter
 
-**Approval:** pending 2026-10-08
+**Approval:** validated 2026-10-08
+

@@ -9,7 +9,7 @@ Marcutie is built in 6 phases, moving from the local server scaffold and modern 
 - [x] **Phase 1: Local Server & Project Scaffold** - Node.js local server, Vite integration, local uploads directory, asset endpoints, and local config.
 - [x] **Phase 2: Web GUI & Input Studio** - Premium dark-mode interface, prompt & image inputs, tone/aspect selectors, and BYOK settings modal.
 - [x] **Phase 3: BYOK Multimodal AI Storyboard Engine** - Gemini/Claude/OpenAI integrations, prompt & image analysis, structured storyboard JSON generation, and marketing laws validation.
-- [ ] **Phase 4: Composition Engine & Live Preview** - Remotion animated scene components (Hook, Reveal, Highlights, Outro) and embedded live scrubbing player.
+- [x] **Phase 4: Composition Engine & Live Preview** - Remotion animated scene components (Hook, Reveal, Highlights, Outro) and embedded live scrubbing player.
 - [ ] **Phase 5: Audio & Sound FX Pipeline** - Bundled CC0 music library, motion-matched sound effect triggers, and audio ducking.
 - [ ] **Phase 6: Local Render, Poster Baking & Social Delivery** - Local MP4 rendering, settled poster frame extraction, frame-0 poster baking, and one-click share copy generation.
 
@@ -71,9 +71,9 @@ Plans:
 **Plans**: 3 plans
 
 Plans:
-- [ ] 04-01: Build core Remotion composition architecture and responsive layout containers (16:9, 9:16, 1:1).
-- [ ] 04-02: Build animated scene templates (Hook, Image Reveal, Highlight Beats, Punchline Outro).
-- [ ] 04-03: Integrate `@remotion/player` into Web GUI with interactive scene inspector and live scrubbing.
+- [x] 04-01: Build core Remotion composition architecture and responsive layout containers (16:9, 9:16, 1:1).
+- [x] 04-02: Build animated scene templates (Hook, Image Reveal, Highlight Beats, Punchline Outro).
+- [x] 04-03: Integrate `@remotion/player` into Web GUI with interactive scene inspector and live scrubbing.
 
 ### Phase 5: Audio & Sound FX Pipeline
 **Goal**: Integrate royalty-free background music and motion-synchronized sound effects.  
@@ -114,7 +114,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 | 1. Local Server & Project Scaffold | 2/2 | Complete | 2026-10-08 |
 | 2. Web GUI & Input Studio | 2/2 | Complete | 2026-10-08 |
 | 3. BYOK Multimodal AI Storyboard Engine | 2/2 | Complete | 2026-10-08 |
-| 4. Composition Engine & Live Preview | 0/3 | Not started | - |
+| 4. Composition Engine & Live Preview | 3/3 | Complete | 2026-10-08 |
 | 5. Audio & Sound FX Pipeline | 0/2 | Not started | - |
 | 6. Local Render, Poster Baking & Social Delivery | 0/2 | Not started | - |
 

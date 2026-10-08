@@ -8,8 +8,10 @@ import { ToneSelector } from "./components/ToneSelector";
 import { FormatControls } from "./components/FormatControls";
 import { SettingsModal } from "./components/SettingsModal";
 import { StoryboardInspector } from "./components/StoryboardInspector";
+import { VideoPlayerPreview, VideoPlayerPreviewHandle } from "./components/VideoPlayerPreview";
 import { useConfig } from "./hooks/useConfig";
 import { Tone, AspectRatio, Duration, Storyboard } from "./types";
+import { secondsToFrames } from "./remotion/types";
 
 export default function App() {
   const { config, hasKey, hasAnyKey, saveConfig } = useConfig();
@@ -35,6 +37,7 @@ export default function App() {
   const [isMock, setIsMock] = useState(false);
 
   const inspectorRef = useRef<HTMLDivElement>(null);
+  const playerRef = useRef<VideoPlayerPreviewHandle>(null);
 
   // Check backend server status
   useEffect(() => {
@@ -220,16 +223,38 @@ export default function App() {
         </div>
       )}
 
-      {/* Storyboard Inspector Section */}
+      {/* Live Video Preview & Storyboard Inspector Section */}
       {storyboard && (
-        <div ref={inspectorRef} style={{ marginTop: "40px" }}>
-          <div style={{ height: "1px", background: "var(--border-color)", margin: "32px 0 40px" }} />
+        <div ref={inspectorRef} style={{ marginTop: "40px", display: "flex", flexDirection: "column", gap: "32px" }}>
+          <div style={{ height: "1px", background: "var(--border-color)", margin: "8px 0" }} />
+
+          {/* Real-Time Live Remotion Player */}
+          <VideoPlayerPreview
+            ref={playerRef}
+            storyboard={storyboard}
+            onAspectRatioChange={(ratio) => {
+              setAspectRatio(ratio);
+              setStoryboard((prev) => (prev ? { ...prev, aspectRatio: ratio } : null));
+            }}
+          />
+
+          {/* Interactive Storyboard Inspector & Scene Tweaker */}
           <StoryboardInspector
             storyboard={storyboard}
             providerUsed={providerUsed}
             isMock={isMock}
             onUpdateStoryboard={setStoryboard}
             onRegenerate={handleGenerate}
+            onProceedToPreview={() => {
+              inspectorRef.current?.scrollIntoView({ behavior: "smooth" });
+            }}
+            onSeekToScene={(sceneIndex) => {
+              let frameOffset = 0;
+              for (let i = 0; i < sceneIndex && i < storyboard.scenes.length; i++) {
+                frameOffset += secondsToFrames(storyboard.scenes[i].duration, 30);
+              }
+              playerRef.current?.seekToFrame(frameOffset);
+            }}
           />
         </div>
       )}

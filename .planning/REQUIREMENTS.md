@@ -19,7 +19,7 @@
 - [x] **GUI-03**: Tone preset selector (`default`, `polished`, `yc-parody`, `chaotic`, `deadpan`, `cinematic`, `app-store`) and custom direction input.
 - [x] **GUI-04**: Aspect ratio selector (16:9 Landscape, 9:16 Vertical, 1:1 Square) and duration picker (15s, 20s, 25s).
 - [x] **GUI-05**: Interactive Storyboard Editor allowing inspection and fine-tuning of scene text, timings, and visual emphasis.
-- [ ] **GUI-06**: Live embedded video player preview with play/pause, scrub slider, and frame timecode display.
+- [x] **GUI-06**: Live embedded video player preview with play/pause, scrub slider, and frame timecode display.
 
 ### AI Storyboard Engine (AI)
 
@@ -33,11 +33,11 @@
 
 ### Composition & Motion Graphics Engine (COMP)
 
-- [ ] **COMP-01**: Remotion composition engine supporting 16:9, 9:16, and 1:1 aspect ratios.
-- [ ] **COMP-02**: Hook Scene component with dynamic kinetic typography, entrance slams, and high-contrast backdrops.
-- [ ] **COMP-03**: Product Reveal Scene component featuring uploaded image with smooth camera pan, 3D tilt, or scale animation.
-- [ ] **COMP-04**: Highlight Beat Scene component with sequential card arrivals, badge pops, and stat callouts.
-- [ ] **COMP-05**: Punchline & Outro Scene component with concluding hook, product title, and CTA payoff.
+- [x] **COMP-01**: Remotion composition engine supporting 16:9, 9:16, and 1:1 aspect ratios.
+- [x] **COMP-02**: Hook Scene component with dynamic kinetic typography, entrance slams, and high-contrast backdrops.
+- [x] **COMP-03**: Product Reveal Scene component featuring uploaded image with smooth camera pan, 3D tilt, or scale animation.
+- [x] **COMP-04**: Highlight Beat Scene component with sequential card arrivals, badge pops, and stat callouts.
+- [x] **COMP-05**: Punchline & Outro Scene component with concluding hook, product title, and CTA payoff.
 
 ### Audio & Sound FX (AUD)
 

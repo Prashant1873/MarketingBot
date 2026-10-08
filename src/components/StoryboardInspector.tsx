@@ -24,6 +24,7 @@ interface StoryboardInspectorProps {
   onUpdateStoryboard: (updated: Storyboard) => void;
   onRegenerate: () => void;
   onProceedToPreview?: () => void;
+  onSeekToScene?: (sceneIndex: number) => void;
 }
 
 export function StoryboardInspector({
@@ -33,6 +34,7 @@ export function StoryboardInspector({
   onUpdateStoryboard,
   onRegenerate,
   onProceedToPreview,
+  onSeekToScene,
 }: StoryboardInspectorProps) {
   const [copiedTab, setCopiedTab] = useState<string | null>(null);
   const [activeShareTab, setActiveShareTab] = useState<"twitter" | "linkedin" | "discord">("twitter");
@@ -238,23 +240,48 @@ export function StoryboardInspector({
             >
               {/* Scene Card Header */}
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <div
-                  style={{
-                    display: "inline-flex",
-                    alignItems: "center",
-                    gap: "6px",
-                    padding: "4px 10px",
-                    borderRadius: "999px",
-                    fontSize: "11px",
-                    fontWeight: "700",
-                    textTransform: "uppercase",
-                    background: badgeStyle.bg,
-                    color: badgeStyle.text,
-                    border: `1px solid ${badgeStyle.border}`,
-                  }}
-                >
-                  {getSceneIcon(scene.type)}
-                  <span>Scene {idx + 1}: {scene.type.replace("_", " ")}</span>
+                <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                  <div
+                    style={{
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: "6px",
+                      padding: "4px 10px",
+                      borderRadius: "999px",
+                      fontSize: "11px",
+                      fontWeight: "700",
+                      textTransform: "uppercase",
+                      background: badgeStyle.bg,
+                      color: badgeStyle.text,
+                      border: `1px solid ${badgeStyle.border}`,
+                    }}
+                  >
+                    {getSceneIcon(scene.type)}
+                    <span>Scene {idx + 1}: {scene.type.replace("_", " ")}</span>
+                  </div>
+
+                  {onSeekToScene && (
+                    <button
+                      onClick={() => onSeekToScene(idx)}
+                      style={{
+                        background: "rgba(255, 255, 255, 0.06)",
+                        border: "1px solid var(--border-color)",
+                        borderRadius: "6px",
+                        color: "var(--text-secondary)",
+                        padding: "3px 8px",
+                        fontSize: "10px",
+                        fontWeight: "600",
+                        cursor: "pointer",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "3px",
+                      }}
+                      title={`Jump player to Scene ${idx + 1}`}
+                    >
+                      <span>▶</span>
+                      <span>Seek</span>
+                    </button>
+                  )}
                 </div>
 
                 {/* Duration Editor */}

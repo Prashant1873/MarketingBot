@@ -20,9 +20,9 @@ Turn raw product ideas, marketing prompts, and product images into professional,
 - ✓ **AI-01**: BYOK multimodal AI engine supporting Gemini, Claude, and OpenAI to parse prompts and analyze product images — Phase 3
 - ✓ **STORY-01**: Creative script and storyboard generator enforcing viral marketing video laws — Phase 3
 - ✓ **SHARE-01**: Automatic social share copy generation matching video tone for Twitter/X, LinkedIn, and Discord — Phase 3
+- ✓ **RENDER-01**: Client-side motion graphics & video rendering engine (Remotion) supporting instant live playback preview — Phase 4
 
 ### Active
-- [ ] **RENDER-01**: Client-side motion graphics & video rendering engine (Remotion) supporting instant live playback preview and local MP4 export — Phase 4 & Phase 6
 - [ ] **AUDIO-01**: Built-in audio direction, royalty-free background music tracks, and motion-matched sound effect triggers — Phase 5
 - [ ] **EXPORT-01**: Full video delivery pipeline: MP4 rendering, settled poster frame extraction (`poster.jpg`), and frame 0 poster baking — Phase 6
 
