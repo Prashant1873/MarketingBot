@@ -6,18 +6,15 @@ import path from "path";
 import { musicTracks, sfxLibrary, getRecommendedTrack } from "../server/data/audioCatalog.js";
 
 test("getRecommendedTrack maps marketing tones to appropriate musical themes", () => {
-  assert.equal(getRecommendedTrack("default").id, "pulse-launch-theme");
-  assert.equal(getRecommendedTrack("polished").id, "pulse-launch-theme");
-  assert.equal(getRecommendedTrack("app-store").id, "pulse-launch-theme");
-
-  assert.equal(getRecommendedTrack("chaotic").id, "cyber-synth-groove");
-  assert.equal(getRecommendedTrack("cinematic").id, "cyber-synth-groove");
-
-  assert.equal(getRecommendedTrack("yc-parody").id, "indie-hustle-acoustic");
-  assert.equal(getRecommendedTrack("deadpan").id, "minimal-dark-sub");
+  assert.equal(getRecommendedTrack("default").id, "happy-beats-vol-1");
+  assert.equal(getRecommendedTrack("chaotic").id, "happy-beats-vol-10");
+  assert.equal(getRecommendedTrack("yc-parody").id, "happy-beats-vol-9");
+  assert.equal(getRecommendedTrack("polished").id, "happy-beats-vol-1");
+  assert.equal(getRecommendedTrack("cinematic").id, "happy-beats-vol-12");
+  assert.equal(getRecommendedTrack("deadpan").id, "happy-beats-vol-12");
 
   // Unknown tone fallback to first track
-  assert.equal(getRecommendedTrack("unknown-custom-tone").id, "pulse-launch-theme");
+  assert.equal(getRecommendedTrack("unknown-custom-tone").id, "happy-beats-vol-1");
 });
 
 test("All catalog music tracks and sound effects exist on disk", () => {
