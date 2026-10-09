@@ -2,9 +2,23 @@ import { AbsoluteFill, useCurrentFrame, useVideoConfig } from "remotion";
 import { SceneComponentProps } from "../types";
 import { calculateCardSlideUp, calculateSlamEntrance } from "../animations";
 
-export function OutroScene({ scene, aspectRatio }: SceneComponentProps) {
+export function OutroScene({ scene, aspectRatio, themePalette }: SceneComponentProps) {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
+
+  // Active theme tokens
+  // Active theme tokens
+  const palette = scene.themePalette || themePalette;
+  const isDark = palette?.isDark !== false;
+  const bg = palette?.background || "#070a13";
+  const primary = palette?.primary || "#10b981";
+  const accent = palette?.accent || "#059669";
+  const textColor = palette?.text || (isDark ? "#ffffff" : "#0f172a");
+  const subtextColor = isDark ? "#94a3b8" : "#475569";
+  const titleTextShadow = isDark
+    ? `0 8px 40px rgba(0, 0, 0, 0.8), 0 0 35px ${primary}40`
+    : `0 2px 14px rgba(0, 0, 0, 0.08)`;
+  const watermarkColor = isDark ? "rgba(255, 255, 255, 0.4)" : "rgba(0, 0, 0, 0.4)";
 
   const titleAnim = calculateSlamEntrance(frame, fps, 0);
   const ctaAnim = calculateSlamEntrance(frame, fps, 8);
@@ -23,7 +37,7 @@ export function OutroScene({ scene, aspectRatio }: SceneComponentProps) {
   return (
     <AbsoluteFill
       style={{
-        backgroundColor: "#070a13",
+        backgroundColor: bg,
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
@@ -33,14 +47,14 @@ export function OutroScene({ scene, aspectRatio }: SceneComponentProps) {
         padding: `0 ${paddingX}`,
       }}
     >
-      {/* Background emerald/indigo ambient glow */}
+      {/* Background ambient glow tailored to brand colors */}
       <div
         style={{
           position: "absolute",
           width: "1300px",
           height: "900px",
           borderRadius: "50%",
-          background: "radial-gradient(circle, rgba(16, 185, 129, 0.22) 0%, rgba(99, 102, 241, 0.12) 45%, rgba(7, 10, 19, 0) 70%)",
+          background: `radial-gradient(circle, ${primary}38 0%, ${accent}18 45%, rgba(0, 0, 0, 0) 70%)`,
           filter: "blur(90px)",
           pointerEvents: "none",
         }}
@@ -72,10 +86,10 @@ export function OutroScene({ scene, aspectRatio }: SceneComponentProps) {
               gap: "8px",
               padding: "6px 22px",
               borderRadius: "999px",
-              background: "rgba(16, 185, 129, 0.15)",
-              border: "1px solid rgba(16, 185, 129, 0.4)",
-              boxShadow: "0 0 24px rgba(16, 185, 129, 0.25)",
-              color: "#34d399",
+              background: `${accent}22`,
+              border: `1px solid ${accent}55`,
+              boxShadow: `0 0 24px ${accent}33`,
+              color: isDark ? accent : primary,
               fontSize: "15px",
               fontWeight: "800",
               textTransform: "uppercase",
@@ -93,10 +107,10 @@ export function OutroScene({ scene, aspectRatio }: SceneComponentProps) {
             margin: "0 0 28px 0",
             fontSize: titleSize,
             fontWeight: "900",
-            color: "#ffffff",
+            color: textColor,
             letterSpacing: "-1.5px",
             lineHeight: 1.15,
-            textShadow: "0 8px 40px rgba(0, 0, 0, 0.8), 0 0 35px rgba(16, 185, 129, 0.3)",
+            textShadow: titleTextShadow,
             transform: `scale(${titleAnim.scale})`,
             opacity: titleAnim.opacity,
           }}
@@ -110,7 +124,7 @@ export function OutroScene({ scene, aspectRatio }: SceneComponentProps) {
             style={{
               margin: "0 0 36px 0",
               fontSize: isVertical ? "24px" : "28px",
-              color: "#94a3b8",
+              color: subtextColor,
               maxWidth: "900px",
               lineHeight: 1.4,
               transform: `translateY(${subtextAnim.translateY}px)`,
@@ -136,8 +150,8 @@ export function OutroScene({ scene, aspectRatio }: SceneComponentProps) {
               gap: "12px",
               padding: isVertical ? "20px 48px" : "22px 64px",
               borderRadius: "999px",
-              background: "linear-gradient(135deg, #10b981 0%, #059669 100%)",
-              boxShadow: "0 12px 35px rgba(16, 185, 129, 0.5), 0 0 25px rgba(16, 185, 129, 0.3)",
+              background: `linear-gradient(135deg, ${primary} 0%, ${accent} 100%)`,
+              boxShadow: `0 12px 35px ${primary}55, 0 0 25px ${accent}40`,
               border: "1px solid rgba(255, 255, 255, 0.3)",
               color: "#ffffff",
               fontSize: ctaFontSize,
@@ -159,7 +173,7 @@ export function OutroScene({ scene, aspectRatio }: SceneComponentProps) {
           bottom: isVertical ? "60px" : "40px",
           fontSize: "14px",
           fontWeight: "600",
-          color: "rgba(255, 255, 255, 0.4)",
+          color: watermarkColor,
           letterSpacing: "0.5px",
         }}
       >

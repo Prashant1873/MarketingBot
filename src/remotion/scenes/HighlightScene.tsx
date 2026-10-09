@@ -2,9 +2,26 @@ import { AbsoluteFill, useCurrentFrame, useVideoConfig } from "remotion";
 import { SceneComponentProps } from "../types";
 import { calculateCardSlideUp, calculateSlamEntrance } from "../animations";
 
-export function HighlightScene({ scene, aspectRatio }: SceneComponentProps) {
+export function HighlightScene({ scene, aspectRatio, themePalette }: SceneComponentProps) {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
+
+  // Active theme tokens
+  // Active theme tokens
+  const palette = scene.themePalette || themePalette;
+  const isDark = palette?.isDark !== false;
+  const bg = palette?.background || "#070a13";
+  const primary = palette?.primary || "#06b6d4";
+  const secondary = palette?.secondary || "#6366f1";
+  const surface = palette?.surface || (isDark ? "rgba(13, 19, 34, 0.75)" : "rgba(255, 255, 255, 0.9)");
+  const textColor = palette?.text || (isDark ? "#ffffff" : "#0f172a");
+  const cardBorder = isDark ? "1px solid rgba(255, 255, 255, 0.14)" : "1px solid rgba(0, 0, 0, 0.08)";
+  const cardShadow = isDark
+    ? `0 20px 50px rgba(0, 0, 0, 0.5), 0 0 30px ${primary}22`
+    : `0 15px 35px rgba(0, 0, 0, 0.08), 0 0 20px ${primary}12`;
+  const titleTextShadow = isDark
+    ? `0 4px 30px rgba(0, 0, 0, 0.8), 0 0 30px ${primary}35`
+    : `0 2px 10px rgba(0, 0, 0, 0.06)`;
 
   const titleAnim = calculateSlamEntrance(frame, fps, 0);
 
@@ -23,7 +40,7 @@ export function HighlightScene({ scene, aspectRatio }: SceneComponentProps) {
   return (
     <AbsoluteFill
       style={{
-        backgroundColor: "#070a13",
+        backgroundColor: bg,
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
@@ -33,14 +50,14 @@ export function HighlightScene({ scene, aspectRatio }: SceneComponentProps) {
         padding: `0 ${paddingX}`,
       }}
     >
-      {/* Background cyan/indigo ambient light */}
+      {/* Background ambient light tailored to brand colors */}
       <div
         style={{
           position: "absolute",
           width: "1200px",
           height: "900px",
           borderRadius: "50%",
-          background: "radial-gradient(circle, rgba(6, 182, 212, 0.18) 0%, rgba(99, 102, 241, 0.1) 40%, rgba(7, 10, 19, 0) 70%)",
+          background: `radial-gradient(circle, ${primary}35 0%, ${secondary}15 45%, rgba(0, 0, 0, 0) 70%)`,
           filter: "blur(90px)",
           pointerEvents: "none",
         }}
@@ -64,9 +81,9 @@ export function HighlightScene({ scene, aspectRatio }: SceneComponentProps) {
             gap: "8px",
             padding: "6px 20px",
             borderRadius: "999px",
-            background: "rgba(6, 182, 212, 0.15)",
-            border: "1px solid rgba(6, 182, 212, 0.35)",
-            color: "#22d3ee",
+            background: `${primary}22`,
+            border: `1px solid ${primary}55`,
+            color: primary,
             fontSize: "15px",
             fontWeight: "800",
             textTransform: "uppercase",
@@ -82,10 +99,10 @@ export function HighlightScene({ scene, aspectRatio }: SceneComponentProps) {
             margin: 0,
             fontSize: titleSize,
             fontWeight: "900",
-            color: "#ffffff",
+            color: textColor,
             letterSpacing: "-1.5px",
             lineHeight: 1.15,
-            textShadow: "0 4px 30px rgba(0, 0, 0, 0.8)",
+            textShadow: titleTextShadow,
           }}
         >
           {scene.headline}
@@ -116,10 +133,10 @@ export function HighlightScene({ scene, aspectRatio }: SceneComponentProps) {
                 flex: isVertical ? "none" : 1,
                 padding: isVertical ? "24px 32px" : "36px 32px",
                 borderRadius: "20px",
-                background: "rgba(13, 19, 34, 0.75)",
+                background: surface,
                 backdropFilter: "blur(20px)",
-                border: "1px solid rgba(255, 255, 255, 0.14)",
-                boxShadow: "0 20px 50px rgba(0, 0, 0, 0.5), 0 0 30px rgba(6, 182, 212, 0.15)",
+                border: cardBorder,
+                boxShadow: cardShadow,
                 display: "flex",
                 flexDirection: isVertical ? "row" : "column",
                 alignItems: isVertical ? "center" : "flex-start",
@@ -134,13 +151,13 @@ export function HighlightScene({ scene, aspectRatio }: SceneComponentProps) {
                   width: "48px",
                   height: "48px",
                   borderRadius: "14px",
-                  background: "linear-gradient(135deg, rgba(6, 182, 212, 0.3) 0%, rgba(99, 102, 241, 0.3) 100%)",
-                  border: "1px solid rgba(6, 182, 212, 0.5)",
+                  background: `linear-gradient(135deg, ${primary}40 0%, ${secondary}40 100%)`,
+                  border: `1px solid ${primary}66`,
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
                   fontSize: "22px",
-                  color: "#22d3ee",
+                  color: primary,
                   flexShrink: 0,
                 }}
               >
@@ -153,7 +170,7 @@ export function HighlightScene({ scene, aspectRatio }: SceneComponentProps) {
                   style={{
                     fontSize: isVertical ? "24px" : "22px",
                     fontWeight: "800",
-                    color: "#ffffff",
+                    color: textColor,
                     lineHeight: 1.3,
                     letterSpacing: "-0.5px",
                   }}

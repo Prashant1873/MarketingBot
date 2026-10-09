@@ -65,6 +65,13 @@ export interface TonePreset {
   iconName: string;
 }
 
+export type VisualTheme =
+  | "default-dark"
+  | "apple-clean"
+  | "neo-brutalist"
+  | "cyberpunk-scanlines"
+  | "aurora-glass";
+
 export interface ThemePalette {
   primary: string;
   secondary: string;
@@ -73,6 +80,7 @@ export interface ThemePalette {
   surface: string;
   text: string;
   isDark: boolean;
+  visualTheme?: VisualTheme;
 }
 
 export type FeatureType =
@@ -99,6 +107,17 @@ export interface FeatureMockup {
   items?: FeatureMockupItem[];
 }
 
+export type ScreenMode = "mockup" | "screenshot";
+
+export type SubtitleStyle = "karaoke-bounce" | "clean-pill" | "cyber-glow" | "minimal";
+export type SubtitlePosition = "bottom" | "middle";
+
+export interface SubtitlesConfig {
+  enabled: boolean;
+  style: SubtitleStyle;
+  position: SubtitlePosition;
+}
+
 export interface StoryboardScene {
   id: string;
   type: "hook" | "product_reveal" | "highlight_beats" | "outro" | string;
@@ -110,8 +129,11 @@ export interface StoryboardScene {
   visualEmphasis?: string;
   transition?: string;
   deviceFrame?: DeviceFrame;
+  screenMode?: ScreenMode;
   themePalette?: ThemePalette;
   featureMockup?: FeatureMockup;
+  voiceoverScript?: string;
+  subtitlesConfig?: SubtitlesConfig;
 }
 
 export interface AudioDirection {
@@ -134,12 +156,23 @@ export interface Storyboard {
   targetDuration: number;
   imageUrl?: string;
   deviceFrame?: DeviceFrame;
+  screenMode?: ScreenMode;
   imageDimensions?: ImageDimensions;
   themePalette?: ThemePalette;
   featureMockup?: FeatureMockup;
+  voiceoverUrl?: string;
+  voiceoverScript?: string;
+  voiceoverVoice?: string;
   scenes: StoryboardScene[];
   audioDirection: AudioDirection;
+  audio?: {
+    musicTrack: string;
+    volume: number;
+    duckingMoments?: Array<{ fromSec: number; toSec: number; volume: number }>;
+  };
   shareCopy: ShareCopy;
+  subtitlesConfig?: SubtitlesConfig;
+  visualTheme?: VisualTheme;
 }
 
 export interface MusicTrack {
@@ -159,5 +192,37 @@ export interface AudioConfig {
   musicVolume: number;
   sfxVolume: number;
   isMuted: boolean;
+  voiceoverUrl?: string;
+  voiceoverVolume?: number;
+  voiceoverEnabled?: boolean;
+  voiceoverVoice?: string;
+}
+
+export interface PreFlightVoiceConfig {
+  enabled: boolean;
+  voiceId: string;
+  speed: number;
+  customNotes?: string;
+}
+
+export interface PreFlightAudioConfig {
+  selectedMusicTrack: string;
+  musicVolume: number;
+  sfxVolume: number;
+  duckingDepth: number;
+}
+
+export interface PreFlightSettings {
+  tone: Tone;
+  customTone: string;
+  aspectRatio: AspectRatio;
+  duration: Duration;
+  themePalette: ThemePalette;
+  screenMode: ScreenMode;
+  deviceFrame?: DeviceFrame;
+  voiceConfig: PreFlightVoiceConfig;
+  audioConfig: PreFlightAudioConfig;
+  subtitlesConfig?: SubtitlesConfig;
+  visualTheme?: VisualTheme;
 }
 

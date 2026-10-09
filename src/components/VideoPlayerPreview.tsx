@@ -18,6 +18,7 @@ interface VideoPlayerPreviewProps {
   onAudioConfigChange?: (config: AudioConfig) => void;
   onAspectRatioChange?: (ratio: AspectRatio) => void;
   onProceedToExport?: () => void;
+  onUpdateStoryboard?: (updated: Storyboard) => void;
 }
 
 export const VideoPlayerPreview = forwardRef<VideoPlayerPreviewHandle, VideoPlayerPreviewProps>(
@@ -25,7 +26,7 @@ export const VideoPlayerPreview = forwardRef<VideoPlayerPreviewHandle, VideoPlay
     {
       storyboard,
       audioConfig = {
-        selectedMusicTrack: "pulse-launch-theme",
+        selectedMusicTrack: "happy-beats-vol-1",
         musicVolume: 0.8,
         sfxVolume: 0.9,
         isMuted: false,
@@ -33,6 +34,7 @@ export const VideoPlayerPreview = forwardRef<VideoPlayerPreviewHandle, VideoPlay
       onAudioConfigChange,
       onAspectRatioChange,
       onProceedToExport,
+      onUpdateStoryboard,
     },
     ref
   ) => {
@@ -208,6 +210,8 @@ export const VideoPlayerPreview = forwardRef<VideoPlayerPreviewHandle, VideoPlay
             audioConfig={audioConfig}
             onAudioConfigChange={onAudioConfigChange}
             storyboardTone={storyboard.tone}
+            storyboard={storyboard}
+            onUpdateStoryboard={onUpdateStoryboard}
           />
         )}
 

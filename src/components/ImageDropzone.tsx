@@ -1,17 +1,21 @@
 import React, { useState, useRef } from "react";
 import { UploadCloud, Image as ImageIcon, X, AlertCircle, Loader2 } from "lucide-react";
-import { ImageDimensions } from "../types";
+import { ImageDimensions, ScreenMode } from "../types";
 
 interface ImageDropzoneProps {
   imageUrl: string | null;
   imageFilename: string | null;
   onImageChange: (url: string | null, filename: string | null, dimensions?: ImageDimensions | null) => void;
+  screenMode?: ScreenMode;
+  onScreenModeChange?: (mode: ScreenMode) => void;
 }
 
 export const ImageDropzone: React.FC<ImageDropzoneProps> = ({
   imageUrl,
   imageFilename,
   onImageChange,
+  screenMode = "mockup",
+  onScreenModeChange,
 }) => {
   const [isDragging, setIsDragging] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
@@ -132,9 +136,10 @@ export const ImageDropzone: React.FC<ImageDropzoneProps> = ({
 
       {/* Upload area or Preview */}
       {imageUrl ? (
-        <div
-          style={{
-            position: "relative",
+        <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+          <div
+            style={{
+              position: "relative",
             borderRadius: "var(--radius-md)",
             overflow: "hidden",
             border: "1px solid var(--border-highlight)",
@@ -207,6 +212,83 @@ export const ImageDropzone: React.FC<ImageDropzoneProps> = ({
             </button>
           </div>
         </div>
+
+        {/* Screen Render Mode Switcher */}
+        {onScreenModeChange && (
+          <div
+            style={{
+              marginTop: "12px",
+              padding: "12px 14px",
+              borderRadius: "var(--radius-sm)",
+              background: "rgba(255, 255, 255, 0.03)",
+              border: "1px solid var(--border-subtle)",
+              display: "flex",
+              flexDirection: "column",
+              gap: "8px",
+            }}
+          >
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <span style={{ fontSize: "12px", fontWeight: "600", color: "var(--text-secondary)" }}>
+                Screen Render Mode:
+              </span>
+              <span style={{ fontSize: "11px", color: screenMode === "mockup" ? "#818cf8" : "#22d3ee", fontWeight: "600" }}>
+                {screenMode === "mockup" ? "⚡ Synthesized HTML/CSS" : "🖼️ Raw Screenshot"}
+              </span>
+            </div>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px" }}>
+              <button
+                type="button"
+                onClick={() => onScreenModeChange("mockup")}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: "6px",
+                  padding: "8px 12px",
+                  borderRadius: "6px",
+                  border: screenMode === "mockup" ? "1px solid rgba(99, 102, 241, 0.6)" : "1px solid var(--border-subtle)",
+                  background: screenMode === "mockup" ? "rgba(99, 102, 241, 0.2)" : "rgba(255, 255, 255, 0.03)",
+                  color: screenMode === "mockup" ? "#ffffff" : "var(--text-secondary)",
+                  fontSize: "12px",
+                  fontWeight: screenMode === "mockup" ? "700" : "500",
+                  cursor: "pointer",
+                  transition: "all 0.15s ease",
+                }}
+              >
+                <span>⚡</span>
+                <span>Synthesized HTML/CSS</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => onScreenModeChange("screenshot")}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: "6px",
+                  padding: "8px 12px",
+                  borderRadius: "6px",
+                  border: screenMode === "screenshot" ? "1px solid rgba(34, 211, 238, 0.6)" : "1px solid var(--border-subtle)",
+                  background: screenMode === "screenshot" ? "rgba(34, 211, 238, 0.2)" : "rgba(255, 255, 255, 0.03)",
+                  color: screenMode === "screenshot" ? "#ffffff" : "var(--text-secondary)",
+                  fontSize: "12px",
+                  fontWeight: screenMode === "screenshot" ? "700" : "500",
+                  cursor: "pointer",
+                  transition: "all 0.15s ease",
+                }}
+              >
+                <span>🖼️</span>
+                <span>Direct Screenshot</span>
+              </button>
+            </div>
+            <p style={{ margin: 0, fontSize: "11px", color: "var(--text-muted)", lineHeight: 1.4 }}>
+              {screenMode === "mockup"
+                ? "Builds a styled live HTML/CSS UI matching your company's palette & prompt."
+                : "Renders your exact uploaded image inside the device frame."}
+            </p>
+          </div>
+        )}
+      </div>
       ) : (
         <div
           onClick={() => !isUploading && fileInputRef.current?.click()}

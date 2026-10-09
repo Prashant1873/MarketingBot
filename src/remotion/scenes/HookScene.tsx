@@ -2,9 +2,21 @@ import { AbsoluteFill, useCurrentFrame, useVideoConfig } from "remotion";
 import { SceneComponentProps } from "../types";
 import { calculateSlamEntrance, calculateCardSlideUp } from "../animations";
 
-export function HookScene({ scene, aspectRatio }: SceneComponentProps) {
+export function HookScene({ scene, aspectRatio, themePalette }: SceneComponentProps) {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
+
+  // Active theme tokens
+  const palette = scene.themePalette || themePalette;
+  const isDark = palette?.isDark !== false;
+  const bg = palette?.background || "#070a13";
+  const primary = palette?.primary || "#6366f1";
+  const accent = palette?.accent || "#a855f7";
+  const textColor = palette?.text || (isDark ? "#ffffff" : "#0f172a");
+  const subtextColor = isDark ? "#94a3b8" : "#475569";
+  const textShadowStyle = isDark
+    ? `0 10px 40px rgba(0, 0, 0, 0.8), 0 0 35px ${primary}40`
+    : `0 2px 16px rgba(0, 0, 0, 0.08)`;
 
   // Entrance animations
   const badgeAnim = calculateSlamEntrance(frame, fps, 0);
@@ -22,7 +34,7 @@ export function HookScene({ scene, aspectRatio }: SceneComponentProps) {
   return (
     <AbsoluteFill
       style={{
-        backgroundColor: "#070a13",
+        backgroundColor: bg,
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
@@ -30,16 +42,16 @@ export function HookScene({ scene, aspectRatio }: SceneComponentProps) {
         overflow: "hidden",
       }}
     >
-      {/* Ambient radial glow background */}
+      {/* Ambient radial glow background tailored to brand colors */}
       <div
         style={{
           position: "absolute",
           width: "1200px",
           height: "1200px",
           borderRadius: "50%",
-          background: "radial-gradient(circle, rgba(99, 102, 241, 0.22) 0%, rgba(168, 85, 247, 0.08) 45%, rgba(0, 0, 0, 0) 70%)",
+          background: `radial-gradient(circle, ${primary}40 0%, ${accent}18 45%, rgba(0, 0, 0, 0) 70%)`,
           transform: `scale(${bgPulse})`,
-          filter: "blur(60px)",
+          filter: "blur(70px)",
           pointerEvents: "none",
         }}
       />
@@ -71,10 +83,10 @@ export function HookScene({ scene, aspectRatio }: SceneComponentProps) {
               gap: "8px",
               padding: "8px 24px",
               borderRadius: "999px",
-              background: "rgba(245, 158, 11, 0.15)",
-              border: "1px solid rgba(245, 158, 11, 0.4)",
-              boxShadow: "0 0 20px rgba(245, 158, 11, 0.2)",
-              color: "#fbbf24",
+              background: `${accent}22`,
+              border: `1px solid ${accent}55`,
+              boxShadow: `0 0 24px ${accent}33`,
+              color: isDark ? accent : primary,
               fontSize: "16px",
               fontWeight: "800",
               textTransform: "uppercase",
@@ -94,8 +106,8 @@ export function HookScene({ scene, aspectRatio }: SceneComponentProps) {
             fontWeight: "900",
             lineHeight: 1.1,
             letterSpacing: "-1.5px",
-            color: "#ffffff",
-            textShadow: "0 10px 40px rgba(0, 0, 0, 0.8), 0 0 30px rgba(99, 102, 241, 0.3)",
+            color: textColor,
+            textShadow: textShadowStyle,
             transform: `scale(${titleAnim.scale})`,
             opacity: titleAnim.opacity,
           }}
@@ -111,7 +123,7 @@ export function HookScene({ scene, aspectRatio }: SceneComponentProps) {
               fontSize: subtextFontSize,
               fontWeight: "500",
               lineHeight: 1.4,
-              color: "#94a3b8",
+              color: subtextColor,
               maxWidth: "1000px",
               transform: `translateY(${subtextAnim.translateY}px)`,
               opacity: subtextAnim.opacity,

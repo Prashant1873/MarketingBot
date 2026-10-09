@@ -23,9 +23,16 @@ import {
   ShoppingCart,
   Rss,
   Sliders,
+  Code,
+  FileCode,
+  CheckCheck,
+  X,
+  Mic,
+  Type,
 } from "lucide-react";
-import { Storyboard, StoryboardScene, FeatureType, ThemePalette } from "../types";
-import { createDefaultFeatureMockup, PRESET_THEME_PALETTES } from "../utils/featureMockups";
+import { Storyboard, StoryboardScene, FeatureType, ThemePalette, ScreenMode, SubtitleStyle, SubtitlesConfig, VisualTheme } from "../types";
+import { createDefaultFeatureMockup, PRESET_THEME_PALETTES, VISUAL_THEME_OPTIONS, VISUAL_THEME_PALETTES } from "../utils/featureMockups";
+import { generateHtmlCssForFeature } from "../utils/htmlCssGenerator";
 
 interface StoryboardInspectorProps {
   storyboard: Storyboard;
@@ -48,6 +55,9 @@ export function StoryboardInspector({
 }: StoryboardInspectorProps) {
   const [copiedTab, setCopiedTab] = useState<string | null>(null);
   const [activeShareTab, setActiveShareTab] = useState<"twitter" | "linkedin" | "discord">("twitter");
+  const [isCodeModalOpen, setIsCodeModalOpen] = useState(false);
+  const [activeCodeTab, setActiveCodeTab] = useState<"html" | "css">("html");
+  const [codeCopied, setCodeCopied] = useState<string | null>(null);
 
   // Calculate current total scene duration
   const currentTotalDuration = storyboard.scenes.reduce(
@@ -84,9 +94,10 @@ export function StoryboardInspector({
     onUpdateStoryboard({
       ...storyboard,
       themePalette: updatedPalette,
-      scenes: storyboard.scenes.map((s) =>
-        s.type === "product_reveal" ? { ...s, themePalette: updatedPalette } : s
-      ),
+      scenes: storyboard.scenes.map((s) => ({
+        ...s,
+        themePalette: updatedPalette,
+      })),
     });
   };
 
@@ -96,9 +107,26 @@ export function StoryboardInspector({
     onUpdateStoryboard({
       ...storyboard,
       themePalette: preset,
-      scenes: storyboard.scenes.map((s) =>
-        s.type === "product_reveal" ? { ...s, themePalette: preset } : s
-      ),
+      scenes: storyboard.scenes.map((s) => ({
+        ...s,
+        themePalette: preset,
+      })),
+    });
+  };
+
+  const handleVisualThemeChange = (theme: VisualTheme) => {
+    const palette = VISUAL_THEME_PALETTES[theme] || {
+      ...currentPalette,
+      visualTheme: theme,
+    };
+    onUpdateStoryboard({
+      ...storyboard,
+      visualTheme: theme,
+      themePalette: palette,
+      scenes: storyboard.scenes.map((s) => ({
+        ...s,
+        themePalette: palette,
+      })),
     });
   };
 
@@ -113,6 +141,32 @@ export function StoryboardInspector({
         s.type === "product_reveal" ? { ...s, featureMockup: nextMockup } : s
       ),
     });
+  };
+
+  const handleScreenModeChange = (mode: ScreenMode) => {
+    onUpdateStoryboard({
+      ...storyboard,
+      screenMode: mode,
+      scenes: storyboard.scenes.map((s) =>
+        s.type === "product_reveal" ? { ...s, screenMode: mode } : s
+      ),
+    });
+  };
+
+  const generatedCode = generateHtmlCssForFeature(
+    storyboard.featureMockup || createDefaultFeatureMockup("analytics", storyboard.title),
+    currentPalette,
+    storyboard.title
+  );
+
+  const handleCopyCode = async (text: string, type: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCodeCopied(type);
+      setTimeout(() => setCodeCopied(null), 2000);
+    } catch {
+      setCodeCopied(null);
+    }
   };
 
   const handleCopyText = async (text: string, tabKey: string) => {
@@ -407,7 +461,7 @@ export function StoryboardInspector({
             paddingBottom: "12px",
           }}
         >
-          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
             <span
               style={{
                 display: "inline-flex",
@@ -428,9 +482,83 @@ export function StoryboardInspector({
               Brand Tokens & Feature Synthesizer
             </span>
           </div>
-          <span style={{ fontSize: "11px", color: "var(--text-muted)" }}>
-            Theme extracted from screenshot • Custom page screen synthesized from prompt
-          </span>
+
+          {/* Screen Render Mode Switch & Code Inspector Trigger */}
+          <div style={{ display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap" }}>
+            <div
+              style={{
+                display: "inline-flex",
+                background: "rgba(255, 255, 255, 0.05)",
+                borderRadius: "8px",
+                padding: "2px",
+                border: "1px solid var(--border-subtle)",
+              }}
+            >
+              <button
+                type="button"
+                onClick={() => handleScreenModeChange("mockup")}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "5px",
+                  padding: "4px 10px",
+                  borderRadius: "6px",
+                  border: "none",
+                  background: (storyboard.screenMode || "mockup") === "mockup" ? "rgba(99, 102, 241, 0.4)" : "transparent",
+                  color: (storyboard.screenMode || "mockup") === "mockup" ? "#ffffff" : "var(--text-secondary)",
+                  fontSize: "11px",
+                  fontWeight: (storyboard.screenMode || "mockup") === "mockup" ? "700" : "500",
+                  cursor: "pointer",
+                  transition: "all 0.15s ease",
+                }}
+                title="Synthesize an authentic live HTML/CSS screen with company palette"
+              >
+                <span>⚡</span> Synthesized HTML/CSS
+              </button>
+              <button
+                type="button"
+                onClick={() => handleScreenModeChange("screenshot")}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "5px",
+                  padding: "4px 10px",
+                  borderRadius: "6px",
+                  border: "none",
+                  background: storyboard.screenMode === "screenshot" ? "rgba(34, 211, 238, 0.35)" : "transparent",
+                  color: storyboard.screenMode === "screenshot" ? "#ffffff" : "var(--text-secondary)",
+                  fontSize: "11px",
+                  fontWeight: storyboard.screenMode === "screenshot" ? "700" : "500",
+                  cursor: "pointer",
+                  transition: "all 0.15s ease",
+                }}
+                title="Render the exact uploaded screenshot image directly"
+              >
+                <span>🖼️</span> Direct Screenshot
+              </button>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => setIsCodeModalOpen(true)}
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "5px",
+                padding: "5px 10px",
+                borderRadius: "6px",
+                border: "1px solid rgba(99, 102, 241, 0.4)",
+                background: "rgba(99, 102, 241, 0.15)",
+                color: "#a5b4fc",
+                fontSize: "11px",
+                fontWeight: "600",
+                cursor: "pointer",
+              }}
+              title="Inspect generated HTML markup and brand CSS"
+            >
+              <Code size={13} /> View HTML/CSS Code
+            </button>
+          </div>
         </div>
 
         <div
@@ -442,7 +570,46 @@ export function StoryboardInspector({
           }}
         >
           {/* Left: Brand Color Palette Controls */}
-          <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+            {/* Visual Aesthetic Theme Selector */}
+            <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+              <span style={{ fontSize: "11px", fontWeight: "700", textTransform: "uppercase", letterSpacing: "0.05em", color: "var(--text-secondary)" }}>
+                Visual Aesthetic Style:
+              </span>
+              <div style={{ display: "flex", gap: "6px", flexWrap: "wrap" }}>
+                {VISUAL_THEME_OPTIONS.map((vt) => {
+                  const isActive = (storyboard.visualTheme || currentPalette.visualTheme || "default-dark") === vt.id;
+                  return (
+                    <button
+                      key={vt.id}
+                      id={`inspector-theme-${vt.id}`}
+                      type="button"
+                      onClick={() => handleVisualThemeChange(vt.id as VisualTheme)}
+                      style={{
+                        fontSize: "11px",
+                        fontWeight: isActive ? "700" : "500",
+                        padding: "4px 8px",
+                        borderRadius: "6px",
+                        background: isActive ? "rgba(99, 102, 241, 0.25)" : "rgba(255, 255, 255, 0.05)",
+                        border: isActive ? "1px solid var(--accent-primary)" : "1px solid var(--border-subtle)",
+                        color: isActive ? "#ffffff" : "var(--text-secondary)",
+                        cursor: "pointer",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "4px",
+                      }}
+                      title={vt.desc}
+                    >
+                      <span>{vt.label}</span>
+                      <span style={{ fontSize: "9px", opacity: 0.7, padding: "1px 4px", borderRadius: "3px", background: "rgba(255,255,255,0.1)" }}>
+                        {vt.badge}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
               <span style={{ fontSize: "12px", fontWeight: "600", color: "var(--text-secondary)" }}>
                 Brand Color Swatches:
@@ -476,6 +643,7 @@ export function StoryboardInspector({
                 { key: "primary" as const, label: "Primary" },
                 { key: "secondary" as const, label: "Secondary" },
                 { key: "accent" as const, label: "Accent" },
+                { key: "background" as const, label: "Background" },
                 { key: "surface" as const, label: "Surface" },
               ].map(({ key, label }) => {
                 const colorVal = currentPalette[key];
@@ -740,6 +908,36 @@ export function StoryboardInspector({
                 </div>
               )}
 
+              {/* Spoken Voiceover Narration & Kinetic Captions Script */}
+              <div>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "4px" }}>
+                  <label style={{ fontSize: "11px", fontWeight: "700", color: "var(--accent-secondary)", display: "flex", alignItems: "center", gap: "4px" }}>
+                    <Mic size={12} /> Spoken Voiceover & Captions
+                  </label>
+                  <span style={{ fontSize: "10px", color: "var(--text-muted)" }}>
+                    {scene.voiceoverScript ? `${scene.voiceoverScript.split(/\s+/).filter(Boolean).length} words` : "Auto-synced from copy"}
+                  </span>
+                </div>
+                <textarea
+                  value={scene.voiceoverScript ?? ""}
+                  placeholder={scene.subtext ? `${scene.headline}. ${scene.subtext}` : scene.headline}
+                  onChange={(e) => handleSceneChange(idx, { voiceoverScript: e.target.value })}
+                  rows={2}
+                  style={{
+                    width: "100%",
+                    padding: "8px 10px",
+                    background: "rgba(56, 189, 248, 0.05)",
+                    border: "1px solid rgba(56, 189, 248, 0.25)",
+                    borderRadius: "6px",
+                    color: "#ffffff",
+                    fontSize: "12px",
+                    lineHeight: 1.4,
+                    fontFamily: "inherit",
+                    resize: "none",
+                  }}
+                />
+              </div>
+
               {/* Beats tags if highlight scene */}
               {Array.isArray(scene.beats) && scene.beats.length > 0 && (
                 <div>
@@ -844,6 +1042,80 @@ export function StoryboardInspector({
                 ))}
               </div>
             </div>
+
+            {/* Subtitles & Captions Quick Switcher */}
+            <div style={{ marginTop: "12px", paddingTop: "12px", borderTop: "1px solid rgba(255, 255, 255, 0.08)" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
+                <span style={{ fontSize: "11px", fontWeight: "700", textTransform: "uppercase", letterSpacing: "0.05em", color: "var(--text-secondary)", display: "flex", alignItems: "center", gap: "4px" }}>
+                  <Type size={12} color="var(--accent-secondary)" /> Kinetic Caption Style
+                </span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const currentEnabled = storyboard.subtitlesConfig?.enabled ?? true;
+                    const nextConfig: SubtitlesConfig = {
+                      ...(storyboard.subtitlesConfig || { style: "karaoke-bounce", position: "bottom" }),
+                      enabled: !currentEnabled,
+                    };
+                    onUpdateStoryboard({
+                      ...storyboard,
+                      subtitlesConfig: nextConfig,
+                      scenes: storyboard.scenes.map((s) => ({ ...s, subtitlesConfig: nextConfig })),
+                    });
+                  }}
+                  style={{
+                    background: (storyboard.subtitlesConfig?.enabled ?? true) ? "rgba(56, 189, 248, 0.2)" : "rgba(255, 255, 255, 0.06)",
+                    color: (storyboard.subtitlesConfig?.enabled ?? true) ? "var(--accent-secondary)" : "var(--text-muted)",
+                    border: "none",
+                    borderRadius: "4px",
+                    padding: "2px 8px",
+                    fontSize: "10px",
+                    fontWeight: "600",
+                    cursor: "pointer",
+                  }}
+                >
+                  {(storyboard.subtitlesConfig?.enabled ?? true) ? "Enabled" : "Disabled"}
+                </button>
+              </div>
+
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "6px" }}>
+                {(["karaoke-bounce", "clean-pill", "cyber-glow", "minimal"] as SubtitleStyle[]).map((st) => {
+                  const currentStyle = storyboard.subtitlesConfig?.style || "karaoke-bounce";
+                  const isSelected = currentStyle === st;
+                  return (
+                    <button
+                      key={st}
+                      type="button"
+                      onClick={() => {
+                        const nextConfig: SubtitlesConfig = {
+                          ...(storyboard.subtitlesConfig || { position: "bottom" }),
+                          style: st,
+                          enabled: true,
+                        };
+                        onUpdateStoryboard({
+                          ...storyboard,
+                          subtitlesConfig: nextConfig,
+                          scenes: storyboard.scenes.map((s) => ({ ...s, subtitlesConfig: nextConfig })),
+                        });
+                      }}
+                      style={{
+                        padding: "5px 8px",
+                        borderRadius: "6px",
+                        border: isSelected ? "1px solid var(--accent-secondary)" : "1px solid rgba(255, 255, 255, 0.08)",
+                        background: isSelected ? "rgba(56, 189, 248, 0.2)" : "rgba(255, 255, 255, 0.02)",
+                        color: isSelected ? "#ffffff" : "var(--text-muted)",
+                        fontSize: "11px",
+                        fontWeight: "600",
+                        cursor: "pointer",
+                        textTransform: "capitalize",
+                      }}
+                    >
+                      {st.replace("-", " ")}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
           </div>
         </div>
 
@@ -935,6 +1207,192 @@ export function StoryboardInspector({
           })()}
         </div>
       </div>
+
+      {/* HTML / CSS Code Viewer Modal */}
+      {isCodeModalOpen && (
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: "rgba(0, 0, 0, 0.75)",
+            backdropFilter: "blur(6px)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 9999,
+            padding: "24px",
+          }}
+          onClick={() => setIsCodeModalOpen(false)}
+        >
+          <div
+            className="glass-panel"
+            style={{
+              width: "100%",
+              maxWidth: "840px",
+              maxHeight: "85vh",
+              display: "flex",
+              flexDirection: "column",
+              background: "#0c0f1d",
+              border: "1px solid rgba(99, 102, 241, 0.3)",
+              borderRadius: "16px",
+              boxShadow: "0 25px 60px rgba(0, 0, 0, 0.7)",
+              overflow: "hidden",
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Modal Header */}
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                padding: "16px 20px",
+                borderBottom: "1px solid rgba(255, 255, 255, 0.08)",
+                background: "rgba(255, 255, 255, 0.02)",
+              }}
+            >
+              <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                <div
+                  style={{
+                    width: "32px",
+                    height: "32px",
+                    borderRadius: "8px",
+                    background: "rgba(99, 102, 241, 0.2)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    color: "#818cf8",
+                  }}
+                >
+                  <FileCode size={18} />
+                </div>
+                <div>
+                  <h3 style={{ margin: 0, fontSize: "15px", fontWeight: "700", color: "#fff" }}>
+                    Synthesized Feature Screen Code
+                  </h3>
+                  <p style={{ margin: 0, fontSize: "11px", color: "var(--text-muted)" }}>
+                    HTML structure and CSS design tokens themed to your company brand
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsCodeModalOpen(false)}
+                className="btn-ghost"
+                style={{ padding: "6px", color: "var(--text-secondary)" }}
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            {/* Modal Tabs & Actions */}
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                padding: "10px 20px",
+                background: "rgba(0, 0, 0, 0.3)",
+                borderBottom: "1px solid rgba(255, 255, 255, 0.05)",
+              }}
+            >
+              <div style={{ display: "flex", gap: "8px" }}>
+                <button
+                  type="button"
+                  onClick={() => setActiveCodeTab("html")}
+                  style={{
+                    padding: "6px 14px",
+                    borderRadius: "6px",
+                    border: "none",
+                    background: activeCodeTab === "html" ? "rgba(99, 102, 241, 0.3)" : "transparent",
+                    color: activeCodeTab === "html" ? "#fff" : "var(--text-secondary)",
+                    fontSize: "12px",
+                    fontWeight: "600",
+                    cursor: "pointer",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "6px",
+                  }}
+                >
+                  <span>📄</span> feature-screen.html
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setActiveCodeTab("css")}
+                  style={{
+                    padding: "6px 14px",
+                    borderRadius: "6px",
+                    border: "none",
+                    background: activeCodeTab === "css" ? "rgba(99, 102, 241, 0.3)" : "transparent",
+                    color: activeCodeTab === "css" ? "#fff" : "var(--text-secondary)",
+                    fontSize: "12px",
+                    fontWeight: "600",
+                    cursor: "pointer",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "6px",
+                  }}
+                >
+                  <span>🎨</span> brand-styles.css
+                </button>
+              </div>
+
+              <button
+                type="button"
+                onClick={() =>
+                  handleCopyCode(
+                    activeCodeTab === "html" ? generatedCode.html : generatedCode.css,
+                    activeCodeTab
+                  )
+                }
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "6px",
+                  padding: "6px 12px",
+                  borderRadius: "6px",
+                  border: "1px solid rgba(99, 102, 241, 0.4)",
+                  background: "rgba(99, 102, 241, 0.15)",
+                  color: "#a5b4fc",
+                  fontSize: "11px",
+                  fontWeight: "600",
+                  cursor: "pointer",
+                }}
+              >
+                {codeCopied === activeCodeTab ? (
+                  <>
+                    <CheckCheck size={13} color="#34d399" /> Copied!
+                  </>
+                ) : (
+                  <>
+                    <Copy size={13} /> Copy {activeCodeTab.toUpperCase()}
+                  </>
+                )}
+              </button>
+            </div>
+
+            {/* Code Body */}
+            <div style={{ flex: 1, overflow: "auto", padding: "16px 20px" }}>
+              <pre
+                style={{
+                  margin: 0,
+                  fontFamily: "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace",
+                  fontSize: "12px",
+                  lineHeight: "1.6",
+                  color: "#cbd5e1",
+                  whiteSpace: "pre-wrap",
+                  wordBreak: "break-word",
+                }}
+              >
+                <code>{activeCodeTab === "html" ? generatedCode.html : generatedCode.css}</code>
+              </pre>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

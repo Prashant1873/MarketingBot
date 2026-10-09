@@ -9,11 +9,23 @@ export function ProductRevealScene({
   aspectRatio,
   imageUrl,
   deviceFrame,
+  screenMode,
   themePalette,
   featureMockup,
 }: SceneComponentProps) {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
+
+  // Active theme tokens
+  const palette = scene.themePalette || themePalette;
+  const isDark = palette?.isDark !== false;
+  const bg = palette?.background || "#070a13";
+  const primary = palette?.primary || "#6366f1";
+  const accent = palette?.accent || "#38bdf8";
+  const textColor = palette?.text || (isDark ? "#ffffff" : "#0f172a");
+  const textShadowStyle = isDark
+    ? "0 4px 20px rgba(0, 0, 0, 0.8)"
+    : "0 2px 10px rgba(0, 0, 0, 0.06)";
 
   // Entrance animations
   const headerAnim = calculateCardSlideUp(frame, fps, 0);
@@ -26,11 +38,12 @@ export function ProductRevealScene({
   const isVertical = aspectRatio === "9:16";
   const titleSize = isVertical ? "48px" : aspectRatio === "1:1" ? "46px" : "56px";
   const effectiveDeviceFrame = scene.deviceFrame || deviceFrame || "macos";
+  const effectiveScreenMode = scene.screenMode || screenMode || "mockup";
 
   return (
     <AbsoluteFill
       style={{
-        backgroundColor: "#070a13",
+        backgroundColor: bg,
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
@@ -39,14 +52,14 @@ export function ProductRevealScene({
         overflow: "hidden",
       }}
     >
-      {/* Background ambient light */}
+      {/* Background ambient light customized to company brand */}
       <div
         style={{
           position: "absolute",
           width: "1400px",
           height: "900px",
           borderRadius: "50%",
-          background: "radial-gradient(circle, rgba(99, 102, 241, 0.28) 0%, rgba(13, 19, 34, 0) 70%)",
+          background: `radial-gradient(circle, ${primary}40 0%, ${accent}18 45%, rgba(0, 0, 0, 0) 70%)`,
           filter: "blur(80px)",
           pointerEvents: "none",
         }}
@@ -71,7 +84,7 @@ export function ProductRevealScene({
             fontWeight: "700",
             textTransform: "uppercase",
             letterSpacing: "2px",
-            color: "#818cf8",
+            color: primary,
             marginBottom: "8px",
           }}
         >
@@ -82,10 +95,10 @@ export function ProductRevealScene({
             margin: 0,
             fontSize: titleSize,
             fontWeight: "900",
-            color: "#ffffff",
+            color: textColor,
             letterSpacing: "-1px",
             lineHeight: 1.15,
-            textShadow: "0 4px 20px rgba(0, 0, 0, 0.8)",
+            textShadow: textShadowStyle,
           }}
         >
           {scene.headline}
@@ -114,14 +127,14 @@ export function ProductRevealScene({
             aspectRatio={aspectRatio}
             productTitle={scene.headline}
           >
-            {imageUrl ? (
+            {effectiveScreenMode === "screenshot" && imageUrl ? (
               <Img
                 src={imageUrl}
                 style={{
                   width: "100%",
                   height: "100%",
                   objectFit: "contain",
-                  background: "#080b12",
+                  background: palette?.surface || "#080b12",
                   padding: effectiveDeviceFrame === "mobile" ? "8px" : "16px",
                   boxSizing: "border-box",
                 }}
@@ -129,7 +142,7 @@ export function ProductRevealScene({
             ) : (
               <FeatureScreenSynthesizer
                 featureMockup={scene.featureMockup || featureMockup}
-                themePalette={scene.themePalette || themePalette}
+                themePalette={palette}
                 deviceFrame={effectiveDeviceFrame}
                 title={scene.headline}
               />
