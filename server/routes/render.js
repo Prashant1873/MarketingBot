@@ -1,7 +1,7 @@
 import express from "express";
 import path from "path";
 import fs from "fs";
-import { createRenderJob, getJob, listJobs } from "../services/renderService.js";
+import { createRenderJob, getJob, listJobs, generateGifFromVideo } from "../services/renderService.js";
 
 const router = express.Router();
 
@@ -103,6 +103,70 @@ router.get("/:jobId/poster", (req, res) => {
   }
 
   res.download(posterPath, "marcutie_poster.jpg");
+});
+
+/**
+ * POST /api/render/:jobId/gif
+ * Generates or retrieves cached animated GIF loop using two-pass FFmpeg
+ */
+router.post("/:jobId/gif", async (req, res) => {
+  const { jobId } = req.params;
+  const options = req.body?.options || {};
+
+  try {
+    const gifResult = await generateGifFromVideo(jobId, options);
+    res.json({
+      success: true,
+      jobId,
+      gifUrl: gifResult.gifUrl,
+      fileSize: gifResult.fileSize,
+      cached: gifResult.cached,
+    });
+  } catch (err) {
+    console.error(`[RenderRoute] GIF generation failed for ${jobId}:`, err);
+    res.status(500).json({
+      success: false,
+      error: err.message || "Failed to generate animated GIF",
+    });
+  }
+});
+
+/**
+ * GET /api/render/:jobId/gif
+ * GET /api/render/:jobId/gif/download
+ * Triggers direct download of the two-pass animated GIF loop
+ */
+router.get(["/:jobId/gif", "/:jobId/gif/download"], async (req, res) => {
+  const { jobId } = req.params;
+  const job = getJob(jobId);
+  const gifPath = path.join(process.cwd(), "data", "renders", jobId, "marcutie_preview.gif");
+
+  try {
+    if (!fs.existsSync(gifPath)) {
+      await generateGifFromVideo(jobId);
+    }
+
+    if (!fs.existsSync(gifPath)) {
+      return res.status(404).json({
+        success: false,
+        error: "Animated GIF could not be created or found",
+      });
+    }
+
+    const cleanTitle = (job?.storyboardTitle || "video")
+      .toLowerCase()
+      .replace(/[^a-z0-9_-]/g, "_")
+      .replace(/_+/g, "_")
+      .substring(0, 30);
+
+    const filename = `marcutie_${cleanTitle}_preview.gif`;
+    res.download(gifPath, filename);
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      error: err.message || "Failed to deliver animated GIF",
+    });
+  }
 });
 
 /**

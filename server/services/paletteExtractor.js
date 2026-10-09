@@ -15,8 +15,8 @@ export function getDefaultThemePalette(tone = "default") {
       primary: "#6366f1", // Indigo
       secondary: "#38bdf8", // Sky blue
       accent: "#a855f7", // Purple
-      background: "#080c16",
-      surface: "#111827",
+      background: "#080718",
+      surface: "#121128",
       text: "#f8fafc",
       isDark: true,
     },
@@ -24,8 +24,8 @@ export function getDefaultThemePalette(tone = "default") {
       primary: "#e11d48", // Crimson rose
       secondary: "#fb7185",
       accent: "#f43f5e",
-      background: "#050505",
-      surface: "#18181b",
+      background: "#120509",
+      surface: "#200912",
       text: "#ffffff",
       isDark: true,
     },
@@ -33,8 +33,8 @@ export function getDefaultThemePalette(tone = "default") {
       primary: "#ea580c", // Hacker Orange
       secondary: "#f97316",
       accent: "#fb923c",
-      background: "#0c0a09",
-      surface: "#1c1917",
+      background: "#140804",
+      surface: "#22110a",
       text: "#fbfbfe",
       isDark: true,
     },
@@ -42,8 +42,8 @@ export function getDefaultThemePalette(tone = "default") {
       primary: "#a855f7", // Electric Neon
       secondary: "#ec4899",
       accent: "#f43f5e",
-      background: "#0f0728",
-      surface: "#1f103d",
+      background: "#130524",
+      surface: "#240a3e",
       text: "#ffffff",
       isDark: true,
     },
@@ -60,23 +60,80 @@ export function getDefaultThemePalette(tone = "default") {
       primary: "#0284c7", // iOS Ocean
       secondary: "#38bdf8",
       accent: "#06b6d4",
-      background: "#030712",
-      surface: "#0f172a",
+      background: "#020f1c",
+      surface: "#061a30",
       text: "#ffffff",
       isDark: true,
     },
     default: {
       primary: "#6366f1", // Indigo core
-      secondary: "#38bdf8",
-      accent: "#10b981",
-      background: "#090d16",
-      surface: "#131b2e",
+      secondary: "#8b5cf6",
+      accent: "#ec4899",
+      background: "#090818",
+      surface: "#14122b",
       text: "#f8fafc",
       isDark: true,
     },
   };
 
   return palettes[tone] || palettes.default;
+}
+
+export const VISUAL_THEME_PALETTES = {
+  "default-dark": {
+    primary: "#6366f1",
+    secondary: "#38bdf8",
+    accent: "#a855f7",
+    background: "#070a13",
+    surface: "#101628",
+    text: "#ffffff",
+    isDark: true,
+    visualTheme: "default-dark",
+  },
+  "apple-clean": {
+    primary: "#0071e3",
+    secondary: "#1d1d1f",
+    accent: "#34c759",
+    background: "#fbfbfd",
+    surface: "#f5f5f7",
+    text: "#1d1d1f",
+    isDark: false,
+    visualTheme: "apple-clean",
+  },
+  "neo-brutalist": {
+    primary: "#ffe600",
+    secondary: "#00f0ff",
+    accent: "#ff0055",
+    background: "#fffdf9",
+    surface: "#ffffff",
+    text: "#000000",
+    isDark: false,
+    visualTheme: "neo-brutalist",
+  },
+  "cyberpunk-scanlines": {
+    primary: "#00f0ff",
+    secondary: "#ff0055",
+    accent: "#00ff66",
+    background: "#080014",
+    surface: "#12002b",
+    text: "#ffffff",
+    isDark: true,
+    visualTheme: "cyberpunk-scanlines",
+  },
+  "aurora-glass": {
+    primary: "#8b5cf6",
+    secondary: "#06b6d4",
+    accent: "#10b981",
+    background: "#060918",
+    surface: "#0e1530",
+    text: "#f8fafc",
+    isDark: true,
+    visualTheme: "aurora-glass",
+  },
+};
+
+export function getVisualThemePalette(theme = "default-dark") {
+  return VISUAL_THEME_PALETTES[theme] || VISUAL_THEME_PALETTES["default-dark"];
 }
 
 /**
@@ -127,14 +184,16 @@ export function extractPaletteFromBuffer(buffer, tone = "default") {
       const primary = sorted[0]?.[0] || fallback.primary;
       const secondary = sorted[1]?.[0] || fallback.secondary;
       const accent = sorted[2]?.[0] || fallback.accent;
+      const background = deriveBrandDarkBackground(primary);
+      const surface = deriveBrandDarkSurface(primary);
 
       return {
         primary,
         secondary,
         accent,
-        background: fallback.background,
-        surface: fallback.surface,
-        text: fallback.text,
+        background,
+        surface,
+        text: fallback.text || "#f8fafc",
         isDark: true,
       };
     }
@@ -143,6 +202,82 @@ export function extractPaletteFromBuffer(buffer, tone = "default") {
   }
 
   return fallback;
+}
+
+export function hexToHsl(hex) {
+  const cleanHex = hex.replace("#", "");
+  const num = parseInt(cleanHex.length === 3 ? cleanHex.split("").map((c) => c + c).join("") : cleanHex, 16);
+  if (isNaN(num)) return [0, 0, 10];
+  const r = ((num >> 16) & 255) / 255;
+  const g = ((num >> 8) & 255) / 255;
+  const b = (num & 255) / 255;
+
+  const max = Math.max(r, g, b);
+  const min = Math.min(r, g, b);
+  let h = 0;
+  let s = 0;
+  const l = (max + min) / 2;
+
+  if (max !== min) {
+    const d = max - min;
+    s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+    switch (max) {
+      case r:
+        h = (g - b) / d + (g < b ? 6 : 0);
+        break;
+      case g:
+        h = (b - r) / d + 2;
+        break;
+      case b:
+        h = (r - g) / d + 4;
+        break;
+    }
+    h /= 6;
+  }
+  return [Math.round(h * 360), Math.round(s * 100), Math.round(l * 100)];
+}
+
+export function hslToHex(h, s, l) {
+  h = h / 360;
+  s = s / 100;
+  l = l / 100;
+  let r, g, b;
+
+  if (s === 0) {
+    r = g = b = l;
+  } else {
+    const hue2rgb = (p, q, t) => {
+      if (t < 0) t += 1;
+      if (t > 1) t -= 1;
+      if (t < 1 / 6) return p + (q - p) * 6 * t;
+      if (t < 1 / 2) return q;
+      if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
+      return p;
+    };
+    const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+    const p = 2 * l - q;
+    r = hue2rgb(p, q, h + 1 / 3);
+    g = hue2rgb(p, q, h);
+    b = hue2rgb(p, q, h - 1 / 3);
+  }
+
+  const toHex = (x) => {
+    const hex = Math.round(x * 255).toString(16);
+    return hex.length === 1 ? "0" + hex : hex;
+  };
+  return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
+}
+
+export function deriveBrandDarkBackground(primaryHex) {
+  if (!primaryHex || typeof primaryHex !== "string" || !primaryHex.startsWith("#")) return "#0a0a0e";
+  const [h] = hexToHsl(primaryHex);
+  return hslToHex(h, 32, 5);
+}
+
+export function deriveBrandDarkSurface(primaryHex) {
+  if (!primaryHex || typeof primaryHex !== "string" || !primaryHex.startsWith("#")) return "#14141e";
+  const [h] = hexToHsl(primaryHex);
+  return hslToHex(h, 28, 11);
 }
 
 /**

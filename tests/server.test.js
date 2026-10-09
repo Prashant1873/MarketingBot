@@ -1,12 +1,24 @@
 import { test, before, after } from "node:test";
 import assert from "node:assert/strict";
 import http from "http";
+import fs from "fs";
+import path from "path";
 import app from "../server/index.js";
 
 let server;
 let baseUrl;
+const configPath = path.join(process.cwd(), "data", "config.json");
+let originalConfigBackup = null;
 
 before(async () => {
+  if (fs.existsSync(configPath)) {
+    try {
+      originalConfigBackup = fs.readFileSync(configPath, "utf-8");
+    } catch {
+      originalConfigBackup = null;
+    }
+  }
+
   await new Promise((resolve) => {
     server = http.createServer(app);
     server.listen(0, "127.0.0.1", () => {
@@ -18,6 +30,14 @@ before(async () => {
 });
 
 after(async () => {
+  if (originalConfigBackup !== null) {
+    try {
+      fs.writeFileSync(configPath, originalConfigBackup, "utf-8");
+    } catch {
+      // Ignore
+    }
+  }
+
   await new Promise((resolve) => {
     server.close(resolve);
   });

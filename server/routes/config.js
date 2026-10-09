@@ -43,11 +43,18 @@ function writeConfig(data) {
 
 router.get("/", (_req, res) => {
   const current = readConfig();
-  // Return masked keys or status to avoid exposing raw keys in plain logs
+  const envGemini = process.env.GEMINI_API_KEY || "";
+  const envAnthropic = process.env.ANTHROPIC_API_KEY || "";
+  const envOpenai = process.env.OPENAI_API_KEY || "";
+
+  const effectiveGemini = current.apiKeys.gemini || envGemini;
+  const effectiveAnthropic = current.apiKeys.anthropic || envAnthropic;
+  const effectiveOpenai = current.apiKeys.openai || envOpenai;
+
   const maskedKeys = {
-    gemini: current.apiKeys.gemini ? "configured" : "",
-    anthropic: current.apiKeys.anthropic ? "configured" : "",
-    openai: current.apiKeys.openai ? "configured" : "",
+    gemini: effectiveGemini ? "configured" : "",
+    anthropic: effectiveAnthropic ? "configured" : "",
+    openai: effectiveOpenai ? "configured" : "",
   };
 
   res.json({
@@ -56,9 +63,9 @@ router.get("/", (_req, res) => {
       apiKeys: maskedKeys,
       preferences: current.preferences,
       hasKey: {
-        gemini: Boolean(current.apiKeys.gemini),
-        anthropic: Boolean(current.apiKeys.anthropic),
-        openai: Boolean(current.apiKeys.openai),
+        gemini: Boolean(effectiveGemini),
+        anthropic: Boolean(effectiveAnthropic),
+        openai: Boolean(effectiveOpenai),
       },
     },
   });
@@ -69,9 +76,21 @@ router.post("/", (req, res) => {
   const current = readConfig();
 
   if (apiKeys) {
-    if (typeof apiKeys.gemini === "string") current.apiKeys.gemini = apiKeys.gemini.trim();
-    if (typeof apiKeys.anthropic === "string") current.apiKeys.anthropic = apiKeys.anthropic.trim();
-    if (typeof apiKeys.openai === "string") current.apiKeys.openai = apiKeys.openai.trim();
+    const isRealKey = (val) =>
+      typeof val === "string" &&
+      val.trim().length > 0 &&
+      val.trim() !== "configured" &&
+      !val.trim().startsWith("•");
+
+    if (isRealKey(apiKeys.gemini)) {
+      current.apiKeys.gemini = apiKeys.gemini.trim();
+    }
+    if (isRealKey(apiKeys.anthropic)) {
+      current.apiKeys.anthropic = apiKeys.anthropic.trim();
+    }
+    if (isRealKey(apiKeys.openai)) {
+      current.apiKeys.openai = apiKeys.openai.trim();
+    }
   }
 
   if (preferences) {
@@ -83,13 +102,21 @@ router.post("/", (req, res) => {
 
   writeConfig(current);
 
+  const envGemini = process.env.GEMINI_API_KEY || "";
+  const envAnthropic = process.env.ANTHROPIC_API_KEY || "";
+  const envOpenai = process.env.OPENAI_API_KEY || "";
+
+  const hasGemini = Boolean(current.apiKeys.gemini || envGemini);
+  const hasAnthropic = Boolean(current.apiKeys.anthropic || envAnthropic);
+  const hasOpenai = Boolean(current.apiKeys.openai || envOpenai);
+
   res.json({
     success: true,
     message: "Settings saved successfully",
     hasKey: {
-      gemini: Boolean(current.apiKeys.gemini),
-      anthropic: Boolean(current.apiKeys.anthropic),
-      openai: Boolean(current.apiKeys.openai),
+      gemini: hasGemini,
+      anthropic: hasAnthropic,
+      openai: hasOpenai,
     },
     preferences: current.preferences,
   });

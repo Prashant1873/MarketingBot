@@ -1,21 +1,27 @@
 import { Audio, Sequence, interpolate } from "remotion";
-import { AudioMixerProps, secondsToFrames } from "../types";
+import { AudioMixerProps, secondsToFrames, resolveAssetUrl } from "../types";
 
 export function MarcutieAudioMixer({
   musicUrl,
   musicVolume = 0.8,
   sfxVolume = 0.9,
+  voiceoverUrl,
+  voiceoverVolume = 1.0,
   isMuted = false,
   scenes,
   totalDurationFrames,
+  serverUrl,
 }: AudioMixerProps) {
-  // Volume interpolation curve for background music (fade-in, constant hold, fade-out)
+  // Volume interpolation curve for background music (fade-in, ducking during voiceover, fade-out)
   const getMusicVolume = (frame: number): number => {
     if (isMuted) return 0;
 
+    // Duck background music volume during voiceover narration
+    const targetVolume = voiceoverUrl ? musicVolume * 0.25 : musicVolume;
+
     // Fade-in across first 15 frames
     if (frame < 15) {
-      return interpolate(frame, [0, 15], [0, musicVolume], {
+      return interpolate(frame, [0, 15], [0, targetVolume], {
         extrapolateLeft: "clamp",
         extrapolateRight: "clamp",
       });
@@ -26,7 +32,7 @@ export function MarcutieAudioMixer({
       return interpolate(
         frame,
         [totalDurationFrames - 30, totalDurationFrames],
-        [musicVolume, 0],
+        [targetVolume, 0],
         {
           extrapolateLeft: "clamp",
           extrapolateRight: "clamp",
@@ -34,7 +40,7 @@ export function MarcutieAudioMixer({
       );
     }
 
-    return musicVolume;
+    return targetVolume;
   };
 
   const effectiveSfxVolume = isMuted ? 0 : sfxVolume;
@@ -54,7 +60,7 @@ export function MarcutieAudioMixer({
         sfxEvents.push({
           from: sceneStart + 3,
           duration: 20,
-          src: "/assets/sfx/impact/heavy_slam.wav",
+          src: resolveAssetUrl("/assets/sfx/impact/heavy_slam.wav", serverUrl),
           key: `hook-slam-${sIdx}`,
         });
         break;
@@ -64,14 +70,14 @@ export function MarcutieAudioMixer({
         sfxEvents.push({
           from: sceneStart,
           duration: 15,
-          src: "/assets/sfx/interface/whoosh.wav",
+          src: resolveAssetUrl("/assets/sfx/interface/whoosh.wav", serverUrl),
           key: `reveal-whoosh-${sIdx}`,
         });
         // Soft pop as card locks into 3D view
         sfxEvents.push({
           from: sceneStart + 4,
           duration: 12,
-          src: "/assets/sfx/ui/pop.wav",
+          src: resolveAssetUrl("/assets/sfx/ui/pop.wav", serverUrl),
           key: `reveal-pop-${sIdx}`,
         });
         break;
@@ -83,7 +89,7 @@ export function MarcutieAudioMixer({
           sfxEvents.push({
             from: sceneStart + 8 + bIdx * 8,
             duration: 10,
-            src: "/assets/sfx/ui/pop.wav",
+            src: resolveAssetUrl("/assets/sfx/ui/pop.wav", serverUrl),
             key: `highlight-pop-${sIdx}-${bIdx}`,
           });
         });
@@ -95,14 +101,14 @@ export function MarcutieAudioMixer({
         sfxEvents.push({
           from: sceneStart,
           duration: 25,
-          src: "/assets/sfx/impact/heavy_slam.wav",
+          src: resolveAssetUrl("/assets/sfx/impact/heavy_slam.wav", serverUrl),
           key: `outro-slam-${sIdx}`,
         });
         // Snappy click as CTA button pops
         sfxEvents.push({
           from: sceneStart + 8,
           duration: 10,
-          src: "/assets/sfx/ui/click.wav",
+          src: resolveAssetUrl("/assets/sfx/ui/click.wav", serverUrl),
           key: `outro-click-${sIdx}`,
         });
         break;
@@ -112,14 +118,31 @@ export function MarcutieAudioMixer({
     }
   });
 
+  const resolvedMusicUrl = resolveAssetUrl(musicUrl, serverUrl);
+  const resolvedVoiceoverUrl = resolveAssetUrl(voiceoverUrl, serverUrl);
+
   return (
     <>
       {/* Background Music Bed */}
-      {musicUrl && (
+      {resolvedMusicUrl && (
         <Audio
-          src={musicUrl}
+          src={resolvedMusicUrl}
           volume={getMusicVolume}
           loop
+          onError={(err) => {
+            console.warn("[AudioMixer] Background music non-fatal load warning:", err);
+          }}
+        />
+      )}
+
+      {/* Voiceover Narration Track */}
+      {resolvedVoiceoverUrl && !isMuted && (
+        <Audio
+          src={resolvedVoiceoverUrl}
+          volume={voiceoverVolume}
+          onError={(err) => {
+            console.warn("[AudioMixer] Voiceover non-fatal load warning:", err);
+          }}
         />
       )}
 
@@ -131,7 +154,13 @@ export function MarcutieAudioMixer({
             from={evt.from}
             durationInFrames={evt.duration}
           >
-            <Audio src={evt.src} volume={effectiveSfxVolume} />
+            <Audio
+              src={evt.src}
+              volume={effectiveSfxVolume}
+              onError={(err) => {
+                console.warn(`[AudioMixer] SFX '${evt.key}' non-fatal load warning:`, err);
+              }}
+            />
           </Sequence>
         ))}
     </>

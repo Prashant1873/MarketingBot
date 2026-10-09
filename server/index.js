@@ -8,6 +8,7 @@ import assetsRouter from "./routes/assets.js";
 import configRouter from "./routes/config.js";
 import storyboardRouter from "./routes/storyboard.js";
 import renderRouter from "./routes/render.js";
+import voiceoverRouter from "./routes/voiceover.js";
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -48,6 +49,8 @@ app.use("/api/upload", uploadRouter);
 app.use("/api/assets", assetsRouter);
 app.use("/api/config", configRouter);
 app.use("/api/generate-storyboard", storyboardRouter);
+app.use("/api/generate-voiceover", voiceoverRouter);
+app.use("/api/voiceover", voiceoverRouter);
 app.use("/api/render", renderRouter);
 
 import { fileURLToPath } from "url";
@@ -55,8 +58,8 @@ import { fileURLToPath } from "url";
 // Start server only if executed directly
 const isMain = process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url);
 if (isMain) {
-  app.listen(PORT, () => {
-    console.log(`[Marcutie] Server running on http://localhost:${PORT}`);
+  app.listen(PORT, "127.0.0.1", () => {
+    console.log(`[Marcutie] Server running on http://127.0.0.1:${PORT}`);
   });
 }
 

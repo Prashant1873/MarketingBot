@@ -10,7 +10,7 @@
     "server": "node server/index.js",
     "build": "tsc && vite build",
     "preview": "vite preview",
-    "test": "node --test tests/server.test.js tests/storyboard.test.js tests/composition.test.js tests/audio.test.js tests/render.test.js tests/deviceClassifier.test.js tests/deviceFrame.test.js tests/styleTransfer.test.js"
+    "test": "node --test tests/server.test.js tests/storyboard.test.js tests/composition.test.js tests/audio.test.js tests/render.test.js tests/deviceClassifier.test.js tests/deviceFrame.test.js tests/styleTransfer.test.js tests/voiceover.test.js tests/autoAudioPipeline.test.js tests/captions.test.js tests/visualThemes.test.js tests/gifExport.test.js"
   },
   "dependencies": {
     "@remotion/bundler": "^4.0.534",
@@ -19,6 +19,7 @@
     "cors": "^2.8.5",
     "express": "^4.21.2",
     "lucide-react": "^0.477.0",
+    "msedge-tts": "^2.0.9",
     "multer": "^1.4.5-lts.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",

@@ -94,6 +94,65 @@ export async function bakeFrameZero(videoPath, posterPath, outputBakedVideoPath)
 }
 
 /**
+ * Generates a two-pass high-quality animated GIF loop from rendered MP4
+ * Uses palettegen + paletteuse with bayer dithering to eliminate color banding
+ */
+export async function generateGifFromVideo(jobId, options = {}) {
+  const job = jobs.get(jobId);
+  const jobDir = path.join(process.cwd(), "data", "renders", jobId);
+  const videoPath = path.join(jobDir, "marcutie_video.mp4");
+  const gifPath = path.join(jobDir, "marcutie_preview.gif");
+
+  if (!fs.existsSync(videoPath)) {
+    throw new Error(`Video file not found for render job '${jobId}'`);
+  }
+
+  // Return cached GIF if already rendered and valid
+  if (fs.existsSync(gifPath) && fs.statSync(gifPath).size > 1024) {
+    const stats = fs.statSync(gifPath);
+    if (job) {
+      job.gifUrl = `/renders/${jobId}/marcutie_preview.gif`;
+      job.gifFileSize = stats.size;
+    }
+    return {
+      jobId,
+      gifPath,
+      gifUrl: `/renders/${jobId}/marcutie_preview.gif`,
+      fileSize: stats.size,
+      cached: true,
+    };
+  }
+
+  const fps = Number(options.fps) || 15;
+  const maxWidth = Number(options.width) || 720;
+  const maxColors = Number(options.maxColors) || 128;
+
+  // Two-pass palettegen + paletteuse filter complex
+  const filter = `"[0:v]fps=${fps},scale='min(${maxWidth},iw)':-2:flags=lanczos,split[s0][s1];[s0]palettegen=max_colors=${maxColors}:reserve_transparent=0[p];[s1][p]paletteuse=dither=bayer:bayer_scale=3"`;
+  const cmd = `ffmpeg -y -i "${videoPath}" -filter_complex ${filter} "${gifPath}"`;
+
+  await execAsync(cmd);
+
+  if (!fs.existsSync(gifPath)) {
+    throw new Error("FFmpeg failed to generate animated GIF: output file was not created");
+  }
+
+  const stats = fs.statSync(gifPath);
+  if (job) {
+    job.gifUrl = `/renders/${jobId}/marcutie_preview.gif`;
+    job.gifFileSize = stats.size;
+  }
+
+  return {
+    jobId,
+    gifPath,
+    gifUrl: `/renders/${jobId}/marcutie_preview.gif`,
+    fileSize: stats.size,
+    cached: false,
+  };
+}
+
+/**
  * Fast local video synthesis fallback using native FFmpeg
  * Used if headless browser rendering is unavailable or for rapid testing
  */
@@ -114,14 +173,19 @@ export async function synthesizeVideoWithFFmpeg(storyboard, outputVideoPath, dim
   const bgColor = toneBgColors[storyboard.tone] || "#09090b";
 
   // Check if we have background audio
-  const audioTrackId = storyboard?.audio?.musicTrack || "pulse-launch-theme";
+  const audioTrackId = storyboard?.audio?.musicTrack || "happy-beats-vol-1";
   const audioFileMap = {
-    "pulse-launch-theme": "pulse-launch-theme.wav",
-    "cyber-synth-groove": "cyber-synth-groove.wav",
-    "indie-hustle-acoustic": "indie-hustle-acoustic.wav",
-    "minimal-dark-sub": "minimal-dark-sub.wav",
+    "happy-beats-vol-1": "happy-beats-business-moves-vol-1-by-ende-dot-app.mp3",
+    "happy-beats-vol-10": "happy-beats-business-moves-vol-10-by-ende-dot-app.mp3",
+    "happy-beats-vol-9": "happy-beats-business-moves-vol-9-by-ende-dot-app.mp3",
+    "happy-beats-vol-11": "happy-beats-business-moves-vol-11-by-ende-dot-app.mp3",
+    "happy-beats-vol-12": "happy-beats-business-moves-vol-12-by-ende-dot-app.mp3",
+    "pulse-launch-theme": "happy-beats-business-moves-vol-1-by-ende-dot-app.mp3",
+    "cyber-synth-groove": "happy-beats-business-moves-vol-10-by-ende-dot-app.mp3",
+    "indie-hustle-acoustic": "happy-beats-business-moves-vol-9-by-ende-dot-app.mp3",
+    "minimal-dark-sub": "happy-beats-business-moves-vol-12-by-ende-dot-app.mp3",
   };
-  const audioFileName = audioFileMap[audioTrackId] || "pulse-launch-theme.wav";
+  const audioFileName = audioFileMap[audioTrackId] || "happy-beats-business-moves-vol-1-by-ende-dot-app.mp3";
   const audioFilePath = path.join(process.cwd(), "assets", "music", audioFileName);
   const hasAudio = fs.existsSync(audioFilePath);
 
@@ -141,6 +205,19 @@ export async function synthesizeVideoWithFFmpeg(storyboard, outputVideoPath, dim
   return outputVideoPath;
 }
 
+export function findLocalBrowserExecutable() {
+  const candidates = [
+    "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+    "C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe",
+    "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",
+    "C:\\Program Files\\Microsoft\\Edge\\Application\\msedge.exe",
+  ];
+  for (const p of candidates) {
+    if (fs.existsSync(p)) return p;
+  }
+  return null;
+}
+
 /**
  * Renders video using Remotion bundler and renderer
  */
@@ -148,24 +225,70 @@ export async function renderWithRemotion(storyboard, outputVideoPath, dimensions
   const { bundle } = await import("@remotion/bundler");
   const { renderMedia, selectComposition } = await import("@remotion/renderer");
 
+  const serverPort = process.env.PORT || 3001;
+  const serverUrl = `http://127.0.0.1:${serverPort}`;
+
+  // Deep-normalize storyboard asset URLs before headless rendering
+  const normalizedStoryboard = JSON.parse(JSON.stringify(storyboard));
+  normalizedStoryboard.serverUrl = serverUrl;
+  if (normalizedStoryboard.imageUrl && normalizedStoryboard.imageUrl.startsWith("/")) {
+    normalizedStoryboard.imageUrl = `${serverUrl}${normalizedStoryboard.imageUrl}`;
+  }
+  if (normalizedStoryboard.voiceoverUrl && normalizedStoryboard.voiceoverUrl.startsWith("/")) {
+    normalizedStoryboard.voiceoverUrl = `${serverUrl}${normalizedStoryboard.voiceoverUrl}`;
+  }
+  if (normalizedStoryboard.audioConfig?.voiceoverUrl && normalizedStoryboard.audioConfig.voiceoverUrl.startsWith("/")) {
+    normalizedStoryboard.audioConfig.voiceoverUrl = `${serverUrl}${normalizedStoryboard.audioConfig.voiceoverUrl}`;
+  }
+  if (Array.isArray(normalizedStoryboard.scenes)) {
+    normalizedStoryboard.scenes = normalizedStoryboard.scenes.map((sc) => {
+      if (sc.imageUrl && sc.imageUrl.startsWith("/")) {
+        return { ...sc, imageUrl: `${serverUrl}${sc.imageUrl}` };
+      }
+      return sc;
+    });
+  }
+
+  // Hook into Remotion's onBrowserDownload callback to stream download metrics to UI
+  const onBrowserDownload = () => ({
+    onProgress: (progress) => {
+      const pct = Math.round((progress.percent || 0) * 100);
+      const dlMb = ((progress.downloadedBytes || 0) / (1024 * 1024)).toFixed(1);
+      const totalMb = ((progress.totalSizeInBytes || 0) / (1024 * 1024)).toFixed(1);
+      const stepMsg = `Downloading Chrome Headless Shell: ${dlMb} / ${totalMb} MB (${pct}%)`;
+      const subPct = Math.min(30, Math.round(15 + pct * 0.15));
+      if (onProgress) {
+        onProgress(subPct, stepMsg);
+      }
+    },
+    version: null,
+  });
+
   if (!cachedBundleLocation || !fs.existsSync(cachedBundleLocation)) {
-    if (onProgress) onProgress(15, "Bundling Remotion composition");
+    if (onProgress) onProgress(15, "Compiling Remotion React bundle");
     cachedBundleLocation = await bundle({
       entryPoint: path.resolve(process.cwd(), "src", "remotion", "index.ts"),
     });
   }
 
-  if (onProgress) onProgress(25, "Selecting Remotion composition");
+  const browserExecutable = findLocalBrowserExecutable();
 
   const composition = await selectComposition({
     serveUrl: cachedBundleLocation,
     id: "Marcutie",
+    browserExecutable,
+    chromiumOptions: {
+      disableWebSecurity: true,
+      headless: true,
+    },
     inputProps: {
-      storyboard,
+      storyboard: normalizedStoryboard,
+      serverUrl,
       fps: 30,
       width: dimensions.width,
       height: dimensions.height,
     },
+    onBrowserDownload,
   });
 
   if (onProgress) onProgress(35, "Rendering motion graphics frames");
@@ -174,10 +297,17 @@ export async function renderWithRemotion(storyboard, outputVideoPath, dimensions
     composition,
     serveUrl: cachedBundleLocation,
     codec: "h264",
+    browserExecutable,
+    chromiumOptions: {
+      disableWebSecurity: true,
+      headless: true,
+    },
     outputLocation: outputVideoPath,
     inputProps: {
-      storyboard,
+      storyboard: normalizedStoryboard,
+      serverUrl,
     },
+    onBrowserDownload,
     onProgress: ({ renderedFrames, totalFrames, progress }) => {
       // Map progress from 35% to 75%
       const mappedPercent = Math.round(35 + progress * 40);
@@ -291,10 +421,20 @@ async function executeRenderJob(jobId, storyboard, jobDir, dimensions, peakMomen
     await extractPosterFrame(rawVideoPath, posterPath, peakMoment.timestampSec);
 
     // Step 3: Bake poster into frame 0 of the MP4 using FFmpeg
-    updateProgress(90, "Baking poster into frame 0 for social platform previews");
+    updateProgress(88, "Baking poster into frame 0 for social platform previews");
     await bakeFrameZero(rawVideoPath, posterPath, finalVideoPath);
 
-    // Step 4: Finalize job
+    // Step 4: Generate high-quality animated GIF loop for READMEs and embeds
+    try {
+      updateProgress(94, "Generating two-pass animated GIF loop (marcutie_preview.gif)");
+      const gifInfo = await generateGifFromVideo(jobId);
+      job.gifUrl = gifInfo.gifUrl;
+      job.gifFileSize = gifInfo.fileSize;
+    } catch (gifErr) {
+      console.warn(`[RenderJob ${jobId}] Animated GIF generation non-fatal error: ${gifErr.message}`);
+    }
+
+    // Step 5: Finalize job
     const stats = fs.statSync(finalVideoPath);
     job.status = "completed";
     job.progress = 100;

@@ -39,6 +39,22 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   }, [currentPreferences]);
 
   useEffect(() => {
+    if (isOpen && typeof window !== "undefined") {
+      try {
+        const raw = localStorage.getItem("marcutie_persistent_keys");
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (parsed.gemini && !geminiKey) setGeminiKey(parsed.gemini);
+          if (parsed.anthropic && !anthropicKey) setAnthropicKey(parsed.anthropic);
+          if (parsed.openai && !openaiKey) setOpenaiKey(parsed.openai);
+        }
+      } catch {
+        // Ignore
+      }
+    }
+  }, [isOpen]);
+
+  useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape" && isOpen) {
         onClose();

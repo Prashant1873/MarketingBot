@@ -32,6 +32,8 @@ interface RenderJobState {
   currentStep: string;
   videoUrl?: string;
   posterUrl?: string;
+  gifUrl?: string;
+  gifFileSize?: number;
   fileSize?: number;
   error?: string;
 }
@@ -223,11 +225,11 @@ export const ExportModal: React.FC<ExportModalProps> = ({ isOpen, onClose, story
                 </p>
               </div>
 
-              {/* Progress Bar */}
+              {/* Rotating Left-to-Right Progress Bar */}
               <div className="w-full max-w-md mx-auto space-y-2">
-                <div className="w-full h-2.5 rounded-full bg-white/10 overflow-hidden relative">
+                <div className="w-full h-3 rounded-full bg-white/10 overflow-hidden relative p-[2px] border border-white/5">
                   <div
-                    className="h-full bg-gradient-to-r from-violet-500 via-indigo-500 to-cyan-400 transition-all duration-300 rounded-full"
+                    className="h-full progress-rotating-bar rounded-full"
                     style={{ width: `${Math.max(5, jobState?.progress || 0)}%` }}
                   />
                 </div>
@@ -280,8 +282,8 @@ export const ExportModal: React.FC<ExportModalProps> = ({ isOpen, onClose, story
                 </span>
               </div>
 
-              {/* Video Player & Poster Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Video Player, Animated GIF & Poster Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {/* Final MP4 Video Player */}
                 <div className="space-y-2">
                   <span className="text-xs font-semibold text-white/50 flex items-center gap-1.5">
@@ -303,7 +305,30 @@ export const ExportModal: React.FC<ExportModalProps> = ({ isOpen, onClose, story
                     className="w-full py-2.5 px-4 rounded-xl text-xs font-medium text-white bg-violet-600 hover:bg-violet-500 shadow-md shadow-violet-600/25 transition-all flex items-center justify-center gap-2 cursor-pointer"
                   >
                     <Download className="w-4 h-4" />
-                    <span>Download MP4 Video</span>
+                    <span>Download MP4</span>
+                  </a>
+                </div>
+
+                {/* Animated GIF Loop */}
+                <div className="space-y-2">
+                  <span className="text-xs font-semibold text-white/50 flex items-center gap-1.5">
+                    <Sparkles className="w-3.5 h-3.5 text-sky-400" />
+                    <span>Animated GIF Loop (15 FPS)</span>
+                  </span>
+                  <div className="relative aspect-video rounded-xl overflow-hidden bg-black border border-white/10 shadow-lg flex items-center justify-center">
+                    <img
+                      src={jobState.gifUrl || `/renders/${jobState.id}/marcutie_preview.gif`}
+                      alt="Animated GIF loop"
+                      className="w-full h-full object-contain"
+                    />
+                  </div>
+                  <a
+                    href={`/api/render/${jobState.id}/gif/download`}
+                    download
+                    className="w-full py-2.5 px-4 rounded-xl text-xs font-medium text-sky-300 bg-sky-950/40 hover:bg-sky-900/50 border border-sky-500/30 transition-all flex items-center justify-center gap-2 cursor-pointer"
+                  >
+                    <Download className="w-4 h-4" />
+                    <span>Download GIF Loop</span>
                   </a>
                 </div>
 
@@ -311,7 +336,7 @@ export const ExportModal: React.FC<ExportModalProps> = ({ isOpen, onClose, story
                 <div className="space-y-2">
                   <span className="text-xs font-semibold text-white/50 flex items-center gap-1.5">
                     <ImageIcon className="w-3.5 h-3.5 text-cyan-400" />
-                    <span>Settled Poster Frame (Baked into Frame 0)</span>
+                    <span>Cover Poster Frame</span>
                   </span>
                   <div className="relative aspect-video rounded-xl overflow-hidden bg-black border border-white/10 shadow-lg flex items-center justify-center">
                     <img
@@ -326,7 +351,7 @@ export const ExportModal: React.FC<ExportModalProps> = ({ isOpen, onClose, story
                     className="w-full py-2.5 px-4 rounded-xl text-xs font-medium text-white/80 bg-white/5 hover:bg-white/10 border border-white/10 transition-all flex items-center justify-center gap-2 cursor-pointer"
                   >
                     <Download className="w-4 h-4" />
-                    <span>Download Poster (JPG)</span>
+                    <span>Download Poster</span>
                   </a>
                 </div>
               </div>

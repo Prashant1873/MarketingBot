@@ -4,7 +4,7 @@ const isWin = process.platform === "win32";
 
 console.log("\x1b[35m[Marcutie]\x1b[0m Starting local backend (port 3001) and Vite frontend (port 5173)...");
 
-const server = spawn("node", ["server/index.js"], {
+const server = spawn("node", ["--watch", "server/index.js"], {
   stdio: "inherit",
   shell: true,
 });
