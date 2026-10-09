@@ -53,13 +53,36 @@
 - [x] **EXP-04**: Social share copy generator producing ready-to-post captions for Twitter/X, LinkedIn, and Discord.
 ### Milestone 2: Synthetic Mockups & Visual Style Transfer
 
-- [x] **MOCKUP-01**: Procedural synthetic app window generator with adaptive device framing: automatically detects whether to render a macOS Chrome window (landscape dimensions, traffic light controls 🔴🟡🟢, URL bar, desktop sidebar and metrics) or a Mobile Phone frame (portrait dimensions, curved bezel, dynamic island/notch, status bar, mobile widgets) based on prompt keyword analysis ("iOS/mobile/iPhone" vs "SaaS/dashboard/desktop") and uploaded photo aspect ratio (portrait phone capture vs landscape laptop screen), with manual override.
-- [ ] **STYLE-01**: Image-to-Theme style transfer extracting color palette (primary, secondary, background, dark/light) and visual tone from uploaded images to theme video elements.
-- [ ] **FEATURE-01**: Prompt-described page feature synthesizer dynamically creating custom UI screens for whatever specific page/feature was described in the prompt while inheriting the brand design system.
+- [x] **MOCKUP-01**: Procedural synthetic app window generator with adaptive device framing: automatically detects whether to render a macOS Chrome window or Mobile Phone frame with manual override.
+- [x] **STYLE-01**: Image-to-Theme style transfer extracting color palette (primary, secondary, background, dark/light) and visual tone from uploaded images to theme video elements.
+- [x] **FEATURE-01**: Prompt-described page feature synthesizer dynamically creating custom UI screens for whatever specific page/feature was described in the prompt while inheriting the brand design system.
+
+### Milestone 3: HTML/CSS Synthesis Switch, Brand Theming & Voiceover
+
+- [x] **HTML-01**: Dual-mode Screen Switch ('Synthesized HTML/CSS' vs 'Direct Screenshot') with live HTML/CSS code viewer.
+- [x] **THEME-01**: Dynamic Brand Theming & Ambient Video Scene Styling across all 4 Remotion scenes.
+- [x] **VOICE-01**: Local Kokoro-82M AI voiceover synthesis with automatic Remotion BGM ducking.
+- [x] **MUSIC-02**: Curated upbeat Ende.app music library replacement.
+
+### Milestone 4: UI Studio Overhaul & One-Click Finished Launch Video
+
+- [x] **STUDIO-01**: Pre-prompt tabbed customization panel alongside Prompt Input offering deep controls for Brand Theming, Voiceover Studio, Music & Audio, and Creative Direction before prompt generation.
+- [x] **AUTO-01**: Automated post-prompt audio & voiceover decision engine selecting tone-matched voice model and upbeat track, generating narration, synthesizing Kokoro-82M TTS, and auto-syncing scene hold durations.
+- [x] **ONECLICK-01**: Single-click full pipeline to finished product delivery: runs storyboard + voiceover + local MP4 render + frame-0 poster bake, presenting a finished delivery hero view with playable MP4, downloads, and social captions.
+
+### Milestone 5: Kinetic Animated Subtitles & Caption Burn-in
+
+- [x] **CAPTION-01**: Subtitle timing engine & word-by-word timestamp interpolation mapping spoken voiceover script to precise video frame windows.
+- [x] **CAPTION-02**: Multi-style animated kinetic caption Remotion renderer supporting 4 visual aesthetics (`karaoke-bounce`, `clean-pill`, `cyber-glow`, `minimal`) with spring dynamics.
+- [x] **CAPTION-03**: Pre-flight studio controls, live player preview, safe-area layout adaptation (16:9, 9:16, 1:1), and headless MP4 caption burn-in.
+
+### Milestone 6: Expanded Visual Themes & Animated GIF Export
+
+- [ ] **THEME-02**: Multi-aesthetic visual theme engine (`apple-clean`, `neo-brutalist`, `cyberpunk-scanlines`, `aurora-glass`) adapting shaders, typography, borders, and ambient background styling across all 4 Remotion scenes.
+- [ ] **EXPORT-GIF**: Two-pass FFmpeg animated GIF generator (`palettegen` + `paletteuse`) creating lightweight, crisp 15fps GIF loops with download API and UI buttons.
 
 ## v2 Requirements (Deferred)
 
-- **AI-VOX**: Automated local voiceover generation via Kokoro TTS or Web Speech API integration.
 - **AUDIO-BEAT**: Real-time FFT audio-reactive motion graphics modulating visual elements to musical frequency bands.
 - **TMPL-CUSTOM**: User-created custom scene template builder.
 
@@ -76,41 +99,29 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| SRV-01 | Phase 1 | Complete |
-| SRV-02 | Phase 1 | Complete |
-| SRV-03 | Phase 1 | Complete |
-| SRV-04 | Phase 1 | Complete |
-| GUI-01 | Phase 2 | Complete |
-| GUI-02 | Phase 2 | Complete |
-| GUI-03 | Phase 2 | Complete |
-| GUI-04 | Phase 2 | Complete |
-| AI-01 | Phase 3 | Complete |
-| AI-02 | Phase 3 | Complete |
-| AI-03 | Phase 3 | Complete |
-| AI-04 | Phase 3 | Complete |
-| COMP-01 | Phase 4 | Complete |
-| COMP-02 | Phase 4 | Complete |
-| COMP-03 | Phase 4 | Complete |
-| COMP-04 | Phase 4 | Complete |
-| COMP-05 | Phase 4 | Complete |
-| GUI-05 | Phase 4 | Complete |
-| GUI-06 | Phase 4 | Complete |
-| AUD-01 | Phase 5 | Complete |
-| AUD-02 | Phase 5 | Complete |
-| AUD-03 | Phase 5 | Complete |
-| EXP-01 | Phase 6 | Complete |
-| EXP-02 | Phase 6 | Complete |
-| EXP-03 | Phase 6 | Complete |
-| EXP-04 | Phase 6 | Complete |
-| EXP-05 | Phase 6 | Complete |
+| SRV-01..04 | Phase 1 | Complete |
+| GUI-01..04 | Phase 2 | Complete |
+| AI-01..04 | Phase 3 | Complete |
+| COMP-01..05 | Phase 4 | Complete |
+| AUD-01..03 | Phase 5 | Complete |
+| EXP-01..05 | Phase 6 | Complete |
 | MOCKUP-01 | Phase 7 | Complete |
-| STYLE-01 | Phase 8 | Complete |
-| FEATURE-01 | Phase 8 | Complete |
+| STYLE-01, FEATURE-01 | Phase 8 | Complete |
+| THEME-01 | Phase 9 | Complete |
+| HTML-01 | Phase 10 | Complete |
+| VOICE-01, MUSIC-02 | Phase 11 | Complete |
+| STUDIO-01 | Phase 12 | Complete |
+| AUTO-01 | Phase 13 | Complete |
+| ONECLICK-01 | Phase 14 | Complete |
+| CAPTION-01, CAPTION-02 | Phase 15 | Complete |
+| CAPTION-03 | Phase 16 | Complete |
+| THEME-02 | Phase 17 | Planned |
+| EXPORT-GIF | Phase 18 | Planned |
 
 **Coverage:**
-- Total requirements: 29 total
-- Completed: 29
-- Milestone 2 pending: 0
+- Total requirements: 41 total
+- Completed: 39
+- Milestone 6 planned: 2
 
 ---
-*Requirements defined: 2026-10-08*
+*Requirements defined: 2026-10-08 | Milestone 6 Added*

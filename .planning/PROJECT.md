@@ -28,6 +28,19 @@ Turn raw product ideas, marketing prompts, and product images into professional,
 - ✓ **STYLE-01**: Image-to-Theme Style Transfer — extract color palette and design tokens from uploaded screenshots to theme the entire video — Phase 8
 - ✓ **FEATURE-01**: Prompt-Described Page Feature Synthesizer — generate custom UI page components for whatever feature was described in the prompt while inheriting the uploaded brand's design system — Phase 8
 
+- ✓ **HTML-01**: Dual-mode Screen Switch ('Synthesized HTML/CSS' vs 'Direct Screenshot') with live HTML/CSS code viewer — Phase 10
+- ✓ **THEME-01**: Dynamic Brand Theming & Ambient Video Scene Styling across all 4 Remotion scenes — Phase 9
+- ✓ **VOICE-01**: Local Kokoro-82M AI voiceover synthesis with automatic Remotion BGM ducking — Phase 11
+- ✓ **MUSIC-02**: Curated upbeat Ende.app music library replacement — Phase 11
+- ✓ **STUDIO-01**: Pre-prompt tabbed customization panel for brand theming, voiceover, and music selection — Phase 12
+- ✓ **AUTO-01**: Automated post-prompt audio & voiceover decision pipeline with upfront TTS synchronization — Phase 13
+- ✓ **ONECLICK-01**: Single-click full pipeline to finished product delivery (rendered MP4, poster, share copy) — Phase 14
+- ✓ **CAPTION-01**: Subtitle timing engine & word-by-word timestamp interpolation — Phase 15
+- ✓ **CAPTION-02**: Multi-style animated kinetic caption Remotion renderer (karaoke bounce, clean pill, cyber glow, minimal) — Phase 15
+- ✓ **CAPTION-03**: Pre-flight studio controls, live player preview, and headless MP4 burn-in integration — Phase 16
+- [ ] **THEME-02**: Multi-aesthetic visual theme engine (Apple Clean Light, Neo-Brutalist, Cyberpunk Scanlines, Aurora Glassmorphism) — Phase 17
+- [ ] **EXPORT-GIF**: High-quality two-pass FFmpeg animated GIF export engine with one-click download — Phase 18
+
 ### Out of Scope
 
 - Cloud server GPU rendering / hosted SaaS backend — rejected to avoid recurring cloud compute and GPU cluster costs.
@@ -40,6 +53,7 @@ Turn raw product ideas, marketing prompts, and product images into professional,
 - Users want to create launch and promo videos for products, ideas, physical items, or services without having a website codebase or repository.
 - BYOK (Bring Your Own Key) keeps AI processing scalable without SaaS subscription middleman fees.
 - Local rendering via browser WebCodecs / Canvas / Remotion offloads all rendering to the user's hardware.
+- Milestone 4 delivers maximum pre-flight customization with a single primary button producing a finished, rendered video with voiceover and upbeat music directly.
 
 ## Constraints
 
@@ -52,27 +66,13 @@ Turn raw product ideas, marketing prompts, and product images into professional,
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
-| Local Server + Web GUI | Provides seamless local file management, asset serving, and cross-platform browser GUI | — Pending |
-| BYOK Cloud APIs (Gemini/Claude/OpenAI) | Leverages state-of-the-art vision and multimodal models without hosting heavy local vision models | — Pending |
-| Browser Motion Graphics / WebCodecs / Remotion | Enables instant interactive preview and zero-cost client-side export to MP4 | — Pending |
-| 15–25s Video Format & Hook Laws | Proven viral structure: 2-3s hook, settled text holds, sharp feature beats, frame-0 poster | — Pending |
-
-## Evolution
-
-This document evolves at phase transitions and milestone boundaries.
-
-**After each phase transition** (via `/gsd-transition`):
-1. Requirements invalidated? → Move to Out of Scope with reason
-2. Requirements validated? → Move to Validated with phase reference
-3. New requirements emerged? → Add to Active
-4. Decisions to log? → Add to Key Decisions
-5. "What This Is" still accurate? → Update if drifted
-
-**After each milestone** (via `/gsd-complete-milestone`):
-1. Full review of all sections
-2. Core Value check — still the right priority?
-3. Audit Out of Scope — reasons still valid?
-4. Update Context with current state
+| Local Server + Web GUI | Provides seamless local file management, asset serving, and cross-platform browser GUI | Validated |
+| BYOK Cloud APIs (Gemini/Claude/OpenAI) | Leverages state-of-the-art vision and multimodal models without hosting heavy local vision models | Validated |
+| Browser Motion Graphics / WebCodecs / Remotion | Enables instant interactive preview and zero-cost client-side export to MP4 | Validated |
+| 15–25s Video Format & Hook Laws | Proven viral structure: 2-3s hook, settled text holds, sharp feature beats, frame-0 poster | Validated |
+| Dual-mode HTML/CSS Screen Switch | Gives realistic brand-themed synthesized UI screens while retaining raw screenshot toggle | Validated |
+| Local Kokoro-82M TTS + Ende.app Upbeat Audio | Zero-cost local studio narration with dynamic Remotion ducking mixer | Validated |
+| One-Click End-to-End Pipeline | Single primary action generates storyboard, synthesizes voiceover, renders MP4, and bakes poster | Planned |
 
 ---
-*Last updated: 2026-10-08 after initialization*
+*Last updated: 2026-10-08 for Milestone 4 Planning*

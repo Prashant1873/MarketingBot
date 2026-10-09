@@ -139,3 +139,145 @@ interface Storyboard {
    (title, subtitle, items, badges) ──────────► [ Live Video Scene ]
 ```
 
+## HTML/CSS Synthesis vs Direct Screenshot Pipeline
+
+```
+[ User Input (Screenshot / Prompt) ]
+              │
+              ▼
+    [ Screen Mode Switch ] ──► ("mockup" [Synthesized HTML/CSS] vs "screenshot" [Raw Capture])
+              │
+              ├── "mockup" (Synthesized HTML/CSS):
+              │    ├── Extract Palette & Design Tokens
+              │    ├── Generate HTML/CSS Feature Markup & CSS Variables
+              │    ├── Interactive Code Inspector (Live Preview & Edit)
+              │    └── Mount in Adaptive Device Frame
+              │
+              └── "screenshot" (Direct Capture):
+                   └── Mount Raw Upload Image in Adaptive Device Frame
+```
+
+## Kokoro Local Voiceover & Audio Ducking Engine
+
+```
+[ Storyboard Script / User Edit ]
+              │
+              ▼
+   [ POST /api/generate-voiceover ]
+              │
+              ▼
+   [ Local Kokoro-82M TTS CLI ] (`npx hyperframes tts --voice <id> -o voiceover.wav`)
+              │ (fallback to OpenAI TTS if local fails)
+              ▼
+   [ Audio Asset Registry ] (/uploads/voiceovers/vo_<id>.wav)
+              │
+              ▼
+   [ Remotion Audio Mixer ] ──► Voiceover Narration Track
+              │                 ├── Duck BGM to 0.15 during narration
+              │                 └── Restore BGM on completion
+              ▼
+   [ Synchronized Video Render ]
+```
+
+## One-Click Finished Launch Video Flow
+
+```
+[ User Input (Prompt + Pre-Flight Studio Settings) ]
+              │
+              ▼ (Single Click: "Generate Finished Launch Video")
+┌──────────────────────────────────────────────────────────┐
+│ Step 1: Multimodal Storyboard + Script Generation         │
+│         - Theme palette & HTML/CSS feature generation    │
+│         - Auto voice/music selection                     │
+└─────────────────────────────┬────────────────────────────┘
+                              │
+                              ▼
+┌──────────────────────────────────────────────────────────┐
+│ Step 2: Upfront Kokoro TTS Synthesis & Timing Sync       │
+│         - Generate voiceover WAV                         │
+│         - Auto-sync scene hold durations to speech timing│
+└─────────────────────────────┬────────────────────────────┘
+                              │
+                              ▼
+┌──────────────────────────────────────────────────────────┐
+│ Step 3: Headless Remotion Video Render (Local MP4)        │
+│         - Mix upbeat track, voiceover, ducking & SFX     │
+│         - Extract settled poster.jpg & bake frame 0      │
+│         - Generate platform social copy                  │
+└─────────────────────────────┬────────────────────────────┘
+                              │
+                              ▼
+┌──────────────────────────────────────────────────────────┐
+│ Finished Product Hero View                               │
+│ - Playable rendered MP4 with full synced audio           │
+│ - Instant One-Click MP4 Download                         │
+│ - Settled Poster Download                                │
+│ - One-Click Social Copy Tabs (X / LinkedIn / Discord)    │
+│ - Option to open Storyboard Inspector for deep tweaking  │
+└──────────────────────────────────────────────────────────┘
+```
+
+## Kinetic Subtitle & Caption Timing Flow
+
+```
+[ Narration Script / Scene Copy ]
+              │
+              ▼
+[ Word Timing Interpolation Engine ]
+   ├── Break script into word & phrase tokens
+   ├── Allocate frame spans proportional to syllables & word length
+   └── Account for punctuation hold pauses (. , ! ?)
+              │
+              ▼ { word, startFrame, endFrame }[]
+[ Remotion KineticCaptions Overlay Layer ]
+   ├── Reads composition active frame
+   ├── Selects current phrase window
+   ├── Applies Spring Dynamics to active word (@remotion/core spring)
+   └── Renders selected aesthetic:
+         ├── karaoke-bounce: 1.25x scale pop + glowing accent color
+         ├── clean-pill: Frosted glass badge with smooth highlight
+         ├── cyber-glow: Neon stroke pulse + brand glow
+         └── minimal: High-contrast crisp typography
+              │
+              ▼
+[ Burned cleanly into Live Preview & Final Export MP4 ]
+```
+
+## Visual Theme Engine Pipeline
+
+```
+[ Active Theme Selection: apple-clean | neo-brutalist | cyberpunk-scanlines | aurora-glass ]
+              │
+              ├── apple-clean: Pure white/alabaster (#fbfbfd), dark text, subtle 1px gray borders
+              ├── neo-brutalist: 6px solid black drop shadow, 3px solid borders, vibrant flat fills
+              ├── cyberpunk-scanlines: Procedural CRT scanline shader, chromatic flicker, green/cyan glow
+              └── aurora-glass: Multi-radial gradient mesh, frosted backdrop blur, specular rims
+              │
+              ▼
+[ Injected into Remotion Scenes & Adaptive Overlays ]
+              │
+              ▼
+[ Rendered consistently in Live Scrubbing Player & Headless Video ]
+```
+
+## Two-Pass Animated GIF Export Flow
+
+```
+[ Finished MP4 Video (data/renders/:jobId/marcutie_video.mp4) ]
+              │
+              ▼ (POST /api/render/:jobId/gif)
+[ Pass 1: FFmpeg Palette Generation ]
+   └── ffmpeg -i video.mp4 -vf "fps=15,scale=720:-1:flags=lanczos,palettegen=max_colors=128" palette.png
+              │
+              ▼
+[ Pass 2: Palette Mapping & Dithered Synthesis ]
+   └── ffmpeg -i video.mp4 -i palette.png -lavfi "fps=15,scale=720:-1:flags=lanczos [x]; [x][1:v] paletteuse=dither=bayer" marcutie_preview.gif
+              │
+              ▼
+[ Cached at data/renders/:jobId/marcutie_preview.gif ]
+              │
+              ▼
+[ Instant Download via GET /api/render/:jobId/gif/download ]
+```
+
+
