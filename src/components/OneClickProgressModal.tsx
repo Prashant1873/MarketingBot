@@ -54,14 +54,14 @@ export function OneClickProgressModal({
       }}
     >
       <div
-        className="glass-panel"
+        className="modal-content"
         style={{
           width: "100%",
           maxWidth: "520px",
-          background: "rgba(13, 19, 33, 0.95)",
-          border: "1px solid rgba(99, 102, 241, 0.4)",
+          background: "var(--bg-surface-1)",
+          border: "1px solid var(--border-medium)",
           borderRadius: "var(--radius-lg)",
-          boxShadow: "0 25px 60px -15px rgba(0, 0, 0, 0.8), 0 0 40px rgba(99, 102, 241, 0.25)",
+          boxShadow: "0 28px 64px -12px rgba(0, 0, 0, 0.8)",
           padding: "32px",
           display: "flex",
           flexDirection: "column",
@@ -71,25 +71,24 @@ export function OneClickProgressModal({
         {/* Header */}
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
           <div>
-            <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "6px" }}>
-              <span style={{ fontSize: "11px", fontWeight: "700", textTransform: "uppercase", letterSpacing: "0.05em", color: "var(--accent-primary)" }}>
-                Automated Production Pipeline
-              </span>
-            </div>
-            <h3 style={{ fontSize: "20px", fontWeight: "800", color: "#ffffff", margin: 0, letterSpacing: "-0.02em" }}>
+            <h3 style={{ fontSize: "20px", fontWeight: "800", color: "var(--text-primary)", margin: "0 0 4px 0", letterSpacing: "-0.02em" }}>
               {currentStage === "error" ? "Generation Paused" : "Synthesizing Finished Launch Video"}
             </h3>
+            <p style={{ margin: 0, fontSize: "12px", color: "var(--text-muted)" }}>
+              Automated multi-stage synthesis pipeline
+            </p>
           </div>
 
           {currentStage === "error" && onClose && (
             <button
               onClick={onClose}
+              className="btn-ghost"
               style={{
-                background: "transparent",
-                border: "none",
+                minHeight: "36px",
+                padding: "6px",
                 color: "var(--text-muted)",
-                cursor: "pointer",
               }}
+              aria-label="Close dialog"
             >
               <X size={18} />
             </button>
@@ -102,14 +101,13 @@ export function OneClickProgressModal({
             style={{
               padding: "14px 16px",
               borderRadius: "var(--radius-md)",
-              background: "rgba(56, 189, 248, 0.12)",
-              border: "1px solid rgba(56, 189, 248, 0.35)",
+              background: "rgba(6, 182, 212, 0.12)",
+              border: "1px solid rgba(6, 182, 212, 0.35)",
               display: "flex",
               alignItems: "center",
               gap: "14px",
-              color: "#38bdf8",
+              color: "var(--accent-secondary)",
               fontSize: "13px",
-              animation: "fadeIn 0.2s ease-out",
             }}
           >
             <div
@@ -117,14 +115,14 @@ export function OneClickProgressModal({
                 width: "38px",
                 height: "38px",
                 borderRadius: "10px",
-                background: "rgba(56, 189, 248, 0.2)",
+                background: "rgba(6, 182, 212, 0.2)",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
                 flexShrink: 0,
               }}
             >
-              <CloudDownload size={22} className="bounce-slow" />
+              <CloudDownload size={22} />
             </div>
             <div style={{ flex: 1 }}>
               <div style={{ fontWeight: "700", color: "#ffffff", fontSize: "13px" }}>

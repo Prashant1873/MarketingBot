@@ -22,4 +22,7 @@ Valuable concepts, design directions, and feature ideas for Marcutie.
 - **Kinetic Animated Subtitles & Word-by-Word Voiceover Burn-In**: Dynamic, spring-animated captions (Karaoke Bounce, Clean Frosted Pill, Cyber Glow, Minimal) burned directly into the video to capture the 70%+ of social media viewers watching on mute.
 - **Multi-Aesthetic Visual Themes Engine**: Moving beyond single dark mode into four distinct visual design languages (Apple Clean Light mode, Neo-Brutalist solid shadows, Cyberpunk CRT scanline shaders, and Aurora Glassmorphism) with adaptive scene styling.
 - **Two-Pass Animated GIF Loops for READMEs**: Local FFmpeg palettegen/paletteuse synthesis generating crisp, lightweight 15fps animated GIFs for Product Hunt discussions, GitHub repository READMEs, and email newsletters where MP4 cannot autoplay.
+- **Interactive Director Cockpit & Live Camera Viewport Stage**: A real-time pre-render 3D camera staging viewport featuring live Apple & Mobile device mockups, instant aspect-ratio/duration reframing, 4-act storyboard timeline bar, and one-click launch presets that bridge the gap between creative brief and final render.
+- **Physical Fluid Stretch-and-Squish Segmented Rails**: Organic multi-option switches with directional leading/trailing edge delay and mid-flight volume compression (`scaleY(0.92)`), bridging from one option to the next before snapping into place with critically-damped spring mechanics.
+
 

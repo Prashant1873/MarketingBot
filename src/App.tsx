@@ -4,6 +4,7 @@ import { Play, Sparkles, Key, CheckCircle2, ShieldAlert, Loader2, AlertCircle, F
 import { Header } from "./components/Header";
 import { PromptInput } from "./components/PromptInput";
 import { ImageDropzone } from "./components/ImageDropzone";
+import { DirectorViewportStage } from "./components/DirectorViewportStage";
 import { PreFlightStudioPanel } from "./components/PreFlightStudioPanel";
 import { FinishedVideoHero } from "./components/FinishedVideoHero";
 import { OneClickProgressModal, PipelineStage } from "./components/OneClickProgressModal";
@@ -29,6 +30,57 @@ import {
 } from "./types";
 import { PRESET_THEME_PALETTES, VISUAL_THEME_PALETTES } from "./utils/featureMockups";
 import { secondsToFrames } from "./remotion/types";
+
+const STUDIO_PRESETS: Array<{
+  icon: string;
+  title: string;
+  dur: Duration;
+  tone: Tone;
+  format: AspectRatio;
+  visualTheme: VisualTheme;
+  prompt: string;
+}> = [
+  {
+    icon: "🚀",
+    title: "SaaS Launch",
+    dur: 15,
+    tone: "polished",
+    format: "16:9",
+    visualTheme: "aurora-glass",
+    prompt:
+      "Launch announcement for PulseSync: Real-time distributed state synchronization for modern web apps. Zero backend boilerplate, sub-10ms conflict resolution, and end-to-end encryption by default.",
+  },
+  {
+    icon: "💻",
+    title: "DevTool CLI",
+    dur: 20,
+    tone: "deadpan",
+    format: "16:9",
+    visualTheme: "default-dark",
+    prompt:
+      "Introducing BoltDB CLI: The fastest distributed key-value database built in Rust. Instant schema migrations, zero lock overhead, and deterministic replication across edge clusters.",
+  },
+  {
+    icon: "📱",
+    title: "Mobile App Drop",
+    dur: 15,
+    tone: "app-store",
+    format: "9:16",
+    visualTheme: "neo-brutalist",
+    prompt:
+      "Introducing FocusPulse: The minimalist iOS and Android habit tracker designed for deep work. Ambient haptic soundscapes, zero streak shame, and biometric focus flow triggers.",
+  },
+  {
+    icon: "⚡",
+    title: "AI Platform",
+    dur: 25,
+    tone: "cinematic",
+    format: "16:9",
+    visualTheme: "cyberpunk-scanlines",
+    prompt:
+      "HyperAgent Studio: Autonomous AI software agents that read your Figma designs, write pull requests, run integration test suites, and deploy to production without human handoffs.",
+  },
+];
 
 export default function App() {
   const { config, hasKey, localKeys, hasAnyKey, saveConfig } = useConfig();
@@ -201,9 +253,20 @@ export default function App() {
 
       clearInterval(ticker);
 
-      const data = await res.json();
+      let data: any;
+      const resText = await res.text();
+      try {
+        data = resText ? JSON.parse(resText) : {};
+      } catch {
+        throw new Error(
+          `Backend connection issue (HTTP ${res.status}): ${
+            resText.slice(0, 140) || "Empty response received. Ensure the local backend is running on port 3001."
+          }`
+        );
+      }
+
       if (!res.ok || !data.success) {
-        throw new Error(data.error || "Failed to generate storyboard");
+        throw new Error(data.error || `Failed to generate storyboard (HTTP ${res.status})`);
       }
 
       const activeStoryboard: Storyboard = data.storyboard;
@@ -245,9 +308,20 @@ export default function App() {
         }),
       });
 
-      const renderData = await renderRes.json();
+      let renderData: any;
+      const renderText = await renderRes.text();
+      try {
+        renderData = renderText ? JSON.parse(renderText) : {};
+      } catch {
+        throw new Error(
+          `Render service connection issue (HTTP ${renderRes.status}): ${
+            renderText.slice(0, 140) || "Empty response from render pipeline."
+          }`
+        );
+      }
+
       if (!renderRes.ok || !renderData.success) {
-        throw new Error(renderData.error || "Failed to start render job");
+        throw new Error(renderData.error || `Failed to start render job (HTTP ${renderRes.status})`);
       }
 
       const jobId = renderData.jobId;
@@ -260,8 +334,15 @@ export default function App() {
         try {
           const statusRes = await fetch(`/api/render/${jobId}/status`);
           if (!statusRes.ok) return;
-          const statusData = await statusRes.json();
+          const statusText = await statusRes.text();
+          let statusData: any;
+          try {
+            statusData = JSON.parse(statusText);
+          } catch {
+            return;
+          }
           const job = statusData.job;
+          if (!job) return;
 
           if (job.status === "rendering") {
             const rawPct = job.progress || 10;
@@ -310,6 +391,17 @@ export default function App() {
     }
   };
 
+  const applyStudioPreset = (preset: (typeof STUDIO_PRESETS)[number]) => {
+    setPrompt(preset.prompt);
+    setDuration(preset.dur);
+    setTone(preset.tone);
+    setAspectRatio(preset.format);
+    setVisualTheme(preset.visualTheme);
+    if (VISUAL_THEME_PALETTES[preset.visualTheme]) {
+      setThemePalette(VISUAL_THEME_PALETTES[preset.visualTheme]);
+    }
+  };
+
   return (
     <div style={{ maxWidth: "1280px", margin: "0 auto", padding: "32px 24px 120px" }}>
       {/* Header Navigation */}
@@ -320,25 +412,87 @@ export default function App() {
         hasApiKeys={hasAnyKey}
       />
 
-      {/* Main Studio Grid */}
-      <main style={{ display: "grid", gridTemplateColumns: "1.15fr 0.85fr", gap: "24px", alignItems: "start" }}>
-        {/* Left Column: Prompt Input & Visual Upload */}
-        <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
-          <PromptInput value={prompt} onChange={setPrompt} />
-          <ImageDropzone
+      {/* Studio Mission Control Banner */}
+      <section
+        className="studio-hero-banner"
+        style={{ marginBottom: "28px" }}
+        aria-label="Studio Quick Start"
+      >
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: "24px" }}>
+          <div style={{ maxWidth: "660px" }}>
+            <h2 style={{ fontSize: "28px", fontWeight: "800", letterSpacing: "-0.035em", color: "var(--text-primary)", lineHeight: "1.2", marginBottom: "10px" }}>
+              Compose cinematic product launch videos in seconds.
+            </h2>
+            <p className="editorial-lead">
+              Write your pitch or drop screenshots. Marcutie orchestrates multi-track 3D motion choreography, Kokoro AI voiceover, and synchronized kinetic captions with frame-accurate timing.
+            </p>
+          </div>
+
+          <div style={{ display: "flex", flexDirection: "column", gap: "8px", minWidth: "300px" }}>
+            <div style={{ fontSize: "12px", fontWeight: "600", color: "var(--text-secondary)" }}>
+              Starter Templates
+            </div>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px" }}>
+              {STUDIO_PRESETS.map((preset) => (
+                <button
+                  key={preset.title}
+                  type="button"
+                  onClick={() => applyStudioPreset(preset)}
+                  className="studio-preset-chip"
+                >
+                  <span style={{ fontSize: "15px" }}>{preset.icon}</span>
+                  <div style={{ display: "flex", flexDirection: "column", textAlign: "left", lineHeight: "1.2" }}>
+                    <span style={{ fontWeight: "600", fontSize: "12px", color: "var(--text-primary)" }}>{preset.title}</span>
+                    <span style={{ fontSize: "10px", color: "var(--text-muted)", fontFamily: "var(--font-mono)" }}>
+                      {preset.dur}s • {preset.format}
+                    </span>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Main Creative Director Studio */}
+      <main style={{ display: "flex", flexDirection: "column", gap: "28px" }}>
+        {/* Top Director Stage: Script & Asset Deck (Left) + Interactive Live Viewport Stage (Right) */}
+        <div className="director-cockpit-grid">
+          {/* Left Column: Script Pitch & Visual Upload */}
+          <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+            <PromptInput value={prompt} onChange={setPrompt} />
+            <ImageDropzone
+              imageUrl={imageUrl}
+              imageFilename={imageFilename}
+              screenMode={screenMode}
+              onScreenModeChange={setScreenMode}
+              onImageChange={(url, filename, dims) => {
+                setImageUrl(url);
+                setImageFilename(filename);
+                setImageDimensions(dims || null);
+              }}
+            />
+          </div>
+
+          {/* Right Column: Live Viewport Stage & Camera Preview */}
+          <DirectorViewportStage
+            aspectRatio={aspectRatio}
+            onAspectRatioChange={setAspectRatio}
+            duration={duration}
+            onDurationChange={setDuration}
             imageUrl={imageUrl}
             imageFilename={imageFilename}
             screenMode={screenMode}
-            onScreenModeChange={setScreenMode}
-            onImageChange={(url, filename, dims) => {
-              setImageUrl(url);
-              setImageFilename(filename);
-              setImageDimensions(dims || null);
-            }}
+            deviceFrame={deviceFrame}
+            onDeviceFrameChange={setDeviceFrame}
+            themePalette={themePalette}
+            visualTheme={visualTheme}
+            tone={tone}
+            prompt={prompt}
           />
         </div>
 
-        {/* Right Column: Pre-Flight Customization Studio Panel */}
+        {/* Lower Studio Synthesis Rack: Brand, Voiceover & Soundscape */}
         <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
           <PreFlightStudioPanel
             tone={tone}
@@ -372,45 +526,52 @@ export default function App() {
 
           {/* Active Recipe Summary Card */}
           <div
-            className="glass-panel"
+            className="studio-panel"
             style={{
               padding: "16px 20px",
-              background: "rgba(10, 15, 26, 0.5)",
-              border: "1px dashed var(--border-color)",
+              background: "var(--bg-surface-1)",
+              border: "1px solid var(--border-subtle)",
               borderRadius: "var(--radius-md)",
             }}
           >
-            <div style={{ fontSize: "11px", fontWeight: "700", textTransform: "uppercase", letterSpacing: "0.05em", color: "var(--text-muted)", marginBottom: "8px" }}>
-              Active Launch Video Recipe
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}>
+              <span style={{ fontSize: "12px", fontWeight: "700", color: "var(--text-primary)" }}>
+                Launch Blueprint Telemetry
+              </span>
+              <span className="editorial-meta">
+                <span className="editorial-meta-index">04</span>
+                <span className="editorial-meta-divider">/</span>
+                <span>Active State</span>
+              </span>
             </div>
             <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", fontSize: "11px" }}>
-              <span style={{ padding: "3px 8px", borderRadius: "999px", background: "rgba(99, 102, 241, 0.15)", color: "var(--accent-primary)" }}>
+              <span className="studio-badge" style={{ color: "var(--accent-primary)" }}>
                 {aspectRatio} Format
               </span>
-              <span style={{ padding: "3px 8px", borderRadius: "999px", background: "rgba(168, 85, 247, 0.15)", color: "var(--accent-secondary)" }}>
+              <span className="studio-badge" style={{ color: "var(--accent-secondary)" }}>
                 {duration}s Duration
               </span>
-              <span style={{ padding: "3px 8px", borderRadius: "999px", background: "rgba(255, 255, 255, 0.08)", color: "var(--text-primary)" }}>
-                Tone: {customTone ? `Custom` : tone}
+              <span className="studio-badge" style={{ color: "var(--text-primary)" }}>
+                Tone: {customTone ? "Custom" : tone}
               </span>
-              <span style={{ padding: "3px 8px", borderRadius: "999px", background: "rgba(56, 189, 248, 0.15)", color: "var(--accent-secondary)", display: "flex", alignItems: "center", gap: "4px" }}>
-                <span style={{ width: "8px", height: "8px", borderRadius: "50%", background: themePalette.primary, display: "inline-block" }} />
-                {visualTheme !== "default-dark" ? visualTheme : "Brand Theme"}
+              <span className="studio-badge" style={{ color: "var(--text-primary)", display: "flex", alignItems: "center", gap: "5px" }}>
+                <span style={{ width: "6px", height: "6px", borderRadius: "1px", background: themePalette.primary, display: "inline-block" }} />
+                {visualTheme !== "default-dark" ? visualTheme : "Brand Palette"}
               </span>
-              <span style={{ padding: "3px 8px", borderRadius: "999px", background: voiceConfig.enabled ? "rgba(16, 185, 129, 0.15)" : "rgba(255, 255, 255, 0.05)", color: voiceConfig.enabled ? "var(--success)" : "var(--text-muted)" }}>
+              <span className="studio-badge" style={{ color: voiceConfig.enabled ? "var(--success)" : "var(--text-muted)" }}>
                 {voiceConfig.enabled ? `Voice: ${voiceConfig.voiceId === "auto" ? "AI Auto" : voiceConfig.voiceId}` : "Voice: Off"}
               </span>
-              <span style={{ padding: "3px 8px", borderRadius: "999px", background: preFlightAudio.selectedMusicTrack === "auto" ? "rgba(234, 88, 12, 0.15)" : "rgba(234, 88, 12, 0.15)", color: "#f97316" }}>
+              <span className="studio-badge" style={{ color: "var(--text-secondary)" }}>
                 Music: {preFlightAudio.selectedMusicTrack === "auto" ? "AI Smart Select" : preFlightAudio.selectedMusicTrack}
               </span>
-              <span style={{ padding: "3px 8px", borderRadius: "999px", background: subtitlesConfig.enabled ? "rgba(56, 189, 248, 0.15)" : "rgba(255, 255, 255, 0.05)", color: subtitlesConfig.enabled ? "var(--accent-secondary)" : "var(--text-muted)" }}>
+              <span className="studio-badge" style={{ color: subtitlesConfig.enabled ? "var(--accent-secondary)" : "var(--text-muted)" }}>
                 {subtitlesConfig.enabled ? `Captions: ${subtitlesConfig.style}` : "Captions: Off"}
               </span>
-              <span style={{ padding: "3px 8px", borderRadius: "999px", background: screenMode === "mockup" ? "rgba(99, 102, 241, 0.15)" : "rgba(56, 189, 248, 0.15)", color: screenMode === "mockup" ? "var(--accent-primary)" : "var(--accent-secondary)" }}>
-                {screenMode === "mockup" ? "Synthesized HTML/CSS" : "Direct Screenshot"}
+              <span className="studio-badge" style={{ color: screenMode === "mockup" ? "var(--accent-primary)" : "var(--accent-secondary)" }}>
+                {screenMode === "mockup" ? "Synthesized UI" : "Direct Screenshot"}
               </span>
-              <span style={{ padding: "3px 8px", borderRadius: "999px", background: imageUrl ? "rgba(16, 185, 129, 0.15)" : "rgba(255, 255, 255, 0.05)", color: imageUrl ? "var(--success)" : "var(--text-muted)" }}>
-                {imageUrl ? "✓ Visual Attached" : "Prompt-Only Mode"}
+              <span className="studio-badge" style={{ color: imageUrl ? "var(--success)" : "var(--text-muted)" }}>
+                {imageUrl ? "Visual Attached" : "Prompt-Only Mode"}
               </span>
             </div>
           </div>
@@ -423,27 +584,27 @@ export default function App() {
           style={{
             marginTop: "24px",
             padding: "16px 20px",
-            background: "rgba(239, 68, 68, 0.15)",
-            border: "1px solid rgba(239, 68, 68, 0.4)",
+            background: "var(--danger-bg)",
+            border: "1px solid var(--danger-border)",
             borderRadius: "var(--radius-md)",
             display: "flex",
             alignItems: "center",
             gap: "12px",
-            color: "#fca5a5",
+            color: "var(--danger)",
             fontSize: "13px",
           }}
+          role="alert"
         >
-          <AlertCircle size={18} color="#ef4444" />
-          <div style={{ flex: 1 }}>{generationError}</div>
+          <AlertCircle size={18} color="var(--danger)" />
+          <div style={{ flex: 1, fontWeight: "500" }}>{generationError}</div>
           <button
             onClick={() => setGenerationError(null)}
+            className="btn-ghost"
             style={{
-              background: "transparent",
-              border: "none",
-              color: "#fca5a5",
-              cursor: "pointer",
+              minHeight: "36px",
+              padding: "4px 10px",
+              color: "var(--danger)",
               fontSize: "12px",
-              textDecoration: "underline",
             }}
           >
             Dismiss
@@ -529,21 +690,22 @@ export default function App() {
         }}
       />
 
-      {/* Floating Action Bar */}
+      {/* Docked Director Command Strip */}
       <footer
         style={{
           position: "fixed",
-          bottom: "24px",
+          bottom: "20px",
           left: "50%",
           transform: "translateX(-50%)",
-          width: "calc(100% - 48px)",
-          maxWidth: "960px",
-          padding: "14px 24px",
-          background: "rgba(13, 19, 34, 0.92)",
+          width: "calc(100% - 32px)",
+          maxWidth: "980px",
+          padding: "12px 20px",
+          background: "rgba(14, 17, 24, 0.94)",
           backdropFilter: "blur(20px)",
-          border: "1px solid var(--border-highlight)",
-          borderRadius: "var(--radius-xl)",
-          boxShadow: "0 16px 40px rgba(0, 0, 0, 0.6), 0 0 24px rgba(99, 102, 241, 0.25)",
+          WebkitBackdropFilter: "blur(20px)",
+          border: "1px solid var(--border-medium)",
+          borderRadius: "var(--radius-lg)",
+          boxShadow: "0 20px 48px rgba(0, 0, 0, 0.7), 0 0 1px rgba(255, 255, 255, 0.15)",
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
@@ -553,35 +715,36 @@ export default function App() {
         <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
           <div
             style={{
-              width: "32px",
-              height: "32px",
-              borderRadius: "8px",
-              background: "var(--accent-gradient)",
+              width: "36px",
+              height: "36px",
+              borderRadius: "var(--radius-sm)",
+              background: "linear-gradient(135deg, #4f46e5 0%, #06b6d4 100%)",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
+              flexShrink: 0,
             }}
           >
             {isGenerating ? (
-              <Loader2 size={16} color="#fff" className="animate-spin" />
+              <Loader2 size={18} color="#ffffff" className="animate-spin" />
             ) : (
-              <Sparkles size={16} color="#fff" />
+              <Sparkles size={18} color="#ffffff" />
             )}
           </div>
           <div>
-            <div style={{ fontSize: "13px", fontWeight: "700" }}>
+            <div style={{ fontSize: "13px", fontWeight: "700", color: "var(--text-primary)" }}>
               {isGenerating
-                ? "Synthesizing marketing storyboard with AI..."
+                ? "Synthesizing marketing storyboard with multimodal AI..."
                 : storyboard
-                ? "Storyboard generated • Ready to preview & render"
+                ? "Storyboard active • Ready to inspect & export"
                 : prompt.trim()
-                ? "Ready to compose video"
-                : "Enter prompt to start"}
+                ? "Prompt ready • Ready to generate"
+                : "Enter marketing prompt to compose"}
             </div>
-            <div style={{ fontSize: "11px", color: "var(--text-secondary)" }}>
+            <div style={{ fontSize: "11px", color: "var(--text-secondary)", marginTop: "2px" }}>
               {!hasAnyKey ? (
                 <span style={{ color: "var(--warning)", display: "flex", alignItems: "center", gap: "4px" }}>
-                  <ShieldAlert size={12} /> No API key saved (will run offline mock mode)
+                  <ShieldAlert size={12} /> Offline mock mode (Add API key in settings for live models)
                 </span>
               ) : (
                 <span style={{ color: "var(--success)", display: "flex", alignItems: "center", gap: "4px" }}>
@@ -592,12 +755,12 @@ export default function App() {
           </div>
         </div>
 
-        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
           {!hasAnyKey && (
             <button
               onClick={() => setIsSettingsOpen(true)}
               className="btn-secondary"
-              style={{ fontSize: "12px", padding: "8px 14px" }}
+              style={{ fontSize: "12px", minHeight: "44px", padding: "8px 14px" }}
             >
               <Key size={14} /> Add API Key
             </button>
@@ -606,21 +769,20 @@ export default function App() {
           {storyboard && (
             <button
               onClick={() => setIsExportModalOpen(true)}
-              className="btn-primary"
+              className="btn-secondary"
               style={{
                 display: "flex",
                 alignItems: "center",
                 gap: "8px",
-                padding: "10px 20px",
+                padding: "10px 18px",
                 fontSize: "13px",
-                borderRadius: "var(--radius-md)",
-                background: "linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%)",
-                boxShadow: "0 0 20px rgba(124, 58, 237, 0.4)",
-                cursor: "pointer",
+                minHeight: "44px",
+                borderRadius: "var(--radius-sm)",
+                border: "1px solid var(--border-medium)",
               }}
             >
-              <Film size={15} />
-              <span>Export Local MP4</span>
+              <Film size={15} color="var(--accent-secondary)" />
+              <span>Export MP4</span>
             </button>
           )}
 
@@ -633,25 +795,34 @@ export default function App() {
               display: "flex",
               alignItems: "center",
               gap: "8px",
-              padding: "10px 24px",
-              fontSize: "14px",
-              fontWeight: "600",
-              borderRadius: "var(--radius-md)",
-              background: "linear-gradient(135deg, #6366f1 0%, #a855f7 50%, #ec4899 100%)",
-              boxShadow: "0 0 24px rgba(99, 102, 241, 0.45)",
-              opacity: isGenerating || !prompt.trim() ? 0.7 : 1,
-              cursor: isGenerating || !prompt.trim() ? "not-allowed" : "pointer",
+              padding: "10px 22px",
+              fontSize: "13px",
+              fontWeight: "700",
+              minHeight: "44px",
+              borderRadius: "var(--radius-sm)",
             }}
           >
             {isGenerating ? (
               <>
                 <Loader2 size={16} className="animate-spin" />
-                <span>Synthesizing Launch Video...</span>
+                <span>Synthesizing Video...</span>
               </>
             ) : (
               <>
-                <Play size={16} fill="#fff" />
-                <span>{renderedResult ? "Re-generate Finished Video" : "Generate Finished Launch Video"}</span>
+                <Play size={15} fill="#ffffff" />
+                <span>{renderedResult ? "Re-generate Video" : "Generate Launch Video"}</span>
+                <span
+                  style={{
+                    fontSize: "10px",
+                    padding: "2px 6px",
+                    borderRadius: "4px",
+                    background: "rgba(255, 255, 255, 0.2)",
+                    fontFamily: "var(--font-mono)",
+                    marginLeft: "2px",
+                  }}
+                >
+                  ⌘↵
+                </span>
               </>
             )}
           </button>

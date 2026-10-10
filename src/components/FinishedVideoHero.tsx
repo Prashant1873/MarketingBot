@@ -10,6 +10,7 @@ import {
   Image as ImageIcon,
 } from "lucide-react";
 import { Storyboard, ThemePalette } from "../types";
+import { FluidSegmentedControl } from "./FluidSegmentedControl";
 
 interface FinishedVideoHeroProps {
   jobId: string;
@@ -84,34 +85,12 @@ export function FinishedVideoHero({
       {/* Top Banner & Header */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: "16px" }}>
         <div>
-          <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "8px" }}>
-            <span
-              style={{
-                display: "inline-flex",
-                alignItems: "center",
-                gap: "6px",
-                padding: "4px 12px",
-                borderRadius: "999px",
-                background: "rgba(16, 185, 129, 0.2)",
-                border: "1px solid rgba(16, 185, 129, 0.4)",
-                color: "var(--success)",
-                fontSize: "12px",
-                fontWeight: "700",
-                letterSpacing: "0.04em",
-                textTransform: "uppercase",
-              }}
-            >
-              <CheckCircle2 size={14} /> One-Click Product Ready
+          <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "8px", fontSize: "12px" }}>
+            <span style={{ display: "flex", alignItems: "center", gap: "6px", color: "var(--success)", fontWeight: "600" }}>
+              <CheckCircle2 size={14} /> Render Complete
             </span>
-            <span
-              style={{
-                padding: "4px 10px",
-                borderRadius: "999px",
-                background: "rgba(255, 255, 255, 0.08)",
-                color: "var(--text-muted)",
-                fontSize: "12px",
-              }}
-            >
+            <span style={{ color: "var(--border-medium)" }}>/</span>
+            <span style={{ color: "var(--text-muted)", fontFamily: "var(--font-mono)" }}>
               1080p • 30 FPS • {storyboard.aspectRatio} • {formattedSize}
             </span>
           </div>
@@ -316,37 +295,28 @@ export function FinishedVideoHero({
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "14px" }}>
               <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
                 <Share2 size={16} color={theme.primary} />
-                <span style={{ fontSize: "13px", fontWeight: "700", textTransform: "uppercase", letterSpacing: "0.04em", color: "#ffffff" }}>
-                  One-Click Launch Copy
+                <span style={{ fontSize: "13px", fontWeight: "700", color: "#ffffff" }}>
+                  Launch Copy
                 </span>
               </div>
               <span style={{ fontSize: "11px", color: "var(--text-muted)" }}>Tailored to video tone</span>
             </div>
 
-            {/* Social Platform Tabs */}
-            <div style={{ display: "flex", gap: "6px", marginBottom: "12px" }}>
-              {(["twitter", "linkedin", "discord"] as const).map((platform) => (
-                <button
-                  key={platform}
-                  id={`share-tab-${platform}`}
-                  type="button"
-                  onClick={() => setActiveShareTab(platform)}
-                  style={{
-                    flex: 1,
-                    padding: "7px 10px",
-                    borderRadius: "var(--radius-md)",
-                    border: activeShareTab === platform ? `1px solid ${theme.primary}` : "1px solid rgba(255, 255, 255, 0.08)",
-                    background: activeShareTab === platform ? `${theme.primary}20` : "transparent",
-                    color: activeShareTab === platform ? "#ffffff" : "var(--text-muted)",
-                    fontSize: "12px",
-                    fontWeight: activeShareTab === platform ? "700" : "500",
-                    cursor: "pointer",
-                    textTransform: "capitalize",
-                  }}
-                >
-                  {platform === "twitter" ? "𝕏 Twitter" : platform}
-                </button>
-              ))}
+            {/* Social Platform Tabs with Fluid Stretch Indicator */}
+            <div style={{ marginBottom: "12px" }}>
+              <FluidSegmentedControl<"twitter" | "linkedin" | "discord">
+                value={activeShareTab}
+                onChange={setActiveShareTab}
+                variant="primary"
+                fill
+                idPrefix="share-tab"
+                buttonStyle={{ minHeight: "34px", padding: "6px 12px", fontSize: "12px", fontWeight: "600" }}
+                options={[
+                  { id: "twitter", label: "𝕏 Twitter" },
+                  { id: "linkedin", label: "LinkedIn" },
+                  { id: "discord", label: "Discord" },
+                ]}
+              />
             </div>
 
             {/* Copy Text Area */}

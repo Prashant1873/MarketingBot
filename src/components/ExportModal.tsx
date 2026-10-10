@@ -200,7 +200,7 @@ export const ExportModal: React.FC<ExportModalProps> = ({ isOpen, onClose, story
               <div className="pt-2">
                 <button
                   onClick={handleStartRender}
-                  className="w-full py-3.5 px-6 rounded-xl font-medium text-sm text-white bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 shadow-lg shadow-violet-600/25 transition-all flex items-center justify-center gap-2 group cursor-pointer"
+                  className="w-full py-3.5 px-6 rounded-xl font-medium text-sm text-white bg-indigo-600 hover:bg-indigo-500 shadow-lg shadow-indigo-600/25 transition-all flex items-center justify-center gap-2 group cursor-pointer"
                 >
                   <Sparkles className="w-4 h-4 group-hover:rotate-12 transition-transform" />
                   <span>Start Local Render</span>

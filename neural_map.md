@@ -277,7 +277,14 @@ interface Storyboard {
 [ Cached at data/renders/:jobId/marcutie_preview.gif ]
               │
               ▼
-[ Instant Download via GET /api/render/:jobId/gif/download ]
+## Frontend Architecture: Obsidian Studio Design System
+
 ```
-
-
+[ Obsidian Studio UI System (src/index.css) ]
+              │
+              ├── Surfaces: Base (#08090d), Surface 1 (#0e1118), Surface 2 (#141822), Surface 3 (#1a202d)
+              ├── Accents: Electric Indigo (#6366f1) + Laser Cyan (#06b6d4) + Emerald (#10b981) + Solar Amber (#f59e0b)
+              ├── Fluid Springs: Apple critically damped settle (cubic-bezier(0.16, 1, 0.3, 1))
+              ├── Ergonomics: Zero layout thrash, direct manipulation active states, WCAG 2.2 AA focus rings & 44px touch targets
+              └── Split Workspace: Director Input Deck (Left) & Studio Synthesis Rack (Right) + Docked Command Strip
+```

@@ -1,6 +1,7 @@
 import React, { useState, useRef } from "react";
-import { UploadCloud, Image as ImageIcon, X, AlertCircle, Loader2 } from "lucide-react";
+import { UploadCloud, Image as ImageIcon, X, AlertCircle, Loader2, Sparkles, Monitor } from "lucide-react";
 import { ImageDimensions, ScreenMode } from "../types";
+import { FluidSegmentedControl } from "./FluidSegmentedControl";
 
 interface ImageDropzoneProps {
   imageUrl: string | null;
@@ -114,15 +115,26 @@ export const ImageDropzone: React.FC<ImageDropzoneProps> = ({
   };
 
   return (
-    <div className="glass-panel" style={{ padding: "24px" }}>
+    <section className="studio-panel" style={{ padding: "24px" }} aria-labelledby="image-dropzone-heading">
       <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "12px" }}>
         <ImageIcon size={18} color="var(--accent-secondary)" />
-        <h2 style={{ fontSize: "15px", fontWeight: "700" }}>Product Screenshot / Hero Visual</h2>
-        <span style={{ fontSize: "11px", color: "var(--text-muted)", marginLeft: "auto" }}>Optional</span>
+        <h2 id="image-dropzone-heading" style={{ fontSize: "15px", fontWeight: "700", letterSpacing: "-0.01em" }}>
+          Product Visual & Hero Asset
+        </h2>
+        <span
+          className="studio-badge"
+          style={{
+            background: "rgba(255, 255, 255, 0.05)",
+            color: "var(--text-muted)",
+            marginLeft: "auto",
+          }}
+        >
+          Optional
+        </span>
       </div>
 
-      <p style={{ fontSize: "13px", color: "var(--text-secondary)", marginBottom: "16px", lineHeight: "1.4" }}>
-        Upload a product screenshot, app UI mockup, or hardware photo. Marcutie's composition engine will animate dynamic camera zooms, 3D tilts, and feature highlights on it.
+      <p style={{ fontSize: "13px", color: "var(--text-secondary)", marginBottom: "16px", lineHeight: "1.5" }}>
+        Attach an app UI screenshot, dashboard mockup, or product photo. Marcutie animates dynamic camera pans, 3D tilts, and feature highlights on it.
       </p>
 
       {/* Hidden file input */}
@@ -132,183 +144,207 @@ export const ImageDropzone: React.FC<ImageDropzoneProps> = ({
         accept="image/png,image/jpeg,image/webp,image/gif"
         style={{ display: "none" }}
         onChange={handleFileSelect}
+        aria-label="Upload product screenshot or mockup"
       />
 
       {/* Upload area or Preview */}
       {imageUrl ? (
-        <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
           <div
+            className="studio-card"
             style={{
-              position: "relative",
-            borderRadius: "var(--radius-md)",
-            overflow: "hidden",
-            border: "1px solid var(--border-highlight)",
-            background: "rgba(10, 15, 26, 0.8)",
-            padding: "16px",
-            display: "flex",
-            alignItems: "center",
-            gap: "16px",
-          }}
-        >
-          {/* Thumbnail preview */}
-          <div
-            style={{
-              width: "100px",
-              height: "70px",
-              borderRadius: "var(--radius-sm)",
-              overflow: "hidden",
-              border: "1px solid var(--border-color)",
-              flexShrink: 0,
-              background: "#000",
+              padding: "16px",
               display: "flex",
               alignItems: "center",
-              justifyContent: "center",
+              gap: "16px",
+              border: "1px solid var(--border-medium)",
+              background: "var(--bg-surface-2)",
             }}
           >
-            <img
-              src={imageUrl}
-              alt="Uploaded Preview"
-              style={{ width: "100%", height: "100%", objectFit: "cover" }}
-            />
-          </div>
-
-          {/* Info */}
-          <div style={{ flex: 1, minWidth: 0 }}>
+            {/* Thumbnail preview */}
             <div
               style={{
-                fontSize: "13px",
-                fontWeight: "600",
-                color: "var(--text-primary)",
-                whiteSpace: "nowrap",
+                width: "96px",
+                height: "64px",
+                borderRadius: "var(--radius-sm)",
                 overflow: "hidden",
-                textOverflow: "ellipsis",
+                border: "1px solid var(--border-subtle)",
+                flexShrink: 0,
+                background: "#000000",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
               }}
             >
-              {imageFilename}
+              <img
+                src={imageUrl}
+                alt="Uploaded Product Visual"
+                style={{ width: "100%", height: "100%", objectFit: "cover" }}
+              />
             </div>
-            <div style={{ fontSize: "12px", color: "var(--success)", display: "flex", alignItems: "center", gap: "4px", marginTop: "4px" }}>
-              Ready for video composition
+
+            {/* Info telemetry */}
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div
+                style={{
+                  fontSize: "13px",
+                  fontWeight: "600",
+                  color: "var(--text-primary)",
+                  whiteSpace: "nowrap",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                }}
+              >
+                {imageFilename}
+              </div>
+              <div
+                style={{
+                  fontSize: "12px",
+                  color: "var(--success)",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "6px",
+                  marginTop: "4px",
+                }}
+              >
+                <span
+                  style={{
+                    width: "6px",
+                    height: "6px",
+                    borderRadius: "50%",
+                    background: "var(--success)",
+                    display: "inline-block",
+                  }}
+                />
+                Active in video composition
+              </div>
+            </div>
+
+            {/* Actions */}
+            <div style={{ display: "flex", gap: "8px" }}>
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                className="btn-secondary"
+                style={{
+                  fontSize: "12px",
+                  padding: "8px 14px",
+                  minHeight: "38px",
+                }}
+              >
+                Replace
+              </button>
+              <button
+                type="button"
+                onClick={handleRemove}
+                className="btn-ghost"
+                style={{
+                  padding: "8px",
+                  minHeight: "38px",
+                  minWidth: "38px",
+                  color: "var(--danger)",
+                }}
+                title="Remove image"
+                aria-label="Remove image"
+              >
+                <X size={16} />
+              </button>
             </div>
           </div>
 
-          {/* Remove / replace actions */}
-          <div style={{ display: "flex", gap: "8px" }}>
-            <button
-              type="button"
-              onClick={() => fileInputRef.current?.click()}
-              className="btn-secondary"
-              style={{ fontSize: "12px", padding: "6px 12px" }}
+          {/* Screen Render Mode Segmented Control */}
+          {onScreenModeChange && (
+            <div
+              style={{
+                padding: "14px",
+                borderRadius: "var(--radius-md)",
+                background: "var(--bg-surface-2)",
+                border: "1px solid var(--border-subtle)",
+                display: "flex",
+                flexDirection: "column",
+                gap: "10px",
+              }}
             >
-              Replace
-            </button>
-            <button
-              type="button"
-              onClick={handleRemove}
-              className="btn-ghost"
-              style={{ padding: "6px", color: "var(--danger)" }}
-              title="Remove image"
-            >
-              <X size={16} />
-            </button>
-          </div>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <span style={{ fontSize: "12px", fontWeight: "600", color: "var(--text-secondary)" }}>
+                  Render Mode:
+                </span>
+                <span
+                  style={{
+                    fontSize: "11px",
+                    fontWeight: "600",
+                    color: screenMode === "mockup" ? "var(--accent-primary)" : "var(--accent-secondary)",
+                  }}
+                >
+                  {screenMode === "mockup" ? "Synthesized HTML/CSS" : "Direct Screenshot"}
+                </span>
+              </div>
+
+              {/* Tactile Segmented Control with Stretch-and-Squish Indicator */}
+              <FluidSegmentedControl<ScreenMode>
+                value={screenMode}
+                onChange={onScreenModeChange}
+                variant="primary"
+                fill
+                idPrefix="dropzone-mode"
+                buttonStyle={{ minHeight: "40px", fontSize: "12px", fontWeight: "700" }}
+                options={[
+                  {
+                    id: "mockup",
+                    icon: <Sparkles size={14} color={screenMode === "mockup" ? "#ffffff" : "var(--accent-primary)"} />,
+                    label: "Synthesized UI",
+                  },
+                  {
+                    id: "screenshot",
+                    icon: <Monitor size={14} color={screenMode === "screenshot" ? "#08090d" : "var(--accent-secondary)"} />,
+                    label: "Direct Screenshot",
+                  },
+                ]}
+              />
+
+              <p style={{ margin: 0, fontSize: "11px", color: "var(--text-muted)", lineHeight: 1.4 }}>
+                {screenMode === "mockup"
+                  ? "Builds a crisp, high-framerate HTML/CSS interface matching your prompt and brand colors."
+                  : "Preserves your exact original uploaded image inside simulated device frames."}
+              </p>
+            </div>
+          )}
         </div>
-
-        {/* Screen Render Mode Switcher */}
-        {onScreenModeChange && (
-          <div
-            style={{
-              marginTop: "12px",
-              padding: "12px 14px",
-              borderRadius: "var(--radius-sm)",
-              background: "rgba(255, 255, 255, 0.03)",
-              border: "1px solid var(--border-subtle)",
-              display: "flex",
-              flexDirection: "column",
-              gap: "8px",
-            }}
-          >
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <span style={{ fontSize: "12px", fontWeight: "600", color: "var(--text-secondary)" }}>
-                Screen Render Mode:
-              </span>
-              <span style={{ fontSize: "11px", color: screenMode === "mockup" ? "#818cf8" : "#22d3ee", fontWeight: "600" }}>
-                {screenMode === "mockup" ? "⚡ Synthesized HTML/CSS" : "🖼️ Raw Screenshot"}
-              </span>
-            </div>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px" }}>
-              <button
-                type="button"
-                onClick={() => onScreenModeChange("mockup")}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  gap: "6px",
-                  padding: "8px 12px",
-                  borderRadius: "6px",
-                  border: screenMode === "mockup" ? "1px solid rgba(99, 102, 241, 0.6)" : "1px solid var(--border-subtle)",
-                  background: screenMode === "mockup" ? "rgba(99, 102, 241, 0.2)" : "rgba(255, 255, 255, 0.03)",
-                  color: screenMode === "mockup" ? "#ffffff" : "var(--text-secondary)",
-                  fontSize: "12px",
-                  fontWeight: screenMode === "mockup" ? "700" : "500",
-                  cursor: "pointer",
-                  transition: "all 0.15s ease",
-                }}
-              >
-                <span>⚡</span>
-                <span>Synthesized HTML/CSS</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => onScreenModeChange("screenshot")}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  gap: "6px",
-                  padding: "8px 12px",
-                  borderRadius: "6px",
-                  border: screenMode === "screenshot" ? "1px solid rgba(34, 211, 238, 0.6)" : "1px solid var(--border-subtle)",
-                  background: screenMode === "screenshot" ? "rgba(34, 211, 238, 0.2)" : "rgba(255, 255, 255, 0.03)",
-                  color: screenMode === "screenshot" ? "#ffffff" : "var(--text-secondary)",
-                  fontSize: "12px",
-                  fontWeight: screenMode === "screenshot" ? "700" : "500",
-                  cursor: "pointer",
-                  transition: "all 0.15s ease",
-                }}
-              >
-                <span>🖼️</span>
-                <span>Direct Screenshot</span>
-              </button>
-            </div>
-            <p style={{ margin: 0, fontSize: "11px", color: "var(--text-muted)", lineHeight: 1.4 }}>
-              {screenMode === "mockup"
-                ? "Builds a styled live HTML/CSS UI matching your company's palette & prompt."
-                : "Renders your exact uploaded image inside the device frame."}
-            </p>
-          </div>
-        )}
-      </div>
       ) : (
         <div
+          role="button"
+          tabIndex={0}
           onClick={() => !isUploading && fileInputRef.current?.click()}
+          onKeyDown={(e) => {
+            if ((e.key === "Enter" || e.key === " ") && !isUploading) {
+              fileInputRef.current?.click();
+            }
+          }}
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
           onDrop={handleDrop}
           style={{
-            border: `2px dashed ${isDragging ? "var(--accent-primary)" : "var(--border-color)"}`,
+            border: `2px dashed ${isDragging ? "var(--accent-primary)" : "var(--border-subtle)"}`,
             borderRadius: "var(--radius-md)",
-            padding: "32px 20px",
+            padding: "36px 20px",
             textAlign: "center",
             cursor: isUploading ? "wait" : "pointer",
-            background: isDragging ? "rgba(99, 102, 241, 0.08)" : "rgba(10, 15, 26, 0.4)",
-            transition: "all 0.2s ease",
+            background: isDragging ? "rgba(99, 102, 241, 0.08)" : "var(--bg-surface-2)",
+            transition: "all var(--dur-fast) var(--ease-settle)",
+            minHeight: "140px",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
           }}
+          aria-label="Upload visual asset drag and drop zone"
         >
           {isUploading ? (
             <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "10px" }}>
-              <Loader2 size={32} color="var(--accent-primary)" style={{ animation: "spin 1s linear infinite" }} />
-              <div style={{ fontSize: "13px", fontWeight: "600" }}>Uploading and processing visual...</div>
+              <Loader2 size={32} color="var(--accent-primary)" className="animate-spin" />
+              <div style={{ fontSize: "13px", fontWeight: "600", color: "var(--text-primary)" }}>
+                Uploading & extracting color palette...
+              </div>
             </div>
           ) : (
             <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "10px" }}>
@@ -317,11 +353,12 @@ export const ImageDropzone: React.FC<ImageDropzoneProps> = ({
                   width: "48px",
                   height: "48px",
                   borderRadius: "50%",
-                  background: "rgba(255, 255, 255, 0.04)",
+                  background: "var(--bg-surface-3)",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
                   color: isDragging ? "var(--accent-primary)" : "var(--text-secondary)",
+                  border: "1px solid var(--border-subtle)",
                 }}
               >
                 <UploadCloud size={24} />
@@ -330,17 +367,17 @@ export const ImageDropzone: React.FC<ImageDropzoneProps> = ({
                 <span style={{ fontSize: "14px", fontWeight: "600", color: "var(--accent-primary)" }}>
                   Click to upload
                 </span>
-                <span style={{ fontSize: "14px", color: "var(--text-secondary)" }}> or drag and drop</span>
+                <span style={{ fontSize: "14px", color: "var(--text-secondary)" }}> or drag and drop visual</span>
               </div>
               <p style={{ fontSize: "12px", color: "var(--text-muted)" }}>
-                PNG, JPG, WEBP or GIF (Max 25MB)
+                PNG, JPG, WEBP or GIF (Up to 25MB)
               </p>
             </div>
           )}
         </div>
       )}
 
-      {/* Error message */}
+      {/* Error alert */}
       {error && (
         <div
           style={{
@@ -348,18 +385,19 @@ export const ImageDropzone: React.FC<ImageDropzoneProps> = ({
             padding: "10px 14px",
             borderRadius: "var(--radius-sm)",
             background: "var(--danger-bg)",
-            border: "1px solid rgba(239, 68, 68, 0.3)",
+            border: "1px solid var(--danger-border)",
             fontSize: "12px",
             color: "var(--danger)",
             display: "flex",
             alignItems: "center",
             gap: "8px",
           }}
+          role="alert"
         >
           <AlertCircle size={15} />
           <span>{error}</span>
         </div>
       )}
-    </div>
+    </section>
   );
 };

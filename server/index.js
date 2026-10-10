@@ -58,9 +58,21 @@ import { fileURLToPath } from "url";
 // Start server only if executed directly
 const isMain = process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url);
 if (isMain) {
-  app.listen(PORT, "127.0.0.1", () => {
-    console.log(`[Marcutie] Server running on http://127.0.0.1:${PORT}`);
-  });
+  function startServer(retryCount = 0) {
+    const srv = app.listen(PORT, "127.0.0.1", () => {
+      console.log(`[Marcutie] Server running on http://127.0.0.1:${PORT}`);
+    });
+    srv.on("error", (err) => {
+      if (err.code === "EADDRINUSE" && retryCount < 5) {
+        console.warn(`[Marcutie] Port ${PORT} busy, retrying in 600ms... (attempt ${retryCount + 1}/5)`);
+        setTimeout(() => startServer(retryCount + 1), 600);
+      } else {
+        console.error(`[Marcutie] Server failed to start:`, err.message);
+        process.exit(1);
+      }
+    });
+  }
+  startServer();
 }
 
 export default app;

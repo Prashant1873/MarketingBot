@@ -6,7 +6,6 @@ import {
   Music2,
   Compass,
   Monitor,
-  Smartphone,
   Check,
   Zap,
   FileCode,
@@ -32,6 +31,7 @@ import {
   VisualTheme,
 } from "../types";
 import { PRESET_THEME_PALETTES, VISUAL_THEME_OPTIONS, VISUAL_THEME_PALETTES } from "../utils/featureMockups";
+import { FluidSegmentedControl } from "./FluidSegmentedControl";
 
 interface PreFlightStudioPanelProps {
   tone: Tone;
@@ -63,7 +63,7 @@ interface PreFlightStudioPanelProps {
   onVisualThemeChange?: (theme: VisualTheme) => void;
 }
 
-type StudioTab = "creative" | "theme" | "voiceover" | "audio";
+type StudioTab = "creative" | "tone" | "theme" | "voiceover" | "audio";
 
 const TONE_OPTIONS: Array<{
   id: Tone;
@@ -122,13 +122,13 @@ const PRESET_PALETTE_LABELS: Record<string, { name: string; desc: string }> = {
   crimson: { name: "Crimson Surge", desc: "High-contrast charcoal & fiery ruby accents" },
   emerald: { name: "Emerald Matrix", desc: "Deep forest & mint green fintech aesthetic" },
   amber: { name: "Amber Spark", desc: "Warm obsidian & solar orange startup energy" },
-  neon: { name: "Cyber Neon", desc: "Synthwave purple, hot pink & laser cyan" },
+  neon: { name: "Cyber Neon", desc: "Synthwave midnight, laser cyan & electric purple" },
   slate: { name: "Slate Minimal", desc: "Cool gunmetal with ocean blue precision" },
   midnight: { name: "Midnight Glow", desc: "Deep black with pastel lavender & sky blue" },
 };
 
 const KOKORO_VOICE_OPTIONS = [
-  { id: "auto", name: "⚡ AI Auto-Pick (Tone-Matched)", desc: "Dynamically selects the ideal voice based on marketing tone" },
+  { id: "auto", name: "AI Auto-Pick (Tone-Matched)", desc: "Dynamically selects the ideal voice based on marketing tone" },
   { id: "af_heart", name: "Heart (Warm & Engaging)", desc: "Empathetic, clear, conversational American female" },
   { id: "af_nova", name: "Nova (High Energy & Upbeat)", desc: "Punchy, fast-paced American female ideal for hype videos" },
   { id: "af_sky", name: "Sky (Crisp & Articulate)", desc: "Sharp, confident, professional American female" },
@@ -139,7 +139,7 @@ const KOKORO_VOICE_OPTIONS = [
 ];
 
 const MUSIC_TRACK_OPTIONS = [
-  { id: "auto", name: "✨ AI Smart Select (Prompt-Matched)", bpm: "Dynamic", desc: "Auto-selects optimal beat based on marketing pace" },
+  { id: "auto", name: "AI Smart Select (Prompt-Matched)", bpm: "Dynamic", desc: "Auto-selects optimal beat based on marketing pace" },
   { id: "happy-beats-vol-1", name: "Happy Beats: Business Moves (Vol 1)", bpm: "125 BPM", desc: "Driving upbeat modern tech beat with punchy percussion" },
   { id: "happy-beats-vol-10", name: "Happy Beats: Compact Pulse (Vol 10)", bpm: "130 BPM", desc: "High-tempo rapid momentum for meme or chaotic energy" },
   { id: "happy-beats-vol-9", name: "Happy Beats: Founder Hustle (Vol 9)", bpm: "118 BPM", desc: "Playful optimistic groove perfect for startup pitches" },
@@ -156,25 +156,25 @@ const SUBTITLE_STYLE_OPTIONS: Array<{
   {
     id: "karaoke-bounce",
     label: "Karaoke Bounce",
-    desc: "Active word spring pop with vibrant accent glow (TikTok/Hormozi style)",
+    desc: "Active word spring pop with vibrant accent glow",
     badge: "Viral #1",
   },
   {
     id: "clean-pill",
     label: "Clean Frosted Pill",
-    desc: "Frosted glass capsule with subtle backdrop blur (Apple/SaaS style)",
+    desc: "Frosted capsule with subtle backdrop blur",
     badge: "Polished",
   },
   {
     id: "cyber-glow",
     label: "Cyber Glow",
-    desc: "Neon glowing outline with pulsed cybernetic lighting",
+    desc: "Neon outline with pulsed cybernetic lighting",
     badge: "Punchy",
   },
   {
     id: "minimal",
     label: "Minimal Crisp",
-    desc: "High-contrast clean typography with understated accent line",
+    desc: "High-contrast clean typography with subtle accent",
     badge: "Subtle",
   },
 ];
@@ -228,149 +228,191 @@ export function PreFlightStudioPanel({
   return (
     <div
       id="preflight-studio-panel"
-      className="glass-panel"
+      className="studio-panel"
       style={{
         borderRadius: "var(--radius-lg)",
-        border: "1px solid var(--border-color)",
-        background: "rgba(13, 19, 33, 0.7)",
+        border: "1px solid var(--border-subtle)",
+        background: "var(--bg-surface-1)",
         overflow: "hidden",
         display: "flex",
         flexDirection: "column",
       }}
     >
-      {/* Studio Navigation Tabs */}
-      <div
+      {/* Studio Rack Navigation Tabs with Stretch-and-Squish Indicator */}
+      <FluidSegmentedControl<StudioTab>
+        value={activeTab}
+        onChange={setActiveTab}
+        variant="default"
+        fill
+        role="tablist"
+        ariaLabel="Studio Configuration Tabs"
+        idPrefix="tab"
         style={{
-          display: "flex",
-          borderBottom: "1px solid var(--border-color)",
-          background: "rgba(9, 13, 22, 0.6)",
+          borderBottom: "1px solid var(--border-subtle)",
           padding: "6px",
-          gap: "4px",
-          overflowX: "auto",
+          gap: "6px",
+          borderRadius: "var(--radius-lg) var(--radius-lg) 0 0",
         }}
-      >
-        <button
-          id="tab-creative"
-          type="button"
-          onClick={() => setActiveTab("creative")}
-          style={{
-            flex: 1,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: "8px",
-            padding: "10px 14px",
-            borderRadius: "var(--radius-md)",
-            border: activeTab === "creative" ? "1px solid rgba(99, 102, 241, 0.4)" : "1px solid transparent",
-            background: activeTab === "creative" ? "linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(168, 85, 247, 0.1))" : "transparent",
-            color: activeTab === "creative" ? "#ffffff" : "var(--text-muted)",
-            fontSize: "13px",
-            fontWeight: activeTab === "creative" ? "600" : "500",
-            cursor: "pointer",
-            transition: "all 0.15s ease",
-            whiteSpace: "nowrap",
-          }}
-        >
-          <Compass size={15} color={activeTab === "creative" ? "var(--accent-primary)" : "currentColor"} />
-          <span>Creative & Tone</span>
-        </button>
+        buttonStyle={{
+          padding: "10px 14px",
+          fontSize: "13px",
+          minHeight: "42px",
+          whiteSpace: "nowrap",
+        }}
+        options={[
+          {
+            id: "creative",
+            icon: <Compass size={15} color={activeTab === "creative" ? "var(--accent-primary)" : "currentColor"} />,
+            label: "Creative",
+          },
+          {
+            id: "tone",
+            icon: <Sparkles size={15} color={activeTab === "tone" ? "var(--accent-secondary)" : "currentColor"} />,
+            label: "Tone",
+          },
+          {
+            id: "theme",
+            icon: <Palette size={15} color={activeTab === "theme" ? "var(--accent-primary)" : "currentColor"} />,
+            label: "Brand & Visuals",
+          },
+          {
+            id: "voiceover",
+            icon: <Mic size={15} color={activeTab === "voiceover" ? "var(--success)" : "currentColor"} />,
+            label: "Voiceover",
+            badge: voiceConfig.enabled ? (
+              <span
+                style={{
+                  width: "6px",
+                  height: "6px",
+                  borderRadius: "50%",
+                  background: "var(--success)",
+                  boxShadow: "0 0 6px var(--success)",
+                  display: "inline-block",
+                }}
+                title="Voiceover Active"
+              />
+            ) : undefined,
+          },
+          {
+            id: "audio",
+            icon: <Music2 size={15} color={activeTab === "audio" ? "var(--accent-secondary)" : "currentColor"} />,
+            label: "Music & Audio",
+          },
+        ]}
+      />
 
-        <button
-          id="tab-theme"
-          type="button"
-          onClick={() => setActiveTab("theme")}
-          style={{
-            flex: 1,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: "8px",
-            padding: "10px 14px",
-            borderRadius: "var(--radius-md)",
-            border: activeTab === "theme" ? "1px solid rgba(56, 189, 248, 0.4)" : "1px solid transparent",
-            background: activeTab === "theme" ? "linear-gradient(135deg, rgba(56, 189, 248, 0.2), rgba(99, 102, 241, 0.1))" : "transparent",
-            color: activeTab === "theme" ? "#ffffff" : "var(--text-muted)",
-            fontSize: "13px",
-            fontWeight: activeTab === "theme" ? "600" : "500",
-            cursor: "pointer",
-            transition: "all 0.15s ease",
-            whiteSpace: "nowrap",
-          }}
-        >
-          <Palette size={15} color={activeTab === "theme" ? "var(--accent-secondary)" : "currentColor"} />
-          <span>Brand & Visuals</span>
-        </button>
-
-        <button
-          id="tab-voiceover"
-          type="button"
-          onClick={() => setActiveTab("voiceover")}
-          style={{
-            flex: 1,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: "8px",
-            padding: "10px 14px",
-            borderRadius: "var(--radius-md)",
-            border: activeTab === "voiceover" ? "1px solid rgba(16, 185, 129, 0.4)" : "1px solid transparent",
-            background: activeTab === "voiceover" ? "linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(56, 189, 248, 0.1))" : "transparent",
-            color: activeTab === "voiceover" ? "#ffffff" : "var(--text-muted)",
-            fontSize: "13px",
-            fontWeight: activeTab === "voiceover" ? "600" : "500",
-            cursor: "pointer",
-            transition: "all 0.15s ease",
-            whiteSpace: "nowrap",
-          }}
-        >
-          <Mic size={15} color={activeTab === "voiceover" ? "var(--success)" : "currentColor"} />
-          <span>Voiceover</span>
-          {voiceConfig.enabled && (
-            <span
-              style={{
-                width: "6px",
-                height: "6px",
-                borderRadius: "50%",
-                background: "var(--success)",
-                boxShadow: "0 0 6px var(--success)",
-              }}
-            />
-          )}
-        </button>
-
-        <button
-          id="tab-audio"
-          type="button"
-          onClick={() => setActiveTab("audio")}
-          style={{
-            flex: 1,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: "8px",
-            padding: "10px 14px",
-            borderRadius: "var(--radius-md)",
-            border: activeTab === "audio" ? "1px solid rgba(234, 88, 12, 0.4)" : "1px solid transparent",
-            background: activeTab === "audio" ? "linear-gradient(135deg, rgba(234, 88, 12, 0.2), rgba(249, 115, 22, 0.1))" : "transparent",
-            color: activeTab === "audio" ? "#ffffff" : "var(--text-muted)",
-            fontSize: "13px",
-            fontWeight: activeTab === "audio" ? "600" : "500",
-            cursor: "pointer",
-            transition: "all 0.15s ease",
-            whiteSpace: "nowrap",
-          }}
-        >
-          <Music2 size={15} color={activeTab === "audio" ? "#f97316" : "currentColor"} />
-          <span>Music & Audio</span>
-        </button>
-      </div>
-
-      {/* Tab 1: Creative & Tone */}
+      {/* Tab 1: Creative (Format, Framing & Engine) */}
       {activeTab === "creative" && (
+        <div style={{ padding: "20px 24px", display: "flex", flexDirection: "column", gap: "20px" }}>
+          {/* Video Format & Target Duration with Fluid Stretch Rails */}
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
+            <div>
+              <label style={{ fontSize: "13px", fontWeight: "700", color: "var(--text-primary)", display: "block", marginBottom: "8px" }}>
+                Aspect Ratio
+              </label>
+              <FluidSegmentedControl<AspectRatio>
+                value={aspectRatio}
+                onChange={onAspectRatioChange}
+                variant="primary"
+                fill
+                idPrefix="aspect-btn"
+                buttonStyle={{ minHeight: "44px", padding: "8px 6px" }}
+                options={[
+                  { id: "16:9", label: "16:9", sub: "Landscape" },
+                  { id: "9:16", label: "9:16", sub: "Vertical" },
+                  { id: "1:1", label: "1:1", sub: "Square" },
+                ]}
+              />
+            </div>
+
+            <div>
+              <label style={{ fontSize: "13px", fontWeight: "700", color: "var(--text-primary)", display: "block", marginBottom: "8px" }}>
+                Target Duration
+              </label>
+              <FluidSegmentedControl<Duration>
+                value={duration}
+                onChange={onDurationChange}
+                variant="cyan"
+                fill
+                idPrefix="duration-btn"
+                buttonStyle={{ minHeight: "44px", padding: "8px 6px" }}
+                options={[
+                  { id: 15, label: "15s", sub: "Snappy" },
+                  { id: 20, label: "20s", sub: "Standard" },
+                  { id: 25, label: "25s", sub: "Deep Dive" },
+                ]}
+              />
+            </div>
+          </div>
+
+          {/* Screen Render Mode Switch & Device Frame with Fluid Stretch Rails */}
+          <div style={{ display: "grid", gridTemplateColumns: "1.2fr 0.8fr", gap: "16px", paddingTop: "14px", borderTop: "1px solid var(--border-subtle)" }}>
+            <div>
+              <label style={{ fontSize: "13px", fontWeight: "700", color: "var(--text-primary)", display: "block", marginBottom: "8px" }}>
+                Screen Render Mode
+              </label>
+              <FluidSegmentedControl<ScreenMode>
+                value={screenMode}
+                onChange={onScreenModeChange}
+                variant="primary"
+                fill
+                idPrefix="screen-mode"
+                buttonStyle={{ minHeight: "44px", padding: "8px 10px", justifyContent: "flex-start" }}
+                options={[
+                  {
+                    id: "mockup",
+                    icon: <FileCode size={16} color={screenMode === "mockup" ? "#ffffff" : "var(--accent-primary)"} />,
+                    label: (
+                      <div style={{ textAlign: "left" }}>
+                        <div style={{ fontSize: "12px", fontWeight: "700" }}>Synthesized UI</div>
+                        <div style={{ fontSize: "10px", opacity: 0.8 }}>Dynamic code mockup</div>
+                      </div>
+                    ),
+                  },
+                  {
+                    id: "screenshot",
+                    icon: <Monitor size={16} color={screenMode === "screenshot" ? "#08090d" : "var(--accent-secondary)"} />,
+                    label: (
+                      <div style={{ textAlign: "left" }}>
+                        <div style={{ fontSize: "12px", fontWeight: "700" }}>Direct Screenshot</div>
+                        <div style={{ fontSize: "10px", opacity: 0.8 }}>Raw uploaded visual</div>
+                      </div>
+                    ),
+                  },
+                ]}
+              />
+            </div>
+
+            {onDeviceFrameChange && (
+              <div>
+                <label style={{ fontSize: "13px", fontWeight: "700", color: "var(--text-primary)", display: "block", marginBottom: "8px" }}>
+                  Device Frame
+                </label>
+                <FluidSegmentedControl<DeviceFrame | undefined>
+                  value={deviceFrame}
+                  onChange={onDeviceFrameChange}
+                  variant="cyan"
+                  fill
+                  idPrefix="device-frame"
+                  buttonStyle={{ minHeight: "44px", padding: "8px 10px" }}
+                  options={[
+                    { id: undefined, label: "Auto" },
+                    { id: "macos", label: "Mac" },
+                    { id: "mobile", label: "Phone" },
+                  ]}
+                />
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Tab 2: Marketing Tone & Energy */}
+      {activeTab === "tone" && (
         <div style={{ padding: "20px 24px", display: "flex", flexDirection: "column", gap: "20px" }}>
           <div>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}>
-              <label style={{ fontSize: "12px", fontWeight: "700", textTransform: "uppercase", letterSpacing: "0.05em", color: "var(--text-secondary)" }}>
+              <label style={{ fontSize: "13px", fontWeight: "700", color: "var(--text-primary)" }}>
                 Marketing Tone & Energy
               </label>
               <span style={{ fontSize: "11px", color: "var(--accent-primary)" }}>Shapes pacing, typography slams & copy</span>
@@ -394,17 +436,27 @@ export function PreFlightStudioPanel({
                       alignItems: "flex-start",
                       padding: "12px 14px",
                       borderRadius: "var(--radius-md)",
-                      border: isSelected ? "1px solid var(--accent-primary)" : "1px solid rgba(255, 255, 255, 0.08)",
-                      background: isSelected ? "rgba(99, 102, 241, 0.15)" : "rgba(255, 255, 255, 0.02)",
+                      border: isSelected ? "1px solid var(--accent-primary)" : "1px solid var(--border-subtle)",
+                      background: isSelected ? "var(--bg-surface-3)" : "var(--bg-surface-2)",
                       cursor: "pointer",
                       textAlign: "left",
-                      transition: "all 0.15s ease",
+                      boxShadow: isSelected ? "0 4px 12px rgba(99, 102, 241, 0.2)" : "none",
+                      minHeight: "80px",
                     }}
                   >
                     <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%", marginBottom: "4px" }}>
                       <span style={{ color: isSelected ? "var(--accent-primary)" : "var(--text-secondary)" }}>{t.icon}</span>
                       {t.badge && (
-                        <span style={{ fontSize: "9px", padding: "1px 6px", borderRadius: "999px", background: "rgba(99, 102, 241, 0.3)", color: "var(--accent-primary)", fontWeight: "600" }}>
+                        <span
+                          style={{
+                            fontSize: "9px",
+                            padding: "1px 6px",
+                            borderRadius: "var(--radius-xs)",
+                            background: "rgba(99, 102, 241, 0.25)",
+                            color: "var(--accent-primary)",
+                            fontWeight: "700",
+                          }}
+                        >
                           {t.badge}
                         </span>
                       )}
@@ -428,83 +480,17 @@ export function PreFlightStudioPanel({
                 placeholder="Or specify custom creative direction (e.g. 'Sarcastic German engineer, brutalist aesthetic')..."
                 value={customTone}
                 onChange={(e) => onCustomToneChange(e.target.value)}
+                className="studio-input"
                 style={{
                   width: "100%",
-                  padding: "9px 14px",
+                  padding: "10px 14px",
                   borderRadius: "var(--radius-md)",
-                  border: customTone ? "1px solid var(--accent-primary)" : "1px solid rgba(255, 255, 255, 0.1)",
-                  background: "rgba(0, 0, 0, 0.25)",
+                  border: customTone ? "1px solid var(--accent-primary)" : "1px solid var(--border-subtle)",
+                  background: "var(--bg-surface-2)",
                   color: "#ffffff",
                   fontSize: "12px",
                 }}
               />
-            </div>
-          </div>
-
-          {/* Video Format & Target Duration */}
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px", paddingTop: "12px", borderTop: "1px solid rgba(255, 255, 255, 0.06)" }}>
-            <div>
-              <label style={{ fontSize: "12px", fontWeight: "700", textTransform: "uppercase", letterSpacing: "0.05em", color: "var(--text-secondary)", display: "block", marginBottom: "8px" }}>
-                Aspect Ratio
-              </label>
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "8px" }}>
-                {[
-                  { id: "16:9", label: "16:9", sub: "YouTube / X" },
-                  { id: "9:16", label: "9:16", sub: "Reels / TikTok" },
-                  { id: "1:1", label: "1:1", sub: "Square" },
-                ].map((f) => (
-                  <button
-                    key={f.id}
-                    id={`aspect-btn-${f.id.replace(":", "-")}`}
-                    type="button"
-                    onClick={() => onAspectRatioChange(f.id as AspectRatio)}
-                    style={{
-                      padding: "8px 6px",
-                      borderRadius: "var(--radius-md)",
-                      border: aspectRatio === f.id ? "1px solid var(--accent-primary)" : "1px solid rgba(255, 255, 255, 0.08)",
-                      background: aspectRatio === f.id ? "rgba(99, 102, 241, 0.15)" : "transparent",
-                      color: aspectRatio === f.id ? "#ffffff" : "var(--text-muted)",
-                      cursor: "pointer",
-                      textAlign: "center",
-                    }}
-                  >
-                    <div style={{ fontSize: "12px", fontWeight: "700" }}>{f.label}</div>
-                    <div style={{ fontSize: "10px", color: "var(--text-muted)" }}>{f.sub}</div>
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div>
-              <label style={{ fontSize: "12px", fontWeight: "700", textTransform: "uppercase", letterSpacing: "0.05em", color: "var(--text-secondary)", display: "block", marginBottom: "8px" }}>
-                Target Duration
-              </label>
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "8px" }}>
-                {[
-                  { dur: 15, label: "15s", sub: "Snappy" },
-                  { dur: 20, label: "20s", sub: "Standard" },
-                  { dur: 25, label: "25s", sub: "Deep Dive" },
-                ].map((d) => (
-                  <button
-                    key={d.dur}
-                    id={`duration-btn-${d.dur}s`}
-                    type="button"
-                    onClick={() => onDurationChange(d.dur as Duration)}
-                    style={{
-                      padding: "8px 6px",
-                      borderRadius: "var(--radius-md)",
-                      border: duration === d.dur ? "1px solid var(--accent-secondary)" : "1px solid rgba(255, 255, 255, 0.08)",
-                      background: duration === d.dur ? "rgba(56, 189, 248, 0.15)" : "transparent",
-                      color: duration === d.dur ? "#ffffff" : "var(--text-muted)",
-                      cursor: "pointer",
-                      textAlign: "center",
-                    }}
-                  >
-                    <div style={{ fontSize: "12px", fontWeight: "700" }}>{d.label}</div>
-                    <div style={{ fontSize: "10px", color: "var(--text-muted)" }}>{d.sub}</div>
-                  </button>
-                ))}
-              </div>
             </div>
           </div>
         </div>
@@ -513,13 +499,13 @@ export function PreFlightStudioPanel({
       {/* Tab 2: Brand & Visuals */}
       {activeTab === "theme" && (
         <div style={{ padding: "20px 24px", display: "flex", flexDirection: "column", gap: "22px" }}>
-          {/* Visual Theme Aesthetics Engine (Phase 17) */}
+          {/* Visual Theme Aesthetics Engine */}
           <div>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" }}>
-              <label style={{ fontSize: "12px", fontWeight: "700", textTransform: "uppercase", letterSpacing: "0.05em", color: "var(--text-secondary)" }}>
+              <label style={{ fontSize: "13px", fontWeight: "700", color: "var(--text-primary)" }}>
                 Visual Aesthetic & Shader Engine
               </label>
-              <span style={{ fontSize: "11px", color: "var(--accent-primary)" }}>Overlays, CRT scanlines, brutalist framing & lighting</span>
+              <span style={{ fontSize: "11px", color: "var(--accent-primary)" }}>Overlays, scanlines, brutalist framing & lighting</span>
             </div>
 
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: "10px" }}>
@@ -543,12 +529,13 @@ export function PreFlightStudioPanel({
                       flexDirection: "column",
                       padding: "12px 14px",
                       borderRadius: "var(--radius-md)",
-                      border: isSelected ? "1px solid var(--accent-primary)" : "1px solid rgba(255, 255, 255, 0.08)",
-                      background: isSelected ? "linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(56, 189, 248, 0.1))" : "rgba(0, 0, 0, 0.25)",
+                      border: isSelected ? "1px solid var(--accent-primary)" : "1px solid var(--border-subtle)",
+                      background: isSelected ? "var(--bg-surface-3)" : "var(--bg-surface-2)",
                       cursor: "pointer",
                       textAlign: "left",
                       position: "relative",
-                      transition: "all 0.15s ease",
+                      boxShadow: isSelected ? "0 4px 12px rgba(99, 102, 241, 0.2)" : "none",
+                      minHeight: "75px",
                     }}
                   >
                     <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "6px" }}>
@@ -576,7 +563,7 @@ export function PreFlightStudioPanel({
           {/* Preset Palettes */}
           <div>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" }}>
-              <label style={{ fontSize: "12px", fontWeight: "700", textTransform: "uppercase", letterSpacing: "0.05em", color: "var(--text-secondary)" }}>
+              <label style={{ fontSize: "13px", fontWeight: "700", color: "var(--text-primary)" }}>
                 Curated Brand Theme Presets
               </label>
               <span style={{ fontSize: "11px", color: "var(--text-muted)" }}>Applies to video background, glows & badges</span>
@@ -585,7 +572,8 @@ export function PreFlightStudioPanel({
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))", gap: "10px" }}>
               {Object.entries(PRESET_THEME_PALETTES).map(([key, pal]) => {
                 const info = PRESET_PALETTE_LABELS[key] || { name: key, desc: "Brand theme" };
-                const isSelected = themePalette.primary.toLowerCase() === pal.primary.toLowerCase() &&
+                const isSelected =
+                  themePalette.primary.toLowerCase() === pal.primary.toLowerCase() &&
                   themePalette.background.toLowerCase() === pal.background.toLowerCase();
 
                 return (
@@ -599,11 +587,12 @@ export function PreFlightStudioPanel({
                       flexDirection: "column",
                       padding: "10px 12px",
                       borderRadius: "var(--radius-md)",
-                      border: isSelected ? `1px solid ${pal.primary}` : "1px solid rgba(255, 255, 255, 0.08)",
-                      background: isSelected ? "rgba(255, 255, 255, 0.06)" : "rgba(0, 0, 0, 0.2)",
+                      border: isSelected ? `1px solid ${pal.primary}` : "1px solid var(--border-subtle)",
+                      background: isSelected ? "var(--bg-surface-3)" : "var(--bg-surface-2)",
                       cursor: "pointer",
                       textAlign: "left",
                       position: "relative",
+                      minHeight: "75px",
                     }}
                   >
                     <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "6px" }}>
@@ -627,8 +616,8 @@ export function PreFlightStudioPanel({
           </div>
 
           {/* Custom Hex Color Pickers */}
-          <div style={{ paddingTop: "12px", borderTop: "1px solid rgba(255, 255, 255, 0.06)" }}>
-            <label style={{ fontSize: "12px", fontWeight: "700", textTransform: "uppercase", letterSpacing: "0.05em", color: "var(--text-secondary)", display: "block", marginBottom: "10px" }}>
+          <div style={{ paddingTop: "14px", borderTop: "1px solid var(--border-subtle)" }}>
+            <label style={{ fontSize: "13px", fontWeight: "700", color: "var(--text-primary)", display: "block", marginBottom: "10px" }}>
               Custom Palette Fine-Tuning
             </label>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(130px, 1fr))", gap: "10px" }}>
@@ -643,9 +632,9 @@ export function PreFlightStudioPanel({
                   key={key}
                   style={{
                     padding: "8px 10px",
-                    borderRadius: "var(--radius-md)",
-                    background: "rgba(0, 0, 0, 0.25)",
-                    border: "1px solid rgba(255, 255, 255, 0.08)",
+                    borderRadius: "var(--radius-sm)",
+                    background: "var(--bg-surface-2)",
+                    border: "1px solid var(--border-subtle)",
                   }}
                 >
                   <span style={{ fontSize: "10px", color: "var(--text-muted)", display: "block", marginBottom: "4px" }}>
@@ -664,6 +653,7 @@ export function PreFlightStudioPanel({
                         cursor: "pointer",
                         background: "none",
                       }}
+                      aria-label={`${label} color picker`}
                     />
                     <input
                       type="text"
@@ -675,121 +665,14 @@ export function PreFlightStudioPanel({
                         border: "none",
                         color: "#ffffff",
                         fontSize: "11px",
-                        fontFamily: "monospace",
+                        fontFamily: "var(--font-mono)",
                       }}
+                      aria-label={`${label} hex value`}
                     />
                   </div>
                 </div>
               ))}
             </div>
-          </div>
-
-          {/* Screen Render Mode Switch & Device Frame */}
-          <div style={{ display: "grid", gridTemplateColumns: "1.2fr 0.8fr", gap: "16px", paddingTop: "12px", borderTop: "1px solid rgba(255, 255, 255, 0.06)" }}>
-            <div>
-              <label style={{ fontSize: "12px", fontWeight: "700", textTransform: "uppercase", letterSpacing: "0.05em", color: "var(--text-secondary)", display: "block", marginBottom: "8px" }}>
-                Screen Render Mode
-              </label>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px" }}>
-                <button
-                  id="screen-mode-mockup-btn"
-                  type="button"
-                  onClick={() => onScreenModeChange("mockup")}
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "8px",
-                    padding: "10px 12px",
-                    borderRadius: "var(--radius-md)",
-                    border: screenMode === "mockup" ? "1px solid var(--accent-primary)" : "1px solid rgba(255, 255, 255, 0.08)",
-                    background: screenMode === "mockup" ? "rgba(99, 102, 241, 0.15)" : "transparent",
-                    color: screenMode === "mockup" ? "#ffffff" : "var(--text-muted)",
-                    cursor: "pointer",
-                    textAlign: "left",
-                  }}
-                >
-                  <FileCode size={16} color={screenMode === "mockup" ? "var(--accent-primary)" : "currentColor"} />
-                  <div>
-                    <div style={{ fontSize: "12px", fontWeight: "600" }}>Synthesized HTML/CSS</div>
-                    <div style={{ fontSize: "10px", color: "var(--text-muted)" }}>Dynamic code mockup</div>
-                  </div>
-                </button>
-
-                <button
-                  id="screen-mode-screenshot-btn"
-                  type="button"
-                  onClick={() => onScreenModeChange("screenshot")}
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "8px",
-                    padding: "10px 12px",
-                    borderRadius: "var(--radius-md)",
-                    border: screenMode === "screenshot" ? "1px solid var(--accent-secondary)" : "1px solid rgba(255, 255, 255, 0.08)",
-                    background: screenMode === "screenshot" ? "rgba(56, 189, 248, 0.15)" : "transparent",
-                    color: screenMode === "screenshot" ? "#ffffff" : "var(--text-muted)",
-                    cursor: "pointer",
-                    textAlign: "left",
-                  }}
-                >
-                  <Monitor size={16} color={screenMode === "screenshot" ? "var(--accent-secondary)" : "currentColor"} />
-                  <div>
-                    <div style={{ fontSize: "12px", fontWeight: "600" }}>Direct Screenshot</div>
-                    <div style={{ fontSize: "10px", color: "var(--text-muted)" }}>Raw uploaded image</div>
-                  </div>
-                </button>
-              </div>
-            </div>
-
-            {onDeviceFrameChange && (
-              <div>
-                <label style={{ fontSize: "12px", fontWeight: "700", textTransform: "uppercase", letterSpacing: "0.05em", color: "var(--text-secondary)", display: "block", marginBottom: "8px" }}>
-                  Device Frame
-                </label>
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px" }}>
-                  <button
-                    type="button"
-                    onClick={() => onDeviceFrameChange(deviceFrame === "macos" ? undefined : "macos")}
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      gap: "6px",
-                      padding: "10px 8px",
-                      borderRadius: "var(--radius-md)",
-                      border: deviceFrame === "macos" ? "1px solid var(--accent-primary)" : "1px solid rgba(255, 255, 255, 0.08)",
-                      background: deviceFrame === "macos" ? "rgba(99, 102, 241, 0.15)" : "transparent",
-                      color: deviceFrame === "macos" ? "#ffffff" : "var(--text-muted)",
-                      cursor: "pointer",
-                      fontSize: "12px",
-                      fontWeight: "600",
-                    }}
-                  >
-                    <Monitor size={14} /> macOS
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => onDeviceFrameChange(deviceFrame === "mobile" ? undefined : "mobile")}
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      gap: "6px",
-                      padding: "10px 8px",
-                      borderRadius: "var(--radius-md)",
-                      border: deviceFrame === "mobile" ? "1px solid var(--accent-secondary)" : "1px solid rgba(255, 255, 255, 0.08)",
-                      background: deviceFrame === "mobile" ? "rgba(56, 189, 248, 0.15)" : "transparent",
-                      color: deviceFrame === "mobile" ? "#ffffff" : "var(--text-muted)",
-                      cursor: "pointer",
-                      fontSize: "12px",
-                      fontWeight: "600",
-                    }}
-                  >
-                    <Smartphone size={14} /> Phone
-                  </button>
-                </div>
-              </div>
-            )}
           </div>
         </div>
       )}
@@ -805,8 +688,8 @@ export function PreFlightStudioPanel({
               justifyContent: "space-between",
               padding: "14px 18px",
               borderRadius: "var(--radius-md)",
-              background: voiceConfig.enabled ? "rgba(16, 185, 129, 0.1)" : "rgba(255, 255, 255, 0.02)",
-              border: voiceConfig.enabled ? "1px solid rgba(16, 185, 129, 0.3)" : "1px solid rgba(255, 255, 255, 0.08)",
+              background: voiceConfig.enabled ? "var(--success-bg)" : "var(--bg-surface-2)",
+              border: voiceConfig.enabled ? "1px solid var(--success-border)" : "1px solid var(--border-subtle)",
             }}
           >
             <div>
@@ -820,7 +703,7 @@ export function PreFlightStudioPanel({
                     fontSize: "10px",
                     fontWeight: "600",
                     padding: "2px 8px",
-                    borderRadius: "999px",
+                    borderRadius: "var(--radius-xs)",
                     background: voiceConfig.enabled ? "rgba(16, 185, 129, 0.2)" : "rgba(255, 255, 255, 0.08)",
                     color: voiceConfig.enabled ? "var(--success)" : "var(--text-muted)",
                   }}
@@ -836,26 +719,19 @@ export function PreFlightStudioPanel({
             <button
               id="voiceover-master-toggle-btn"
               type="button"
+              role="switch"
+              aria-checked={voiceConfig.enabled}
+              aria-label="Toggle AI Voiceover Narration"
               onClick={() => onVoiceConfigChange({ ...voiceConfig, enabled: !voiceConfig.enabled })}
-              style={{
-                padding: "8px 18px",
-                borderRadius: "var(--radius-md)",
-                border: "none",
-                background: voiceConfig.enabled ? "var(--success)" : "rgba(255, 255, 255, 0.12)",
-                color: voiceConfig.enabled ? "#064e3b" : "#ffffff",
-                fontWeight: "700",
-                fontSize: "12px",
-                cursor: "pointer",
-                transition: "all 0.15s ease",
-              }}
+              className={`studio-switch ${voiceConfig.enabled ? "active" : ""}`}
             >
-              {voiceConfig.enabled ? "Turn OFF" : "Turn ON"}
+              <span className="studio-switch-thumb" />
             </button>
           </div>
 
           {/* Voice Model Selection */}
           <div style={{ opacity: voiceConfig.enabled ? 1 : 0.5, pointerEvents: voiceConfig.enabled ? "auto" : "none" }}>
-            <label style={{ fontSize: "12px", fontWeight: "700", textTransform: "uppercase", letterSpacing: "0.05em", color: "var(--text-secondary)", display: "block", marginBottom: "8px" }}>
+            <label style={{ fontSize: "13px", fontWeight: "700", color: "var(--text-primary)", display: "block", marginBottom: "8px" }}>
               Voice Character & Archetype
             </label>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: "10px" }}>
@@ -873,11 +749,11 @@ export function PreFlightStudioPanel({
                       alignItems: "flex-start",
                       padding: "10px 12px",
                       borderRadius: "var(--radius-md)",
-                      border: isSelected ? "1px solid var(--success)" : "1px solid rgba(255, 255, 255, 0.08)",
-                      background: isSelected ? "rgba(16, 185, 129, 0.12)" : "rgba(0, 0, 0, 0.2)",
+                      border: isSelected ? "1px solid var(--success)" : "1px solid var(--border-subtle)",
+                      background: isSelected ? "var(--bg-surface-3)" : "var(--bg-surface-2)",
                       cursor: "pointer",
                       textAlign: "left",
-                      transition: "all 0.15s ease",
+                      minHeight: "64px",
                     }}
                   >
                     <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%", marginBottom: "4px" }}>
@@ -913,6 +789,7 @@ export function PreFlightStudioPanel({
                 value={voiceConfig.speed}
                 onChange={(e) => onVoiceConfigChange({ ...voiceConfig, speed: parseFloat(e.target.value) })}
                 style={{ width: "100%", accentColor: "var(--success)" }}
+                aria-label="Voice speaking speed"
               />
             </div>
 
@@ -926,12 +803,12 @@ export function PreFlightStudioPanel({
                 placeholder="e.g. 'Emphasize 10x faster and say SaaS smoothly'"
                 value={voiceConfig.customNotes || ""}
                 onChange={(e) => onVoiceConfigChange({ ...voiceConfig, customNotes: e.target.value })}
+                className="studio-input"
                 style={{
                   width: "100%",
-                  padding: "7px 12px",
-                  borderRadius: "var(--radius-md)",
-                  border: "1px solid rgba(255, 255, 255, 0.1)",
-                  background: "rgba(0, 0, 0, 0.25)",
+                  padding: "8px 12px",
+                  borderRadius: "var(--radius-sm)",
+                  background: "var(--bg-surface-2)",
                   color: "#ffffff",
                   fontSize: "12px",
                 }}
@@ -945,8 +822,8 @@ export function PreFlightStudioPanel({
               marginTop: "8px",
               padding: "16px 18px",
               borderRadius: "var(--radius-md)",
-              background: effectiveSubtitles.enabled ? "rgba(56, 189, 248, 0.06)" : "rgba(255, 255, 255, 0.02)",
-              border: effectiveSubtitles.enabled ? "1px solid rgba(56, 189, 248, 0.25)" : "1px solid rgba(255, 255, 255, 0.08)",
+              background: effectiveSubtitles.enabled ? "rgba(6, 182, 212, 0.06)" : "var(--bg-surface-2)",
+              border: effectiveSubtitles.enabled ? "1px solid rgba(6, 182, 212, 0.25)" : "1px solid var(--border-subtle)",
               display: "flex",
               flexDirection: "column",
               gap: "14px",
@@ -963,8 +840,8 @@ export function PreFlightStudioPanel({
                         fontSize: "10px",
                         fontWeight: "600",
                         padding: "2px 7px",
-                        borderRadius: "999px",
-                        background: effectiveSubtitles.enabled ? "rgba(56, 189, 248, 0.2)" : "rgba(255, 255, 255, 0.08)",
+                        borderRadius: "var(--radius-xs)",
+                        background: effectiveSubtitles.enabled ? "rgba(6, 182, 212, 0.2)" : "rgba(255, 255, 255, 0.08)",
                         color: effectiveSubtitles.enabled ? "var(--accent-secondary)" : "var(--text-muted)",
                       }}
                     >
@@ -981,25 +858,18 @@ export function PreFlightStudioPanel({
                 <button
                   id="subtitles-master-toggle-btn"
                   type="button"
+                  role="switch"
+                  aria-checked={effectiveSubtitles.enabled}
+                  aria-label="Toggle Kinetic Animated Captions"
                   onClick={() =>
                     onSubtitlesConfigChange({
                       ...effectiveSubtitles,
                       enabled: !effectiveSubtitles.enabled,
                     })
                   }
-                  style={{
-                    padding: "6px 14px",
-                    borderRadius: "var(--radius-md)",
-                    border: "none",
-                    background: effectiveSubtitles.enabled ? "var(--accent-secondary)" : "rgba(255, 255, 255, 0.12)",
-                    color: effectiveSubtitles.enabled ? "#032b42" : "#ffffff",
-                    fontWeight: "700",
-                    fontSize: "11px",
-                    cursor: "pointer",
-                    transition: "all 0.15s ease",
-                  }}
+                  className={`studio-switch ${effectiveSubtitles.enabled ? "active-cyan" : ""}`}
                 >
-                  {effectiveSubtitles.enabled ? "Enabled" : "Disabled"}
+                  <span className="studio-switch-thumb" />
                 </button>
               )}
             </div>
@@ -1007,7 +877,7 @@ export function PreFlightStudioPanel({
             {/* Subtitle Style Cards */}
             {effectiveSubtitles.enabled && onSubtitlesConfigChange && (
               <div>
-                <label style={{ fontSize: "11px", fontWeight: "700", textTransform: "uppercase", letterSpacing: "0.05em", color: "var(--text-secondary)", display: "block", marginBottom: "8px" }}>
+                <label style={{ fontSize: "13px", fontWeight: "700", color: "var(--text-primary)", display: "block", marginBottom: "8px" }}>
                   Caption Style & Animation Aesthetic
                 </label>
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(210px, 1fr))", gap: "8px" }}>
@@ -1029,11 +899,11 @@ export function PreFlightStudioPanel({
                           gap: "4px",
                           padding: "10px 12px",
                           borderRadius: "var(--radius-md)",
-                          border: isSelected ? "1px solid var(--accent-secondary)" : "1px solid rgba(255, 255, 255, 0.08)",
-                          background: isSelected ? "rgba(56, 189, 248, 0.15)" : "rgba(255, 255, 255, 0.02)",
+                          border: isSelected ? "1px solid var(--accent-secondary)" : "1px solid var(--border-subtle)",
+                          background: isSelected ? "var(--bg-surface-3)" : "var(--bg-surface-2)",
                           cursor: "pointer",
                           textAlign: "left",
-                          transition: "all 0.15s ease",
+                          minHeight: "64px",
                         }}
                       >
                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", width: "100%" }}>
@@ -1046,7 +916,7 @@ export function PreFlightStudioPanel({
                               fontWeight: "700",
                               padding: "1px 6px",
                               borderRadius: "4px",
-                              background: isSelected ? "rgba(56, 189, 248, 0.3)" : "rgba(255, 255, 255, 0.06)",
+                              background: isSelected ? "rgba(6, 182, 212, 0.3)" : "rgba(255, 255, 255, 0.06)",
                               color: isSelected ? "var(--accent-secondary)" : "var(--text-muted)",
                             }}
                           >
@@ -1061,45 +931,22 @@ export function PreFlightStudioPanel({
                   })}
                 </div>
 
-                {/* Position Selector */}
-                <div style={{ marginTop: "10px", display: "flex", alignItems: "center", gap: "10px" }}>
+                {/* Position Selector with Fluid Indicator */}
+                <div style={{ marginTop: "12px", display: "flex", alignItems: "center", gap: "10px" }}>
                   <span style={{ fontSize: "11px", fontWeight: "600", color: "var(--text-muted)" }}>
                     Screen Placement:
                   </span>
-                  <div style={{ display: "inline-flex", gap: "6px" }}>
-                    <button
-                      type="button"
-                      onClick={() => onSubtitlesConfigChange({ ...effectiveSubtitles, position: "bottom" })}
-                      style={{
-                        padding: "4px 10px",
-                        borderRadius: "6px",
-                        border: effectiveSubtitles.position === "bottom" ? "1px solid var(--accent-secondary)" : "1px solid rgba(255, 255, 255, 0.08)",
-                        background: effectiveSubtitles.position === "bottom" ? "rgba(56, 189, 248, 0.2)" : "transparent",
-                        color: effectiveSubtitles.position === "bottom" ? "#ffffff" : "var(--text-muted)",
-                        fontSize: "11px",
-                        fontWeight: "600",
-                        cursor: "pointer",
-                      }}
-                    >
-                      Lower Third (Safe Zone)
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => onSubtitlesConfigChange({ ...effectiveSubtitles, position: "middle" })}
-                      style={{
-                        padding: "4px 10px",
-                        borderRadius: "6px",
-                        border: effectiveSubtitles.position === "middle" ? "1px solid var(--accent-secondary)" : "1px solid rgba(255, 255, 255, 0.08)",
-                        background: effectiveSubtitles.position === "middle" ? "rgba(56, 189, 248, 0.2)" : "transparent",
-                        color: effectiveSubtitles.position === "middle" ? "#ffffff" : "var(--text-muted)",
-                        fontSize: "11px",
-                        fontWeight: "600",
-                        cursor: "pointer",
-                      }}
-                    >
-                      Center Impact
-                    </button>
-                  </div>
+                  <FluidSegmentedControl<SubtitlePosition>
+                    value={effectiveSubtitles.position || "bottom"}
+                    onChange={(pos) => onSubtitlesConfigChange({ ...effectiveSubtitles, position: pos })}
+                    variant="cyan"
+                    idPrefix="captions-pos"
+                    buttonStyle={{ fontSize: "11px", minHeight: "34px", padding: "6px 14px" }}
+                    options={[
+                      { id: "bottom", label: "Lower Third (Safe Zone)" },
+                      { id: "middle", label: "Center Impact" },
+                    ]}
+                  />
                 </div>
               </div>
             )}
@@ -1113,10 +960,10 @@ export function PreFlightStudioPanel({
           {/* Music Track Selection */}
           <div>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" }}>
-              <label style={{ fontSize: "12px", fontWeight: "700", textTransform: "uppercase", letterSpacing: "0.05em", color: "var(--text-secondary)" }}>
-                Curated Upbeat Music Beats (Ende.app)
+              <label style={{ fontSize: "13px", fontWeight: "700", color: "var(--text-primary)" }}>
+                Curated Upbeat Music Beats
               </label>
-              <span style={{ fontSize: "11px", color: "#f97316" }}>High-energy commercial royalty-free tracks</span>
+              <span style={{ fontSize: "11px", color: "var(--accent-secondary)" }}>High-energy commercial royalty-free tracks</span>
             </div>
 
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(230px, 1fr))", gap: "10px" }}>
@@ -1134,18 +981,27 @@ export function PreFlightStudioPanel({
                       alignItems: "flex-start",
                       padding: "10px 12px",
                       borderRadius: "var(--radius-md)",
-                      border: isSelected ? "1px solid #f97316" : "1px solid rgba(255, 255, 255, 0.08)",
-                      background: isSelected ? "rgba(234, 88, 12, 0.15)" : "rgba(0, 0, 0, 0.2)",
+                      border: isSelected ? "1px solid var(--accent-secondary)" : "1px solid var(--border-subtle)",
+                      background: isSelected ? "var(--bg-surface-3)" : "var(--bg-surface-2)",
                       cursor: "pointer",
                       textAlign: "left",
-                      transition: "all 0.15s ease",
+                      minHeight: "64px",
                     }}
                   >
                     <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%", marginBottom: "4px" }}>
                       <span style={{ fontSize: "12px", fontWeight: "700", color: isSelected ? "#ffffff" : "var(--text-primary)" }}>
                         {m.name}
                       </span>
-                      <span style={{ fontSize: "10px", padding: "1px 6px", borderRadius: "999px", background: "rgba(255, 255, 255, 0.08)", color: "#f97316" }}>
+                      <span
+                        style={{
+                          fontSize: "10px",
+                          padding: "1px 6px",
+                          borderRadius: "var(--radius-xs)",
+                          background: "rgba(255, 255, 255, 0.08)",
+                          color: "var(--accent-secondary)",
+                          fontFamily: "var(--font-mono)",
+                        }}
+                      >
                         {m.bpm}
                       </span>
                     </div>
@@ -1159,7 +1015,7 @@ export function PreFlightStudioPanel({
           </div>
 
           {/* Volume & Ducking Sliders */}
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "16px", paddingTop: "12px", borderTop: "1px solid rgba(255, 255, 255, 0.06)" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "16px", paddingTop: "14px", borderTop: "1px solid var(--border-subtle)" }}>
             <div>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "6px" }}>
                 <label style={{ fontSize: "12px", fontWeight: "700", color: "var(--text-secondary)" }}>
@@ -1174,7 +1030,8 @@ export function PreFlightStudioPanel({
                 step="0.05"
                 value={audioConfig.musicVolume}
                 onChange={(e) => onAudioConfigChange({ ...audioConfig, musicVolume: parseFloat(e.target.value) })}
-                style={{ width: "100%", accentColor: "#f97316" }}
+                style={{ width: "100%", accentColor: "var(--accent-primary)" }}
+                aria-label="Music volume slider"
               />
             </div>
 
@@ -1193,6 +1050,7 @@ export function PreFlightStudioPanel({
                 value={audioConfig.sfxVolume}
                 onChange={(e) => onAudioConfigChange({ ...audioConfig, sfxVolume: parseFloat(e.target.value) })}
                 style={{ width: "100%", accentColor: "var(--accent-secondary)" }}
+                aria-label="SFX volume slider"
               />
             </div>
 
@@ -1211,6 +1069,7 @@ export function PreFlightStudioPanel({
                 value={audioConfig.duckingDepth}
                 onChange={(e) => onAudioConfigChange({ ...audioConfig, duckingDepth: parseFloat(e.target.value) })}
                 style={{ width: "100%", accentColor: "var(--success)" }}
+                aria-label="Voiceover ducking depth slider"
               />
             </div>
           </div>

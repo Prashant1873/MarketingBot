@@ -226,35 +226,13 @@ export function StoryboardInspector({
         }}
       >
         <div>
-          <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "6px" }}>
-            <span
-              style={{
-                display: "inline-flex",
-                alignItems: "center",
-                gap: "5px",
-                padding: "3px 10px",
-                borderRadius: "999px",
-                fontSize: "11px",
-                fontWeight: "700",
-                textTransform: "uppercase",
-                letterSpacing: "0.5px",
-                background: "rgba(99, 102, 241, 0.2)",
-                color: "var(--accent-primary)",
-              }}
-            >
-              <Sparkles size={12} /> Generated Storyboard
+          <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px", fontSize: "12px" }}>
+            <span style={{ display: "flex", alignItems: "center", gap: "5px", color: "var(--accent-secondary)", fontWeight: "600" }}>
+              <Sparkles size={13} /> Storyboard Blueprint
             </span>
-            <span
-              style={{
-                fontSize: "11px",
-                padding: "3px 8px",
-                borderRadius: "4px",
-                background: isMock ? "rgba(245, 158, 11, 0.15)" : "rgba(16, 185, 129, 0.15)",
-                color: isMock ? "#f59e0b" : "#10b981",
-                fontWeight: "600",
-              }}
-            >
-              {isMock ? "⚡ Local Mock Storyboard" : `Engine: ${providerUsed}`}
+            <span style={{ color: "var(--border-medium)" }}>/</span>
+            <span style={{ color: isMock ? "var(--warning)" : "var(--success)", fontFamily: "var(--font-mono)", fontSize: "11px", fontWeight: "600" }}>
+              {isMock ? "Local Mock" : `Engine: ${providerUsed}`}
             </span>
           </div>
           <h2 style={{ fontSize: "22px", fontWeight: "800", margin: "0 0 4px 0", letterSpacing: "-0.5px" }}>
@@ -284,11 +262,10 @@ export function StoryboardInspector({
                 fontSize: "11px",
                 color: "var(--text-muted)",
                 fontWeight: "600",
-                textTransform: "uppercase",
                 padding: "0 6px",
               }}
             >
-              Frame
+              Frame:
             </span>
             <button
               type="button"
@@ -468,12 +445,11 @@ export function StoryboardInspector({
                 alignItems: "center",
                 gap: "5px",
                 padding: "3px 8px",
-                borderRadius: "6px",
+                borderRadius: "var(--radius-xs)",
                 fontSize: "11px",
-                fontWeight: "700",
+                fontWeight: "600",
                 background: "rgba(99, 102, 241, 0.2)",
                 color: "#818cf8",
-                textTransform: "uppercase",
               }}
             >
               <Palette size={12} /> Style Transfer
@@ -573,7 +549,7 @@ export function StoryboardInspector({
           <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
             {/* Visual Aesthetic Theme Selector */}
             <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-              <span style={{ fontSize: "11px", fontWeight: "700", textTransform: "uppercase", letterSpacing: "0.05em", color: "var(--text-secondary)" }}>
+              <span style={{ fontSize: "12px", fontWeight: "600", color: "var(--text-secondary)" }}>
                 Visual Aesthetic Style:
               </span>
               <div style={{ display: "flex", gap: "6px", flexWrap: "wrap" }}>
@@ -770,11 +746,10 @@ export function StoryboardInspector({
                       display: "inline-flex",
                       alignItems: "center",
                       gap: "6px",
-                      padding: "4px 10px",
-                      borderRadius: "999px",
+                      padding: "4px 8px",
+                      borderRadius: "var(--radius-xs)",
                       fontSize: "11px",
-                      fontWeight: "700",
-                      textTransform: "uppercase",
+                      fontWeight: "600",
                       background: badgeStyle.bg,
                       color: badgeStyle.text,
                       border: `1px solid ${badgeStyle.border}`,
@@ -1046,7 +1021,7 @@ export function StoryboardInspector({
             {/* Subtitles & Captions Quick Switcher */}
             <div style={{ marginTop: "12px", paddingTop: "12px", borderTop: "1px solid rgba(255, 255, 255, 0.08)" }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
-                <span style={{ fontSize: "11px", fontWeight: "700", textTransform: "uppercase", letterSpacing: "0.05em", color: "var(--text-secondary)", display: "flex", alignItems: "center", gap: "4px" }}>
+                <span style={{ fontSize: "12px", fontWeight: "600", color: "var(--text-secondary)", display: "flex", alignItems: "center", gap: "4px" }}>
                   <Type size={12} color="var(--accent-secondary)" /> Kinetic Caption Style
                 </span>
                 <button

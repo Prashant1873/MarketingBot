@@ -5,6 +5,7 @@ import { MarcutieComposition } from "../remotion/MarcutieComposition";
 import { AspectRatioDimensions, secondsToFrames } from "../remotion/types";
 import { Storyboard, AspectRatio, AudioConfig } from "../types";
 import { AudioControls } from "./AudioControls";
+import { FluidSegmentedControl } from "./FluidSegmentedControl";
 
 export interface VideoPlayerPreviewHandle {
   seekToFrame: (frame: number) => void;
@@ -79,14 +80,14 @@ export const VideoPlayerPreview = forwardRef<VideoPlayerPreviewHandle, VideoPlay
 
     return (
       <div
-        className="glass-panel"
+        className="studio-panel"
         style={{
           padding: "24px",
           display: "flex",
           flexDirection: "column",
           gap: "18px",
-          border: "1px solid var(--border-highlight)",
-          boxShadow: "0 20px 50px rgba(0, 0, 0, 0.6), 0 0 30px rgba(99, 102, 241, 0.15)",
+          border: "1px solid var(--border-subtle)",
+          background: "var(--bg-surface-1)",
         }}
       >
         {/* Player Header Controls */}
@@ -102,20 +103,21 @@ export const VideoPlayerPreview = forwardRef<VideoPlayerPreviewHandle, VideoPlay
           <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
             <div
               style={{
-                width: "28px",
-                height: "28px",
-                borderRadius: "8px",
-                background: "var(--accent-gradient)",
+                width: "32px",
+                height: "32px",
+                borderRadius: "var(--radius-sm)",
+                background: "linear-gradient(135deg, #4f46e5 0%, #06b6d4 100%)",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
+                flexShrink: 0,
               }}
             >
-              <Film size={15} color="#fff" />
+              <Film size={16} color="#ffffff" />
             </div>
             <div>
-              <div style={{ fontSize: "14px", fontWeight: "700" }}>Live Motion Graphic Preview</div>
-              <div style={{ fontSize: "11px", color: "var(--text-secondary)" }}>
+              <div style={{ fontSize: "14px", fontWeight: "700", color: "var(--text-primary)" }}>Live Motion Graphic Preview</div>
+              <div style={{ fontSize: "11px", color: "var(--text-muted)" }}>
                 {storyboard.targetDuration}s runtime • {durationInFrames} frames @ 30fps
               </div>
             </div>
@@ -147,40 +149,19 @@ export const VideoPlayerPreview = forwardRef<VideoPlayerPreviewHandle, VideoPlay
               </button>
             )}
 
-            {/* Aspect Ratio Selector */}
-            <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
-              {(
-                [
-                  { id: "16:9", icon: <Monitor size={12} />, label: "16:9" },
-                  { id: "9:16", icon: <Smartphone size={12} />, label: "9:16" },
-                  { id: "1:1", icon: <Square size={12} />, label: "1:1" },
-                ] as const
-              ).map((opt) => (
-                <button
-                  key={opt.id}
-                  onClick={() => onAspectRatioChange?.(opt.id)}
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "4px",
-                    padding: "4px 10px",
-                    borderRadius: "6px",
-                    fontSize: "11px",
-                    fontWeight: "600",
-                    border: "none",
-                    cursor: "pointer",
-                    background:
-                      storyboard.aspectRatio === opt.id
-                        ? "var(--accent-primary)"
-                        : "rgba(255, 255, 255, 0.05)",
-                    color: storyboard.aspectRatio === opt.id ? "#ffffff" : "var(--text-secondary)",
-                  }}
-                >
-                  {opt.icon}
-                  <span>{opt.label}</span>
-                </button>
-              ))}
-            </div>
+            {/* Aspect Ratio Selector with Fluid Stretch Rail */}
+            <FluidSegmentedControl<AspectRatio>
+              value={storyboard.aspectRatio}
+              onChange={(ratio) => onAspectRatioChange?.(ratio)}
+              variant="primary"
+              idPrefix="preview-aspect"
+              buttonStyle={{ minHeight: "28px", padding: "3px 9px", fontSize: "11px" }}
+              options={[
+                { id: "16:9", icon: <Monitor size={12} />, label: "16:9" },
+                { id: "9:16", icon: <Smartphone size={12} />, label: "9:16" },
+                { id: "1:1", icon: <Square size={12} />, label: "1:1" },
+              ]}
+            />
 
             {onProceedToExport && (
               <button
