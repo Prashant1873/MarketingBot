@@ -74,7 +74,7 @@ export function FinishedVideoHero({
         padding: "36px 32px",
         borderRadius: "var(--radius-lg)",
         border: `1px solid ${theme.primary}50`,
-        background: `radial-gradient(circle at top right, ${theme.primary}18, transparent 40%), radial-gradient(circle at bottom left, ${theme.accent}12, transparent 50%), rgba(10, 15, 28, 0.85)`,
+        background: `radial-gradient(circle at top right, ${theme.primary}18, transparent 40%), radial-gradient(circle at bottom left, ${theme.accent}12, transparent 50%), var(--bg-surface-1)`,
         boxShadow: `0 20px 60px -15px ${theme.primary}25`,
         display: "flex",
         flexDirection: "column",
@@ -95,7 +95,7 @@ export function FinishedVideoHero({
             </span>
           </div>
 
-          <h2 style={{ fontSize: "28px", fontWeight: "800", color: "#ffffff", letterSpacing: "-0.03em", margin: "0 0 6px 0" }}>
+          <h2 style={{ fontSize: "28px", fontWeight: "800", color: "var(--text-primary)", letterSpacing: "-0.03em", margin: "0 0 6px 0" }}>
             {storyboard.title}
           </h2>
           <p style={{ fontSize: "14px", color: "var(--text-secondary)", margin: 0, maxWidth: "600px" }}>
@@ -288,14 +288,14 @@ export function FinishedVideoHero({
             style={{
               padding: "20px",
               borderRadius: "var(--radius-md)",
-              background: "rgba(13, 19, 33, 0.8)",
-              border: "1px solid var(--border-color)",
+              background: "var(--bg-surface-2)",
+              border: "1px solid var(--border-medium)",
             }}
           >
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "14px" }}>
               <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
                 <Share2 size={16} color={theme.primary} />
-                <span style={{ fontSize: "13px", fontWeight: "700", color: "#ffffff" }}>
+                <span style={{ fontSize: "13px", fontWeight: "700", color: "var(--text-primary)" }}>
                   Launch Copy
                 </span>
               </div>
@@ -323,13 +323,13 @@ export function FinishedVideoHero({
             <div
               style={{
                 position: "relative",
-                background: "rgba(0, 0, 0, 0.4)",
+                background: "var(--bg-surface-1)",
                 padding: "14px",
                 borderRadius: "var(--radius-md)",
-                border: "1px solid rgba(255, 255, 255, 0.06)",
+                border: "1px solid var(--border-medium)",
                 fontSize: "13px",
                 lineHeight: 1.5,
-                color: "#f8fafc",
+                color: "var(--text-primary)",
                 whiteSpace: "pre-wrap",
                 minHeight: "110px",
                 maxHeight: "180px",
@@ -372,13 +372,13 @@ export function FinishedVideoHero({
               justifyContent: "space-between",
               alignItems: "center",
               padding: "16px 20px",
-              background: "rgba(10, 15, 26, 0.6)",
+              background: "var(--bg-surface-2)",
               borderRadius: "var(--radius-md)",
-              border: "1px dashed var(--border-color)",
+              border: "1px dashed var(--border-medium)",
             }}
           >
             <div style={{ display: "flex", flexDirection: "column" }}>
-              <span style={{ fontSize: "13px", fontWeight: "700", color: "#ffffff" }}>Want to customize scenes?</span>
+              <span style={{ fontSize: "13px", fontWeight: "700", color: "var(--text-primary)" }}>Want to customize scenes?</span>
               <span style={{ fontSize: "11px", color: "var(--text-muted)" }}>Tweak typography slams, badges, timings or colors</span>
             </div>
             <button

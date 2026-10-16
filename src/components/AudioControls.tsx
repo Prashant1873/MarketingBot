@@ -284,7 +284,7 @@ export function AudioControls({
             >
               <Mic size={12} /> Kokoro TTS
             </span>
-            <span style={{ fontSize: "13px", fontWeight: "700", color: "#fff" }}>
+            <span style={{ fontSize: "13px", fontWeight: "700", color: "var(--text-primary)" }}>
               Voiceover Narration
             </span>
           </div>
@@ -298,15 +298,15 @@ export function AudioControls({
               style={{
                 padding: "4px 8px",
                 borderRadius: "6px",
-                background: "rgba(0, 0, 0, 0.4)",
-                border: "1px solid rgba(255, 255, 255, 0.15)",
-                color: "#fff",
+                background: "var(--bg-surface-2)",
+                border: "1px solid var(--border-medium)",
+                color: "var(--text-primary)",
                 fontSize: "11px",
                 cursor: "pointer",
               }}
             >
               {KOKORO_VOICES.map((v) => (
-                <option key={v.id} value={v.id} style={{ background: "#111827", color: "#fff" }}>
+                <option key={v.id} value={v.id} style={{ background: "var(--bg-surface-2)", color: "var(--text-primary)" }}>
                   {v.name} ({v.gender})
                 </option>
               ))}
@@ -333,9 +333,9 @@ export function AudioControls({
               width: "100%",
               padding: "10px",
               borderRadius: "8px",
-              background: "rgba(0, 0, 0, 0.35)",
-              border: "1px solid rgba(255, 255, 255, 0.1)",
-              color: "#fff",
+              background: "var(--bg-surface-2)",
+              border: "1px solid var(--border-medium)",
+              color: "var(--text-primary)",
               fontSize: "12px",
               lineHeight: 1.5,
               resize: "vertical",
@@ -490,9 +490,9 @@ export function AudioControls({
                       width: "24px",
                       height: "24px",
                       borderRadius: "50%",
-                      border: "none",
-                      background: isPlaying ? "var(--accent-primary)" : "rgba(255, 255, 255, 0.1)",
-                      color: "#fff",
+                      border: "1px solid var(--border-medium)",
+                      background: isPlaying ? "var(--accent-primary)" : "var(--bg-surface-3)",
+                      color: isPlaying ? "#ffffff" : "var(--text-primary)",
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",

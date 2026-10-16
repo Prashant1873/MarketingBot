@@ -106,13 +106,14 @@ export const ToneSelector: React.FC<ToneSelectorProps> = ({
                 alignItems: "flex-start",
                 padding: "12px 14px",
                 borderRadius: "var(--radius-md)",
-                background: isSelected ? "rgba(22, 32, 54, 0.95)" : "rgba(13, 19, 34, 0.5)",
+                background: isSelected ? "var(--bg-surface-2)" : "var(--bg-surface-1)",
                 border: isSelected
-                  ? `1px solid ${item.accentColor}`
+                  ? `1.5px solid ${item.accentColor}`
                   : "1px solid var(--border-color)",
                 boxShadow: isSelected ? `0 0 16px ${item.accentColor}33` : "none",
                 textAlign: "left",
                 cursor: "pointer",
+                transition: "all var(--duration-fast) var(--ease-spring)",
               }}
             >
               <div

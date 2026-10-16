@@ -85,6 +85,27 @@ const STUDIO_PRESETS: Array<{
 export default function App() {
   const { config, hasKey, localKeys, hasAnyKey, saveConfig } = useConfig();
 
+  // Persistent Light/Dark Mode State
+  const [theme, setTheme] = useState<"dark" | "light">(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("marcutie_theme");
+      if (saved === "light" || saved === "dark") return saved;
+      if (window.matchMedia("(prefers-color-scheme: light)").matches) {
+        return "light";
+      }
+    }
+    return "dark";
+  });
+
+  useEffect(() => {
+    document.documentElement.setAttribute("data-theme", theme);
+    localStorage.setItem("marcutie_theme", theme);
+  }, [theme]);
+
+  const handleToggleTheme = () => {
+    setTheme((prev) => (prev === "dark" ? "light" : "dark"));
+  };
+
   const [serverStatus, setServerStatus] = useState<"checking" | "online" | "offline">("checking");
   const [serverVersion, setServerVersion] = useState("1.0.0");
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -329,11 +350,21 @@ export default function App() {
       setPipelineStepMessage("Initializing Remotion rendering environment...");
       setPipelineProgress(42);
 
+      let errorCount = 0;
       // Step 3: Poll status until completion
       const pollInterval = setInterval(async () => {
         try {
           const statusRes = await fetch(`/api/render/${jobId}/status`);
-          if (!statusRes.ok) return;
+          if (!statusRes.ok) {
+            errorCount++;
+            if (errorCount >= 4) {
+              clearInterval(pollInterval);
+              setPipelineStage("error");
+              setGenerationError("Render job lost due to server restart. Please click to re-render.");
+            }
+            return;
+          }
+          errorCount = 0;
           const statusText = await statusRes.text();
           let statusData: any;
           try {
@@ -410,6 +441,8 @@ export default function App() {
         serverVersion={serverVersion}
         onOpenSettings={() => setIsSettingsOpen(true)}
         hasApiKeys={hasAnyKey}
+        theme={theme}
+        onToggleTheme={handleToggleTheme}
       />
 
       {/* Studio Mission Control Banner */}
@@ -691,27 +724,7 @@ export default function App() {
       />
 
       {/* Docked Director Command Strip */}
-      <footer
-        style={{
-          position: "fixed",
-          bottom: "20px",
-          left: "50%",
-          transform: "translateX(-50%)",
-          width: "calc(100% - 32px)",
-          maxWidth: "980px",
-          padding: "12px 20px",
-          background: "rgba(14, 17, 24, 0.94)",
-          backdropFilter: "blur(20px)",
-          WebkitBackdropFilter: "blur(20px)",
-          border: "1px solid var(--border-medium)",
-          borderRadius: "var(--radius-lg)",
-          boxShadow: "0 20px 48px rgba(0, 0, 0, 0.7), 0 0 1px rgba(255, 255, 255, 0.15)",
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          zIndex: 100,
-        }}
-      >
+      <footer className="studio-docked-strip">
         <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
           <div
             style={{

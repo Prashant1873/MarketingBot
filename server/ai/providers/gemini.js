@@ -1,12 +1,11 @@
 import { SYSTEM_PROMPT, buildUserPrompt } from "../prompts.js";
 
 const CANDIDATE_MODELS = [
-  "gemini-3.8-flash",
-  "gemini-3.7-flash",
-  "gemini-3.6-flash",
   "gemini-3.5-flash",
-  "gemini-flash-latest",
-  "gemini-2.5-pro",
+  "gemini-flash-lite-latest",
+  "gemini-3.5-flash-lite",
+  "gemini-3-flash-preview",
+  "gemini-3.6-flash",
 ];
 
 export async function generateWithGemini(params, apiKey) {
@@ -50,6 +49,7 @@ export async function generateWithGemini(params, apiKey) {
       const res = await fetch(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        signal: AbortSignal.timeout(6000),
         body: JSON.stringify(payload),
       });
 
@@ -67,7 +67,9 @@ export async function generateWithGemini(params, apiKey) {
       return JSON.parse(textResponse);
     } catch (err) {
       lastError = err;
-      console.warn(`[Gemini] Model ${model} failed (${err.message}). Trying next candidate model...`);
+      const isTimeout = err.name === "AbortError" || err.name === "TimeoutError";
+      const reason = isTimeout ? "timed out (>6s)" : err.message;
+      console.warn(`[Gemini] Model ${model} failed (${reason}). Trying next candidate model...`);
     }
   }
 

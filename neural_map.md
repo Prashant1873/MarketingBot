@@ -277,14 +277,32 @@ interface Storyboard {
 [ Cached at data/renders/:jobId/marcutie_preview.gif ]
               │
               ▼
-## Frontend Architecture: Obsidian Studio Design System
+## Frontend Architecture: Obsidian & Alabaster Dual-Theme System
 
 ```
-[ Obsidian Studio UI System (src/index.css) ]
+[ Studio Theme System (src/index.css + Header Switcher) ]
               │
-              ├── Surfaces: Base (#08090d), Surface 1 (#0e1118), Surface 2 (#141822), Surface 3 (#1a202d)
-              ├── Accents: Electric Indigo (#6366f1) + Laser Cyan (#06b6d4) + Emerald (#10b981) + Solar Amber (#f59e0b)
-              ├── Fluid Springs: Apple critically damped settle (cubic-bezier(0.16, 1, 0.3, 1))
-              ├── Ergonomics: Zero layout thrash, direct manipulation active states, WCAG 2.2 AA focus rings & 44px touch targets
+              ├── Dark Mode ("dark", default):
+              │    ├── Surfaces: Base (#08090d), Surface 1 (#0e1118), Surface 2 (#141822), Surface 3 (#1a202d)
+              │    ├── Text: Pure Ice (#f8fafc) 15.6:1 AAA, Secondary (#94a3b8) 7.3:1 AAA, Muted (#64748b) 4.6:1 AA
+              │    └── Accents: Electric Indigo (#6366f1) + Laser Cyan (#06b6d4) + Emerald (#10b981) + Amber (#f59e0b)
+              │
+              ├── Light Mode ("light", OKLCH-calibrated):
+              │    ├── Surfaces: Canvas (#f8fafc), Surface 1 (#ffffff), Surface 2 (#f1f5f9), Surface 3 (#e2e8f0)
+              │    ├── Text: Deep Ink (#090d16) 18.57:1 AAA, Slate (#334155) 9.45:1 AAA, Slate-Muted (#475569) 6.92:1 AA
+              │    └── Accents: Deep Indigo (#4f46e5) 6.29:1 AA, Deep Cyan (#0284c7), Emerald (#059669), Amber (#b45309)
+              │
+              ├── High-Contrast Control Architecture:
+              │    ├── .btn-primary: High-contrast white text (6.29:1), Poisson volume squish (scale(1.03, 0.94)), specular rim
+              │    ├── .btn-secondary: High-contrast borders, tactile surface, theme-adaptive text
+              │    ├── .studio-switch: High-contrast track & thumb with stretch-on-hold dynamics in both themes
+              │    └── .studio-fluid-indicator: Web Animations API (WAAPI) keyframe-driven bridging stretch
+              │
+              ├── Physics & Motion:
+              │    ├── Apple critically damped curve: cubic-bezier(0.16, 1, 0.3, 1)
+              │    ├── Poisson volume compression: scale(1.03, 0.94) on active click
+              │    ├── Hardware-composited transforms: 0 layout thrash (scaleX, transform, opacity)
+              │    └── Accessibility: strict prefers-reduced-motion overrides
+              │
               └── Split Workspace: Director Input Deck (Left) & Studio Synthesis Rack (Right) + Docked Command Strip
 ```

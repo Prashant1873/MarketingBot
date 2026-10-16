@@ -125,7 +125,7 @@ export function OneClickProgressModal({
               <CloudDownload size={22} />
             </div>
             <div style={{ flex: 1 }}>
-              <div style={{ fontWeight: "700", color: "#ffffff", fontSize: "13px" }}>
+              <div style={{ fontWeight: "700", color: "var(--text-primary)", fontSize: "13px" }}>
                 Installing Chrome Headless Shell Engine
               </div>
               <div style={{ fontSize: "11px", color: "#93c5fd", marginTop: "2px" }}>
@@ -222,7 +222,7 @@ export function OneClickProgressModal({
                         style={{
                           fontSize: "13px",
                           fontWeight: isCurrent ? "700" : "500",
-                          color: isCurrent ? "#ffffff" : isPassed ? "var(--text-primary)" : "var(--text-muted)",
+                          color: isCurrent ? "var(--text-primary)" : isPassed ? "var(--text-primary)" : "var(--text-muted)",
                         }}
                       >
                         {s.label}
@@ -250,11 +250,11 @@ export function OneClickProgressModal({
                 style={{
                   height: "10px",
                   borderRadius: "999px",
-                  background: "rgba(255, 255, 255, 0.08)",
+                  background: "var(--bg-surface-2)",
                   padding: "2px",
                   overflow: "hidden",
-                  boxShadow: "inset 0 1px 3px rgba(0, 0, 0, 0.5)",
-                  border: "1px solid rgba(255, 255, 255, 0.05)",
+                  boxShadow: "inset 0 1px 3px rgba(0, 0, 0, 0.2)",
+                  border: "1px solid var(--border-medium)",
                 }}
               >
                 <div

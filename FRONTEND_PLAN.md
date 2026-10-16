@@ -69,4 +69,39 @@
 - [x] Task 10.5: Upgrade render mode in `ImageDropzone.tsx`, aspect ratio in `VideoPlayerPreview.tsx`, and social platform tabs in `FinishedVideoHero.tsx`
 - [x] Task 10.6: Run AST antipattern detector and production build (`npm run build`)
 
+### Chunk 11: Light Mode Architecture & Perceptual Contrast Token System (reference/colorize.md)
+- [x] Task 11.1: Build complete `[data-theme="light"]` token architecture in `src/index.css` (hue-tinted porcelain canvas `#f8fafc`, elevated pure-white `#ffffff` and `#f1f5f9` surfaces, deep ink `#090d16` text with 18.5:1 contrast, `#334155` secondary text with 9.4:1 contrast, `#475569` muted text with 6.9:1 contrast)
+- [x] Task 11.2: Calibrate light mode borders (`rgba(15, 23, 42, 0.12)` subtle, `rgba(15, 23, 42, 0.2)` medium, `rgba(15, 23, 42, 0.35)` strong) and atmospheric radial mesh lighting for light mode
+- [x] Task 11.3: Calibrate telemetry status colors for light mode (`--success: #059669`, `--warning: #d97706`, `--danger: #e11d48`) with guaranteed $\ge 4.5:1$ contrast against light canvas
+- [x] Task 11.4: Define smooth CSS color transitions for instant, flicker-free theme switching
+
+### Chunk 12: Theme Switcher & System Integration (reference/craft-floor.md)
+- [x] Task 12.1: Implement theme state hook with `localStorage` persistence and `prefers-color-scheme` initial detection in `App.tsx`
+- [x] Task 12.2: Add tactile Theme Switcher button in `Header.tsx` with Sun/Moon icons, smooth rotational spring animation, and accessible ARIA attributes
+- [x] Task 12.3: Ensure docked strip, modals, and tooltips automatically sync with active theme
+
+### Chunk 13: Buttons & Toggles High-Contrast Overhaul (reference/buttons.md)
+- [x] Task 13.1: Perfect contrast for `.btn-primary` in dark mode (`#ffffff` on `#6366f1` 6.29:1) and light mode (`#ffffff` on `#4f46e5` 6.29:1) with specular highlight
+- [x] Task 13.2: Perfect contrast for `.btn-secondary` in dark mode (`#f8fafc` on `#101526` 8.2:1) and light mode (`#090d16` on `#ffffff` 18.5:1 with `#cbd5e1` tactile border)
+- [x] Task 13.3: Perfect contrast for `.btn-ghost` and `.btn-destructive` across both dark and light modes
+- [x] Task 13.4: Overhaul `.studio-switch` track and thumb contrast for both On and Off states in light and dark mode with tactile Poisson volume stretch
+- [x] Task 13.5: Upgrade `FluidSegmentedControl` indicator variants and text color logic ensuring `variant-default` text uses `var(--text-primary)` in light mode instead of hardcoded white
+
+### Chunk 14: Platform-Wide Hardcoded Color Purge & Modal Consistency
+- [x] Task 14.1: Eliminate hardcoded `#ffffff` text in `PreFlightStudioPanel.tsx`, replacing with `var(--text-primary)`
+- [x] Task 14.2: Eliminate hardcoded `#ffffff` text in `FinishedVideoHero.tsx`, `AudioControls.tsx`, and `StoryboardInspector.tsx`
+- [x] Task 14.3: Modernize `ExportModal.tsx` to use semantic `.modal-backdrop`, `.modal-content`, and tokens instead of hardcoded dark classes
+- [x] Task 14.4: Ensure dropdowns, color inputs, and textareas have high-contrast text and backgrounds in both modes
+
+### Chunk 15: Apple Fluid Spring Motion & Animations (reference/animate.md)
+- [x] Task 15.1: Add smooth section entrance choreography `studioFadeInUp` with Apple critically damped curve `cubic-bezier(0.16, 1, 0.3, 1)`
+- [x] Task 15.2: Add live telemetry pulse keyframe animation for server status & voiceover active indicators
+- [x] Task 15.3: Add interactive hover spring feedback and micro-interactions on cards, chips, and modals
+- [x] Task 15.4: Implement strict `prefers-reduced-motion` overrides for accessibility
+
+### Chunk 16: Verification & Final Polish
+- [x] Task 16.1: Run `detect-antipatterns.mjs` mechanical AST detector on all modified files
+- [x] Task 16.2: Verify production build (`npm run build`) and regression test suite (`npm test`)
+
+
 

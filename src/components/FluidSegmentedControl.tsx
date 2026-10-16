@@ -261,7 +261,9 @@ export function FluidSegmentedControl<T extends string | number | undefined>({
         const activeClass = isSelected
           ? variant === "cyan"
             ? "active active-cyan"
-            : "active"
+            : variant === "primary"
+            ? "active active-primary"
+            : "active active-default"
           : "";
 
         return (

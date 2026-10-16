@@ -48,11 +48,12 @@ export const FormatControls: React.FC<FormatControlsProps> = ({
                     flexDirection: "column",
                     padding: "10px 8px",
                     borderRadius: "var(--radius-sm)",
-                    background: isSelected ? "rgba(99, 102, 241, 0.2)" : "rgba(13, 19, 34, 0.4)",
+                    background: isSelected ? "var(--bg-surface-2)" : "var(--bg-surface-1)",
                     border: isSelected
-                      ? "1px solid var(--accent-primary)"
+                      ? "1.5px solid var(--accent-primary)"
                       : "1px solid var(--border-color)",
                     color: isSelected ? "var(--text-primary)" : "var(--text-secondary)",
+                    transition: "all var(--duration-fast) var(--ease-spring)",
                   }}
                 >
                   <Icon size={18} color={isSelected ? "var(--accent-primary)" : "var(--text-secondary)"} />
@@ -96,11 +97,12 @@ export const FormatControls: React.FC<FormatControlsProps> = ({
                     flexDirection: "column",
                     padding: "10px 8px",
                     borderRadius: "var(--radius-sm)",
-                    background: isSelected ? "rgba(168, 85, 247, 0.2)" : "rgba(13, 19, 34, 0.4)",
+                    background: isSelected ? "var(--bg-surface-2)" : "var(--bg-surface-1)",
                     border: isSelected
-                      ? "1px solid var(--accent-secondary)"
+                      ? "1.5px solid var(--accent-secondary)"
                       : "1px solid var(--border-color)",
                     color: isSelected ? "var(--text-primary)" : "var(--text-secondary)",
+                    transition: "all var(--duration-fast) var(--ease-spring)",
                   }}
                 >
                   <span

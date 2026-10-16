@@ -798,10 +798,10 @@ export function StoryboardInspector({
                     style={{
                       width: "56px",
                       padding: "4px 6px",
-                      background: "rgba(0, 0, 0, 0.4)",
-                      border: "1px solid var(--border-color)",
+                      background: "var(--bg-surface-1)",
+                      border: "1px solid var(--border-medium)",
                       borderRadius: "6px",
-                      color: "#fff",
+                      color: "var(--text-primary)",
                       fontSize: "12px",
                       fontWeight: "700",
                       textAlign: "center",
@@ -901,10 +901,10 @@ export function StoryboardInspector({
                   style={{
                     width: "100%",
                     padding: "8px 10px",
-                    background: "rgba(56, 189, 248, 0.05)",
-                    border: "1px solid rgba(56, 189, 248, 0.25)",
+                    background: "var(--bg-surface-1)",
+                    border: "1px solid var(--border-medium)",
                     borderRadius: "6px",
-                    color: "#ffffff",
+                    color: "var(--text-primary)",
                     fontSize: "12px",
                     lineHeight: 1.4,
                     fontFamily: "inherit",
@@ -1245,7 +1245,7 @@ export function StoryboardInspector({
                   <FileCode size={18} />
                 </div>
                 <div>
-                  <h3 style={{ margin: 0, fontSize: "15px", fontWeight: "700", color: "#fff" }}>
+                  <h3 style={{ margin: 0, fontSize: "15px", fontWeight: "700", color: "var(--text-primary)" }}>
                     Synthesized Feature Screen Code
                   </h3>
                   <p style={{ margin: 0, fontSize: "11px", color: "var(--text-muted)" }}>

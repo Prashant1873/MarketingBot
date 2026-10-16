@@ -97,7 +97,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
             justifyContent: "space-between",
             alignItems: "center",
             padding: "20px 24px",
-            borderBottom: "1px solid var(--border-color)",
+            borderBottom: "1px solid var(--border-medium)",
           }}
         >
           <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
@@ -158,8 +158,8 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                       alignItems: "flex-start",
                       padding: "10px 12px",
                       borderRadius: "var(--radius-sm)",
-                      border: preferredProvider === item.id ? "1px solid var(--accent-primary)" : "1px solid var(--border-color)",
-                      background: preferredProvider === item.id ? "rgba(99, 102, 241, 0.15)" : "rgba(15, 23, 42, 0.4)",
+                      border: preferredProvider === item.id ? "1px solid var(--accent-primary)" : "1px solid var(--border-medium)",
+                      background: preferredProvider === item.id ? "rgba(99, 102, 241, 0.15)" : "var(--bg-surface-2)",
                       textAlign: "left",
                     }}
                   >
@@ -297,7 +297,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               gap: "10px",
               marginTop: "24px",
               paddingTop: "16px",
-              borderTop: "1px solid var(--border-color)",
+              borderTop: "1px solid var(--border-medium)",
             }}
           >
             <button type="button" onClick={onClose} className="btn-secondary" style={{ padding: "8px 16px" }}>

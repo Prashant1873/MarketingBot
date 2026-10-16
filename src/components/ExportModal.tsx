@@ -35,6 +35,8 @@ interface RenderJobState {
   gifUrl?: string;
   gifFileSize?: number;
   fileSize?: number;
+  etaSec?: number;
+  etaText?: string;
   error?: string;
 }
 
@@ -46,12 +48,18 @@ export const ExportModal: React.FC<ExportModalProps> = ({ isOpen, onClose, story
 
   const shareCopy: FormattedShareCopy = getAllShareCopy(storyboard);
 
-  // Reset or initialize when modal opens
+  // Close on Escape key
   useEffect(() => {
-    if (isOpen && renderStatus === "idle") {
-      // Keep idle so user can click start, or auto-start if desired
-    }
-  }, [isOpen]);
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && isOpen && renderStatus !== "rendering") {
+        onClose();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isOpen, onClose, renderStatus]);
+
+  if (!isOpen) return null;
 
   const handleStartRender = async () => {
     try {
@@ -95,10 +103,24 @@ export const ExportModal: React.FC<ExportModalProps> = ({ isOpen, onClose, story
   };
 
   const pollJobStatus = (jobId: string) => {
+    let failureCount = 0;
     const interval = setInterval(async () => {
       try {
         const res = await fetch(`/api/render/${jobId}/status`);
-        if (!res.ok) return;
+        if (!res.ok) {
+          failureCount++;
+          if (failureCount >= 4) {
+            clearInterval(interval);
+            setRenderStatus("error");
+            setJobState((prev) => ({
+              ...(prev || { id: jobId, progress: 0, currentStep: "" }),
+              status: "error",
+              error: "Render job lost due to server restart. Please try again.",
+            }));
+          }
+          return;
+        }
+        failureCount = 0;
 
         const data = await res.json();
         const job: RenderJobState = data.job;
@@ -126,8 +148,6 @@ export const ExportModal: React.FC<ExportModalProps> = ({ isOpen, onClose, story
     }, 2000);
   };
 
-  if (!isOpen) return null;
-
   const resolutionMap = {
     "16:9": "1920 × 1080 (Landscape)",
     "9:16": "1080 × 1920 (Vertical)",
@@ -135,329 +155,570 @@ export const ExportModal: React.FC<ExportModalProps> = ({ isOpen, onClose, story
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fadeIn">
-      <div className="relative w-full max-w-3xl bg-[#0e0e12] border border-white/10 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
-        {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-white/10 bg-white/[0.02]">
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-violet-600/20 border border-violet-500/30 flex items-center justify-center text-violet-400">
-              <Film className="w-5 h-5" />
+    <div className="modal-backdrop" onClick={renderStatus !== "rendering" ? onClose : undefined}>
+      <div
+        className="modal-content animate-fade-in-up"
+        onClick={(e) => e.stopPropagation()}
+        style={{
+          maxWidth: "740px",
+          display: "flex",
+          flexDirection: "column",
+          borderRadius: "var(--radius-lg)",
+          overflow: "hidden",
+        }}
+      >
+        {/* Modal Header */}
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            padding: "18px 24px",
+            borderBottom: "1px solid var(--border-medium)",
+            background: "var(--bg-surface-1)",
+          }}
+        >
+          <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+            <div
+              style={{
+                width: "36px",
+                height: "36px",
+                borderRadius: "var(--radius-sm)",
+                background: "linear-gradient(135deg, #4f46e5 0%, #06b6d4 100%)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                color: "#ffffff",
+                boxShadow: "0 4px 12px rgba(79, 70, 229, 0.35)",
+              }}
+            >
+              <Film size={18} />
             </div>
             <div>
-              <h2 className="text-base font-semibold text-white tracking-tight">Export & Delivery Studio</h2>
-              <p className="text-xs text-white/50">100% Local 1080p MP4 Render with Frame-0 Poster Baking</p>
+              <h2 style={{ fontSize: "16px", fontWeight: "700", color: "var(--text-primary)", margin: 0 }}>
+                Export & Delivery Studio
+              </h2>
+              <p style={{ fontSize: "12px", color: "var(--text-muted)", margin: "2px 0 0" }}>
+                100% Local 1080p MP4 Render with Frame-0 Poster Baking
+              </p>
             </div>
           </div>
-          <button
-            onClick={onClose}
-            className="p-2 text-white/50 hover:text-white rounded-lg hover:bg-white/5 transition-colors"
-          >
-            <X className="w-5 h-5" />
-          </button>
+          {renderStatus !== "rendering" && (
+            <button
+              onClick={onClose}
+              className="btn-ghost"
+              style={{ padding: "8px", minHeight: "36px", color: "var(--text-secondary)" }}
+              aria-label="Close export modal"
+            >
+              <X size={18} />
+            </button>
+          )}
         </div>
 
-        {/* Body Container */}
-        <div className="flex-1 overflow-y-auto p-6 space-y-6">
+        {/* Modal Body Container */}
+        <div style={{ flex: 1, overflowY: "auto", padding: "24px", display: "flex", flexDirection: "column", gap: "20px" }}>
           {/* Pre-render State */}
           {renderStatus === "idle" && (
-            <div className="space-y-6">
-              <div className="p-5 rounded-xl bg-white/[0.03] border border-white/10 space-y-4">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-semibold uppercase tracking-wider text-white/50">Video Specifications</span>
-                  <span className="text-xs text-violet-400 font-medium">H.264 / AAC 30 FPS</span>
+            <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+              <div
+                style={{
+                  padding: "18px 20px",
+                  borderRadius: "var(--radius-md)",
+                  background: "var(--bg-surface-2)",
+                  border: "1px solid var(--border-medium)",
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "14px",
+                }}
+              >
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <span style={{ fontSize: "12px", fontWeight: "700", color: "var(--text-primary)", letterSpacing: "0.02em" }}>
+                    Video Specifications
+                  </span>
+                  <span
+                    className="studio-badge"
+                    style={{
+                      background: "rgba(99, 102, 241, 0.15)",
+                      color: "var(--accent-primary)",
+                      fontWeight: "700",
+                    }}
+                  >
+                    H.264 / AAC 30 FPS
+                  </span>
                 </div>
-                <div className="grid grid-cols-3 gap-3">
-                  <div className="p-3 rounded-lg bg-black/30 border border-white/5">
-                    <span className="text-[11px] text-white/40 block">Resolution</span>
-                    <span className="text-xs font-semibold text-white mt-1 block">
+
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "10px" }}>
+                  <div
+                    style={{
+                      padding: "12px",
+                      borderRadius: "var(--radius-sm)",
+                      background: "var(--bg-surface-1)",
+                      border: "1px solid var(--border-subtle)",
+                    }}
+                  >
+                    <span style={{ fontSize: "11px", color: "var(--text-muted)", display: "block" }}>Resolution</span>
+                    <span style={{ fontSize: "12px", fontWeight: "700", color: "var(--text-primary)", marginTop: "4px", display: "block" }}>
                       {resolutionMap[storyboard.aspectRatio] || "1920 × 1080"}
                     </span>
                   </div>
-                  <div className="p-3 rounded-lg bg-black/30 border border-white/5">
-                    <span className="text-[11px] text-white/40 block">Duration</span>
-                    <span className="text-xs font-semibold text-white mt-1 block">
+                  <div
+                    style={{
+                      padding: "12px",
+                      borderRadius: "var(--radius-sm)",
+                      background: "var(--bg-surface-1)",
+                      border: "1px solid var(--border-subtle)",
+                    }}
+                  >
+                    <span style={{ fontSize: "11px", color: "var(--text-muted)", display: "block" }}>Duration</span>
+                    <span style={{ fontSize: "12px", fontWeight: "700", color: "var(--text-primary)", marginTop: "4px", display: "block" }}>
                       {storyboard.targetDuration || 15} Seconds
                     </span>
                   </div>
-                  <div className="p-3 rounded-lg bg-black/30 border border-white/5">
-                    <span className="text-[11px] text-white/40 block">Soundtrack</span>
-                    <span className="text-xs font-semibold text-white mt-1 block truncate">
+                  <div
+                    style={{
+                      padding: "12px",
+                      borderRadius: "var(--radius-sm)",
+                      background: "var(--bg-surface-1)",
+                      border: "1px solid var(--border-subtle)",
+                    }}
+                  >
+                    <span style={{ fontSize: "11px", color: "var(--text-muted)", display: "block" }}>Soundtrack</span>
+                    <span
+                      style={{
+                        fontSize: "12px",
+                        fontWeight: "700",
+                        color: "var(--text-primary)",
+                        marginTop: "4px",
+                        display: "block",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        whiteSpace: "nowrap",
+                      }}
+                    >
                       {storyboard.audioDirection?.trackRecommendation || "Tech Pulse"}
                     </span>
                   </div>
                 </div>
               </div>
 
-              {/* Poster info pill */}
-              <div className="p-4 rounded-xl bg-violet-950/20 border border-violet-500/20 flex items-start gap-3">
-                <Sparkles className="w-5 h-5 text-violet-400 shrink-0 mt-0.5" />
-                <div className="text-xs text-violet-200/80 leading-relaxed">
-                  <strong className="text-violet-300 font-medium">Frame-0 Poster Baking Active:</strong> Marcutie will automatically extract a high-resolution settled poster frame at the product reveal moment and bake it into frame 0 of the exported MP4 so Twitter/X, Discord, and LinkedIn display it as the cover thumbnail.
+              {/* Poster Frame Notice */}
+              <div
+                style={{
+                  padding: "14px 18px",
+                  borderRadius: "var(--radius-md)",
+                  background: "rgba(99, 102, 241, 0.1)",
+                  border: "1px solid rgba(99, 102, 241, 0.3)",
+                  display: "flex",
+                  alignItems: "flex-start",
+                  gap: "12px",
+                }}
+              >
+                <Sparkles size={18} color="var(--accent-primary)" style={{ flexShrink: 0, marginTop: "2px" }} />
+                <div style={{ fontSize: "12px", color: "var(--text-secondary)", lineHeight: "1.5" }}>
+                  <strong style={{ color: "var(--text-primary)", fontWeight: "700" }}>Frame-0 Poster Baking Active: </strong>
+                  Marcutie automatically extracts a high-resolution settled poster frame at the product reveal moment and bakes it into frame 0 of the exported MP4 so Twitter/X, Discord, and LinkedIn display it as the cover thumbnail.
                 </div>
               </div>
 
               {/* Start Render Button */}
-              <div className="pt-2">
-                <button
-                  onClick={handleStartRender}
-                  className="w-full py-3.5 px-6 rounded-xl font-medium text-sm text-white bg-indigo-600 hover:bg-indigo-500 shadow-lg shadow-indigo-600/25 transition-all flex items-center justify-center gap-2 group cursor-pointer"
-                >
-                  <Sparkles className="w-4 h-4 group-hover:rotate-12 transition-transform" />
-                  <span>Start Local Render</span>
-                </button>
-              </div>
+              <button
+                id="start-export-render-btn"
+                type="button"
+                onClick={handleStartRender}
+                className="btn-primary"
+                style={{
+                  width: "100%",
+                  minHeight: "48px",
+                  fontSize: "14px",
+                  borderRadius: "var(--radius-md)",
+                  gap: "8px",
+                }}
+              >
+                <Sparkles size={16} />
+                <span>Start Local Render</span>
+              </button>
             </div>
           )}
 
           {/* Rendering Progress State */}
           {renderStatus === "rendering" && (
-            <div className="space-y-6 py-6 text-center">
-              <div className="relative w-20 h-20 mx-auto flex items-center justify-center">
-                <div className="absolute inset-0 rounded-full border-4 border-violet-500/20 animate-pulse" />
-                <div className="absolute inset-0 rounded-full border-4 border-transparent border-t-violet-500 animate-spin" />
-                <Film className="w-8 h-8 text-violet-400" />
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "20px", padding: "28px 12px", textAlign: "center" }}>
+              <div
+                style={{
+                  width: "72px",
+                  height: "72px",
+                  borderRadius: "50%",
+                  background: "rgba(99, 102, 241, 0.15)",
+                  border: "2px solid var(--accent-primary)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  position: "relative",
+                }}
+              >
+                <div
+                  className="radar-spinner"
+                  style={{
+                    position: "absolute",
+                    inset: "-6px",
+                    borderRadius: "50%",
+                    border: "3px solid transparent",
+                    borderTopColor: "var(--accent-secondary)",
+                  }}
+                />
+                <Film size={28} color="var(--accent-primary)" />
               </div>
 
-              <div className="space-y-2">
-                <h3 className="text-base font-semibold text-white">Rendering Launch Video...</h3>
-                <p className="text-xs text-white/60 font-mono">
+              <div>
+                <h3 style={{ fontSize: "16px", fontWeight: "700", color: "var(--text-primary)", margin: "0 0 4px" }}>
+                  Rendering Launch Video...
+                </h3>
+                <p style={{ fontSize: "12px", color: "var(--text-secondary)", fontFamily: "var(--font-mono)", margin: 0 }}>
                   {jobState?.currentStep || "Processing video frames on local machine..."}
                 </p>
               </div>
 
-              {/* Rotating Left-to-Right Progress Bar */}
-              <div className="w-full max-w-md mx-auto space-y-2">
-                <div className="w-full h-3 rounded-full bg-white/10 overflow-hidden relative p-[2px] border border-white/5">
+              {/* Progress Bar */}
+              <div style={{ width: "100%", maxWidth: "460px", display: "flex", flexDirection: "column", gap: "8px" }}>
+                <div
+                  style={{
+                    width: "100%",
+                    height: "12px",
+                    borderRadius: "var(--radius-full)",
+                    background: "var(--bg-surface-2)",
+                    overflow: "hidden",
+                    padding: "2px",
+                    border: "1px solid var(--border-medium)",
+                  }}
+                >
                   <div
-                    className="h-full progress-rotating-bar rounded-full"
-                    style={{ width: `${Math.max(5, jobState?.progress || 0)}%` }}
+                    className="progress-rotating-bar"
+                    style={{
+                      height: "100%",
+                      width: "100%",
+                      borderRadius: "var(--radius-full)",
+                      transform: `scaleX(${Math.max(0.05, (jobState?.progress || 0) / 100)})`,
+                      transformOrigin: "left center",
+                      transition: "transform 0.3s cubic-bezier(0.16, 1, 0.3, 1)",
+                    }}
                   />
                 </div>
-                <div className="flex justify-between text-[11px] font-mono text-white/40">
-                  <span>Rendering locally</span>
-                  <span>{jobState?.progress || 0}%</span>
+                <div style={{ display: "flex", justifyContent: "space-between", fontSize: "11px", fontFamily: "var(--font-mono)", color: "var(--text-muted)" }}>
+                  <span>{jobState?.etaText ? `ETA: ${jobState.etaText}` : "Rendering locally"}</span>
+                  <span style={{ fontWeight: "700", color: "var(--text-primary)" }}>{jobState?.progress || 0}%</span>
                 </div>
               </div>
 
-              <div className="p-3.5 rounded-xl bg-white/[0.02] border border-white/5 inline-flex items-center gap-2 text-xs text-white/50">
-                <Clock className="w-3.5 h-3.5 text-violet-400" />
-                <span>Zero cloud fees • Processing directly on your CPU/GPU</span>
+              <div
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "6px",
+                  padding: "8px 14px",
+                  borderRadius: "var(--radius-sm)",
+                  background: "var(--bg-surface-2)",
+                  border: "1px solid var(--border-subtle)",
+                  fontSize: "11px",
+                  color: "var(--text-muted)",
+                }}
+              >
+                <Clock size={13} color="var(--accent-primary)" />
+                <span>Zero cloud fees • Processing directly on your local CPU/GPU</span>
               </div>
             </div>
           )}
 
           {/* Error State */}
           {renderStatus === "error" && (
-            <div className="space-y-4 py-4 text-center">
-              <div className="w-14 h-14 rounded-full bg-red-500/10 border border-red-500/20 text-red-400 flex items-center justify-center mx-auto">
-                <AlertCircle className="w-7 h-7" />
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "16px", padding: "20px 0", textAlign: "center" }}>
+              <div
+                style={{
+                  width: "56px",
+                  height: "56px",
+                  borderRadius: "50%",
+                  background: "var(--danger-bg)",
+                  border: "1px solid var(--danger-border)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  color: "var(--danger)",
+                }}
+              >
+                <AlertCircle size={28} />
               </div>
-              <div className="space-y-1">
-                <h3 className="text-sm font-semibold text-white">Rendering Encountered an Issue</h3>
-                <p className="text-xs text-red-300/80 max-w-md mx-auto">
+              <div>
+                <h3 style={{ fontSize: "15px", fontWeight: "700", color: "var(--text-primary)", margin: "0 0 4px" }}>
+                  Rendering Encountered an Issue
+                </h3>
+                <p style={{ fontSize: "12px", color: "var(--danger)", margin: 0, maxWidth: "440px" }}>
                   {jobState?.error || "An unexpected error occurred during video rendering."}
                 </p>
               </div>
               <button
+                type="button"
                 onClick={handleStartRender}
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-medium text-white bg-white/10 hover:bg-white/15 transition-colors cursor-pointer"
+                className="btn-secondary"
+                style={{ minHeight: "40px", padding: "8px 18px", fontSize: "12px", gap: "6px" }}
               >
-                <RotateCcw className="w-3.5 h-3.5" />
+                <RotateCcw size={14} />
                 <span>Try Again</span>
               </button>
             </div>
           )}
 
-          {/* Completed Delivery State */}
+          {/* Completed State */}
           {renderStatus === "completed" && jobState && (
-            <div className="space-y-6">
+            <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
               {/* Success Badge */}
-              <div className="flex items-center justify-between p-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 text-xs">
-                <div className="flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                  <span className="font-medium">Video Rendered Successfully with Frame-0 Poster Baked!</span>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  padding: "14px 18px",
+                  borderRadius: "var(--radius-md)",
+                  background: "var(--success-bg)",
+                  border: "1px solid var(--success-border)",
+                  color: "var(--success)",
+                  fontSize: "12px",
+                }}
+              >
+                <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                  <CheckCircle2 size={16} />
+                  <span style={{ fontWeight: "700" }}>Video Rendered Successfully with Frame-0 Poster Baked!</span>
                 </div>
-                <span className="text-[11px] font-mono text-emerald-400/80">
+                <span style={{ fontFamily: "var(--font-mono)", fontWeight: "600" }}>
                   {jobState.fileSize ? `${(jobState.fileSize / (1024 * 1024)).toFixed(2)} MB` : "Ready"}
                 </span>
               </div>
 
-              {/* Video Player, Animated GIF & Poster Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {/* Final MP4 Video Player */}
-                <div className="space-y-2">
-                  <span className="text-xs font-semibold text-white/50 flex items-center gap-1.5">
-                    <Film className="w-3.5 h-3.5 text-violet-400" />
-                    <span>Rendered MP4 Preview</span>
+              {/* Delivery Grid */}
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "16px" }}>
+                {/* MP4 Player */}
+                <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                  <span style={{ fontSize: "12px", fontWeight: "700", color: "var(--text-secondary)", display: "flex", alignItems: "center", gap: "6px" }}>
+                    <Film size={14} color="var(--accent-primary)" />
+                    <span>Rendered MP4</span>
                   </span>
-                  <div className="relative aspect-video rounded-xl overflow-hidden bg-black border border-white/10 shadow-lg">
-                    <video
-                      src={jobState.videoUrl}
-                      controls
-                      autoPlay
-                      muted
-                      className="w-full h-full object-contain"
-                    />
+                  <div
+                    style={{
+                      aspectRatio: "16/9",
+                      borderRadius: "var(--radius-sm)",
+                      overflow: "hidden",
+                      background: "#000000",
+                      border: "1px solid var(--border-medium)",
+                    }}
+                  >
+                    <video src={jobState.videoUrl} controls autoPlay muted style={{ width: "100%", height: "100%", objectFit: "contain" }} />
                   </div>
                   <a
                     href={`/api/render/${jobState.id}/download`}
                     download
-                    className="w-full py-2.5 px-4 rounded-xl text-xs font-medium text-white bg-violet-600 hover:bg-violet-500 shadow-md shadow-violet-600/25 transition-all flex items-center justify-center gap-2 cursor-pointer"
+                    className="btn-primary"
+                    style={{ minHeight: "38px", padding: "8px 12px", fontSize: "12px", textDecoration: "none" }}
                   >
-                    <Download className="w-4 h-4" />
+                    <Download size={14} />
                     <span>Download MP4</span>
                   </a>
                 </div>
 
-                {/* Animated GIF Loop */}
-                <div className="space-y-2">
-                  <span className="text-xs font-semibold text-white/50 flex items-center gap-1.5">
-                    <Sparkles className="w-3.5 h-3.5 text-sky-400" />
-                    <span>Animated GIF Loop (15 FPS)</span>
+                {/* Animated GIF */}
+                <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                  <span style={{ fontSize: "12px", fontWeight: "700", color: "var(--text-secondary)", display: "flex", alignItems: "center", gap: "6px" }}>
+                    <Sparkles size={14} color="var(--accent-secondary)" />
+                    <span>Animated GIF</span>
                   </span>
-                  <div className="relative aspect-video rounded-xl overflow-hidden bg-black border border-white/10 shadow-lg flex items-center justify-center">
+                  <div
+                    style={{
+                      aspectRatio: "16/9",
+                      borderRadius: "var(--radius-sm)",
+                      overflow: "hidden",
+                      background: "#000000",
+                      border: "1px solid var(--border-medium)",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
                     <img
                       src={jobState.gifUrl || `/renders/${jobState.id}/marcutie_preview.gif`}
                       alt="Animated GIF loop"
-                      className="w-full h-full object-contain"
+                      style={{ width: "100%", height: "100%", objectFit: "contain" }}
                     />
                   </div>
                   <a
                     href={`/api/render/${jobState.id}/gif/download`}
                     download
-                    className="w-full py-2.5 px-4 rounded-xl text-xs font-medium text-sky-300 bg-sky-950/40 hover:bg-sky-900/50 border border-sky-500/30 transition-all flex items-center justify-center gap-2 cursor-pointer"
+                    className="btn-secondary"
+                    style={{ minHeight: "38px", padding: "8px 12px", fontSize: "12px", textDecoration: "none" }}
                   >
-                    <Download className="w-4 h-4" />
-                    <span>Download GIF Loop</span>
+                    <Download size={14} />
+                    <span>Download GIF</span>
                   </a>
                 </div>
 
-                {/* Settled Poster Frame */}
-                <div className="space-y-2">
-                  <span className="text-xs font-semibold text-white/50 flex items-center gap-1.5">
-                    <ImageIcon className="w-3.5 h-3.5 text-cyan-400" />
+                {/* Cover Poster */}
+                <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                  <span style={{ fontSize: "12px", fontWeight: "700", color: "var(--text-secondary)", display: "flex", alignItems: "center", gap: "6px" }}>
+                    <ImageIcon size={14} color="var(--success)" />
                     <span>Cover Poster Frame</span>
                   </span>
-                  <div className="relative aspect-video rounded-xl overflow-hidden bg-black border border-white/10 shadow-lg flex items-center justify-center">
-                    <img
-                      src={jobState.posterUrl}
-                      alt="Settled cover poster"
-                      className="w-full h-full object-contain"
-                    />
+                  <div
+                    style={{
+                      aspectRatio: "16/9",
+                      borderRadius: "var(--radius-sm)",
+                      overflow: "hidden",
+                      background: "#000000",
+                      border: "1px solid var(--border-medium)",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <img src={jobState.posterUrl} alt="Cover poster" style={{ width: "100%", height: "100%", objectFit: "contain" }} />
                   </div>
                   <a
                     href={`/api/render/${jobState.id}/poster`}
                     download
-                    className="w-full py-2.5 px-4 rounded-xl text-xs font-medium text-white/80 bg-white/5 hover:bg-white/10 border border-white/10 transition-all flex items-center justify-center gap-2 cursor-pointer"
+                    className="btn-secondary"
+                    style={{ minHeight: "38px", padding: "8px 12px", fontSize: "12px", textDecoration: "none" }}
                   >
-                    <Download className="w-4 h-4" />
+                    <Download size={14} />
                     <span>Download Poster</span>
                   </a>
                 </div>
               </div>
 
-              {/* Social Launch Copy Section */}
-              <div className="p-5 rounded-xl bg-white/[0.03] border border-white/10 space-y-3">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Share2 className="w-4 h-4 text-violet-400" />
-                    <span className="text-xs font-semibold text-white">Social Launch Captions</span>
+              {/* Social Launch Captions Card */}
+              <div
+                style={{
+                  padding: "16px 18px",
+                  borderRadius: "var(--radius-md)",
+                  background: "var(--bg-surface-2)",
+                  border: "1px solid var(--border-medium)",
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "12px",
+                }}
+              >
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "8px" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                    <Share2 size={16} color="var(--accent-primary)" />
+                    <span style={{ fontSize: "13px", fontWeight: "700", color: "var(--text-primary)" }}>Social Launch Captions</span>
                   </div>
+
                   {/* Platform Tabs */}
-                  <div className="flex items-center p-1 rounded-lg bg-black/40 border border-white/5">
-                    <button
-                      onClick={() => setActiveTab("twitter")}
-                      className={`px-3 py-1 rounded-md text-[11px] font-medium transition-all ${
-                        activeTab === "twitter"
-                          ? "bg-violet-600 text-white shadow-sm"
-                          : "text-white/50 hover:text-white"
-                      }`}
-                    >
-                      𝕏 Twitter
-                    </button>
-                    <button
-                      onClick={() => setActiveTab("linkedin")}
-                      className={`px-3 py-1 rounded-md text-[11px] font-medium transition-all ${
-                        activeTab === "linkedin"
-                          ? "bg-violet-600 text-white shadow-sm"
-                          : "text-white/50 hover:text-white"
-                      }`}
-                    >
-                      LinkedIn
-                    </button>
-                    <button
-                      onClick={() => setActiveTab("discord")}
-                      className={`px-3 py-1 rounded-md text-[11px] font-medium transition-all ${
-                        activeTab === "discord"
-                          ? "bg-violet-600 text-white shadow-sm"
-                          : "text-white/50 hover:text-white"
-                      }`}
-                    >
-                      Discord
-                    </button>
+                  <div
+                    style={{
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: "4px",
+                      background: "var(--bg-surface-1)",
+                      padding: "3px",
+                      borderRadius: "var(--radius-sm)",
+                      border: "1px solid var(--border-subtle)",
+                    }}
+                  >
+                    {(["twitter", "linkedin", "discord"] as const).map((tab) => (
+                      <button
+                        key={tab}
+                        type="button"
+                        onClick={() => setActiveTab(tab)}
+                        style={{
+                          padding: "4px 10px",
+                          borderRadius: "4px",
+                          fontSize: "11px",
+                          fontWeight: activeTab === tab ? "700" : "500",
+                          border: "none",
+                          background: activeTab === tab ? "var(--accent-primary)" : "transparent",
+                          color: activeTab === tab ? "#ffffff" : "var(--text-muted)",
+                          cursor: "pointer",
+                        }}
+                      >
+                        {tab === "twitter" ? "𝕏 Twitter" : tab.charAt(0).toUpperCase() + tab.slice(1)}
+                      </button>
+                    ))}
                   </div>
                 </div>
 
-                {/* Tab Copy Box */}
-                <div className="relative">
-                  <div className="p-3.5 rounded-xl bg-black/50 border border-white/5 font-mono text-xs text-white/80 leading-relaxed whitespace-pre-wrap max-h-40 overflow-y-auto">
-                    {activeTab === "twitter" && shareCopy.twitter.text}
-                    {activeTab === "linkedin" && shareCopy.linkedin}
-                    {activeTab === "discord" && shareCopy.discord}
-                  </div>
+                <div
+                  style={{
+                    padding: "12px 14px",
+                    borderRadius: "var(--radius-sm)",
+                    background: "var(--bg-surface-1)",
+                    border: "1px solid var(--border-medium)",
+                    fontFamily: "var(--font-mono)",
+                    fontSize: "12px",
+                    color: "var(--text-primary)",
+                    lineHeight: "1.5",
+                    whiteSpace: "pre-wrap",
+                    maxHeight: "140px",
+                    overflowY: "auto",
+                  }}
+                >
+                  {activeTab === "twitter" && shareCopy.twitter.text}
+                  {activeTab === "linkedin" && shareCopy.linkedin}
+                  {activeTab === "discord" && shareCopy.discord}
+                </div>
 
-                  <div className="flex items-center justify-between mt-2">
-                    <div className="text-[11px] text-white/40">
-                      {activeTab === "twitter" && (
-                        <span>
-                          {shareCopy.twitter.charCount} / 280 Characters{" "}
-                          {shareCopy.twitter.isUnderLimit ? "✓" : "(Thread Recommended)"}
-                        </span>
-                      )}
-                      {activeTab === "linkedin" && <span>Story-driven mobile feed format</span>}
-                      {activeTab === "discord" && <span>Markdown community announcement</span>}
-                    </div>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <span style={{ fontSize: "11px", color: "var(--text-muted)" }}>
+                    {activeTab === "twitter" && `${shareCopy.twitter.charCount} / 280 Characters ${shareCopy.twitter.isUnderLimit ? "✓" : "(Thread Recommended)"}`}
+                    {activeTab === "linkedin" && "Story-driven mobile feed format"}
+                    {activeTab === "discord" && "Markdown community announcement"}
+                  </span>
 
-                    <button
-                      onClick={() => {
-                        const text =
-                          activeTab === "twitter"
-                            ? shareCopy.twitter.text
-                            : activeTab === "linkedin"
-                            ? shareCopy.linkedin
-                            : shareCopy.discord;
-                        handleCopy(text, activeTab);
-                      }}
-                      className="px-3 py-1.5 rounded-lg text-xs font-medium text-white/90 bg-white/10 hover:bg-white/15 transition-colors flex items-center gap-1.5 cursor-pointer"
-                    >
-                      {copiedTab === activeTab ? (
-                        <>
-                          <Check className="w-3.5 h-3.5 text-emerald-400" />
-                          <span className="text-emerald-400">Copied!</span>
-                        </>
-                      ) : (
-                        <>
-                          <Copy className="w-3.5 h-3.5" />
-                          <span>Copy Caption</span>
-                        </>
-                      )}
-                    </button>
-                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const text =
+                        activeTab === "twitter"
+                          ? shareCopy.twitter.text
+                          : activeTab === "linkedin"
+                          ? shareCopy.linkedin
+                          : shareCopy.discord;
+                      handleCopy(text, activeTab);
+                    }}
+                    className="btn-secondary"
+                    style={{ minHeight: "34px", padding: "6px 14px", fontSize: "12px", gap: "6px" }}
+                  >
+                    {copiedTab === activeTab ? (
+                      <>
+                        <Check size={14} color="var(--success)" />
+                        <span style={{ color: "var(--success)", fontWeight: "700" }}>Copied!</span>
+                      </>
+                    ) : (
+                      <>
+                        <Copy size={14} />
+                        <span>Copy Caption</span>
+                      </>
+                    )}
+                  </button>
                 </div>
               </div>
             </div>
           )}
         </div>
 
-        {/* Footer */}
-        <div className="px-6 py-4 border-t border-white/10 bg-white/[0.02] flex items-center justify-between">
-          <div className="flex items-center gap-2 text-xs text-white/40">
-            <Layers className="w-3.5 h-3.5" />
+        {/* Modal Footer */}
+        <div
+          style={{
+            padding: "14px 24px",
+            borderTop: "1px solid var(--border-medium)",
+            background: "var(--bg-surface-1)",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
+          <div style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "12px", color: "var(--text-muted)" }}>
+            <Layers size={14} />
             <span>Marcutie v1.0 • Local Render Engine</span>
           </div>
           <button
             onClick={onClose}
-            className="px-4 py-2 rounded-xl text-xs font-medium text-white/70 hover:text-white bg-white/5 hover:bg-white/10 transition-colors cursor-pointer"
+            className="btn-secondary"
+            style={{ minHeight: "36px", padding: "6px 16px", fontSize: "12px" }}
           >
             Close
           </button>

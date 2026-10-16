@@ -11,6 +11,16 @@ const jobs = new Map();
 // Cached Remotion bundle location
 let cachedBundleLocation = null;
 
+function saveJobState(job, jobDir) {
+  try {
+    if (jobDir && fs.existsSync(jobDir)) {
+      fs.writeFileSync(path.join(jobDir, "job.json"), JSON.stringify(job, null, 2), "utf-8");
+    }
+  } catch {
+    // Non-fatal if state save fails
+  }
+}
+
 export const ASPECT_RATIO_DIMENSIONS = {
   "16:9": { width: 1920, height: 1080 },
   "9:16": { width: 1080, height: 1920 },
@@ -293,6 +303,8 @@ export async function renderWithRemotion(storyboard, outputVideoPath, dimensions
 
   if (onProgress) onProgress(35, "Rendering motion graphics frames");
 
+  const frameRenderStartTime = Date.now();
+
   await renderMedia({
     composition,
     serveUrl: cachedBundleLocation,
@@ -311,11 +323,23 @@ export async function renderWithRemotion(storyboard, outputVideoPath, dimensions
     onProgress: ({ renderedFrames, totalFrames, progress }) => {
       // Map progress from 35% to 75%
       const mappedPercent = Math.round(35 + progress * 40);
+      const elapsedSec = (Date.now() - frameRenderStartTime) / 1000;
+      let etaSec = null;
+      let etaText = "";
+      if (renderedFrames > 3 && elapsedSec > 0.5) {
+        const fps = renderedFrames / elapsedSec;
+        const remainingFrames = Math.max(0, totalFrames - renderedFrames);
+        etaSec = Math.max(1, Math.round(remainingFrames / fps));
+        const mins = Math.floor(etaSec / 60);
+        const secs = etaSec % 60;
+        etaText = mins > 0 ? `~${mins}m ${secs}s left` : `~${secs}s left`;
+      }
+      const stepMsg = etaText
+        ? `Rendering frames: ${renderedFrames}/${totalFrames} (${Math.round(progress * 100)}%) • ${etaText}`
+        : `Rendering frames: ${renderedFrames}/${totalFrames} (${Math.round(progress * 100)}%)`;
+
       if (onProgress) {
-        onProgress(
-          mappedPercent,
-          `Rendering frames: ${renderedFrames}/${totalFrames} (${Math.round(progress * 100)}%)`
-        );
+        onProgress(mappedPercent, stepMsg, etaSec, etaText);
       }
     },
   });
@@ -364,10 +388,13 @@ export function createRenderJob(storyboard, options = {}) {
     videoUrl: null,
     posterUrl: null,
     fileSize: null,
+    etaSec: null,
+    etaText: null,
     error: null,
   };
 
   jobs.set(jobId, job);
+  saveJobState(job, jobDir);
 
   // Execute job asynchronously in background
   executeRenderJob(jobId, storyboard, jobDir, dimensions, peakMoment, options).catch((err) => {
@@ -375,6 +402,7 @@ export function createRenderJob(storyboard, options = {}) {
     job.status = "error";
     job.error = err.message || String(err);
     job.currentStep = "Render failed";
+    saveJobState(job, jobDir);
   });
 
   return job;
@@ -391,9 +419,12 @@ async function executeRenderJob(jobId, storyboard, jobDir, dimensions, peakMomen
   const posterPath = path.join(jobDir, "poster.jpg");
   const finalVideoPath = path.join(jobDir, "marcutie_video.mp4");
 
-  const updateProgress = (pct, step) => {
+  const updateProgress = (pct, step, etaSec = null, etaText = null) => {
     job.progress = pct;
     job.currentStep = step;
+    if (etaSec !== null) job.etaSec = etaSec;
+    if (etaText !== null) job.etaText = etaText;
+    saveJobState(job, jobDir);
   };
 
   try {
@@ -442,7 +473,10 @@ async function executeRenderJob(jobId, storyboard, jobDir, dimensions, peakMomen
     job.videoUrl = `/renders/${jobId}/marcutie_video.mp4`;
     job.posterUrl = `/renders/${jobId}/poster.jpg`;
     job.fileSize = stats.size;
+    job.etaSec = 0;
+    job.etaText = "Done";
     job.completedAt = new Date().toISOString();
+    saveJobState(job, jobDir);
 
     // Clean up temporary raw video to conserve disk space
     if (fs.existsSync(rawVideoPath)) {
@@ -458,6 +492,7 @@ async function executeRenderJob(jobId, storyboard, jobDir, dimensions, peakMomen
     job.status = "error";
     job.error = err.message || String(err);
     job.currentStep = "Render failed";
+    saveJobState(job, jobDir);
     throw err;
   }
 }
@@ -466,7 +501,61 @@ async function executeRenderJob(jobId, storyboard, jobDir, dimensions, peakMomen
  * Retrieves job status by ID
  */
 export function getJob(jobId) {
-  return jobs.get(jobId) || null;
+  if (jobs.has(jobId)) {
+    return jobs.get(jobId);
+  }
+
+  // Attempt recovery from disk in case server restarted
+  const jobDir = path.join(process.cwd(), "data", "renders", jobId);
+  const jobJsonPath = path.join(jobDir, "job.json");
+
+  if (fs.existsSync(jobJsonPath)) {
+    try {
+      const persisted = JSON.parse(fs.readFileSync(jobJsonPath, "utf-8"));
+      if (persisted.status === "rendering" || persisted.status === "queued") {
+        persisted.status = "error";
+        persisted.error = "Render was interrupted by a server restart. Please re-run the render.";
+        persisted.currentStep = "Render interrupted";
+        saveJobState(persisted, jobDir);
+      }
+      jobs.set(jobId, persisted);
+      return persisted;
+    } catch {
+      return null;
+    }
+  }
+
+  // If storyboard.json exists but no job.json
+  const storyboardPath = path.join(jobDir, "storyboard.json");
+  if (fs.existsSync(storyboardPath)) {
+    const finalVideo = path.join(jobDir, "marcutie_video.mp4");
+    if (fs.existsSync(finalVideo)) {
+      const stats = fs.statSync(finalVideo);
+      const recovered = {
+        id: jobId,
+        status: "completed",
+        progress: 100,
+        currentStep: "Render complete",
+        videoUrl: `/renders/${jobId}/marcutie_video.mp4`,
+        posterUrl: `/renders/${jobId}/poster.jpg`,
+        fileSize: stats.size,
+      };
+      jobs.set(jobId, recovered);
+      return recovered;
+    } else {
+      const interrupted = {
+        id: jobId,
+        status: "error",
+        progress: 46,
+        currentStep: "Render interrupted",
+        error: "Render was interrupted by a server restart. Please click to re-render.",
+      };
+      jobs.set(jobId, interrupted);
+      return interrupted;
+    }
+  }
+
+  return null;
 }
 
 /**

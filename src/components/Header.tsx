@@ -1,11 +1,13 @@
 import React from "react";
-import { Sparkles, Server, AlertCircle, Settings, Command } from "lucide-react";
+import { Sparkles, Server, AlertCircle, Settings, Command, Sun, Moon } from "lucide-react";
 
 interface HeaderProps {
   serverStatus: "checking" | "online" | "offline";
   serverVersion?: string;
   onOpenSettings: () => void;
   hasApiKeys: boolean;
+  theme: "dark" | "light";
+  onToggleTheme: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -13,6 +15,8 @@ export const Header: React.FC<HeaderProps> = ({
   serverVersion = "1.0",
   onOpenSettings,
   hasApiKeys,
+  theme,
+  onToggleTheme,
 }) => {
   return (
     <header
@@ -125,6 +129,32 @@ export const Header: React.FC<HeaderProps> = ({
             </span>
           )}
         </div>
+
+        {/* Theme Toggle Button */}
+        <button
+          id="header-theme-toggle-btn"
+          type="button"
+          onClick={onToggleTheme}
+          className="btn-secondary"
+          style={{
+            minHeight: "44px",
+            padding: "8px 14px",
+            fontSize: "13px",
+            borderRadius: "var(--radius-sm)",
+            display: "inline-flex",
+            alignItems: "center",
+            gap: "7px",
+          }}
+          title={`Switch to ${theme === "dark" ? "Light" : "Dark"} Mode`}
+          aria-label={`Switch to ${theme === "dark" ? "Light" : "Dark"} Mode`}
+        >
+          {theme === "dark" ? (
+            <Sun size={15} className="theme-toggle-icon" color="var(--warning)" />
+          ) : (
+            <Moon size={15} className="theme-toggle-icon" color="var(--accent-primary)" />
+          )}
+          <span>{theme === "dark" ? "Light Mode" : "Dark Mode"}</span>
+        </button>
 
         {/* Settings button */}
         <button

@@ -487,7 +487,7 @@ export function PreFlightStudioPanel({
                   borderRadius: "var(--radius-md)",
                   border: customTone ? "1px solid var(--accent-primary)" : "1px solid var(--border-subtle)",
                   background: "var(--bg-surface-2)",
-                  color: "#ffffff",
+                  color: "var(--text-primary)",
                   fontSize: "12px",
                 }}
               />
@@ -539,7 +539,7 @@ export function PreFlightStudioPanel({
                     }}
                   >
                     <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "6px" }}>
-                      <span style={{ fontSize: "12px", fontWeight: "700", color: "#ffffff" }}>{opt.label}</span>
+                      <span style={{ fontSize: "12px", fontWeight: "700", color: "var(--text-primary)" }}>{opt.label}</span>
                       <span
                         style={{
                           fontSize: "10px",
@@ -596,7 +596,7 @@ export function PreFlightStudioPanel({
                     }}
                   >
                     <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "6px" }}>
-                      <span style={{ fontSize: "12px", fontWeight: "700", color: "#ffffff" }}>{info.name}</span>
+                      <span style={{ fontSize: "12px", fontWeight: "700", color: "var(--text-primary)" }}>{info.name}</span>
                       {isSelected && <Check size={14} color={pal.primary} />}
                     </div>
 
@@ -663,7 +663,7 @@ export function PreFlightStudioPanel({
                         width: "68px",
                         background: "transparent",
                         border: "none",
-                        color: "#ffffff",
+                        color: "var(--text-primary)",
                         fontSize: "11px",
                         fontFamily: "var(--font-mono)",
                       }}
@@ -695,7 +695,7 @@ export function PreFlightStudioPanel({
             <div>
               <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
                 <Mic size={18} color={voiceConfig.enabled ? "var(--success)" : "var(--text-muted)"} />
-                <span style={{ fontSize: "14px", fontWeight: "700", color: "#ffffff" }}>
+                <span style={{ fontSize: "14px", fontWeight: "700", color: "var(--text-primary)" }}>
                   AI Voiceover Narration (100% Local Kokoro-82M)
                 </span>
                 <span
@@ -809,7 +809,7 @@ export function PreFlightStudioPanel({
                   padding: "8px 12px",
                   borderRadius: "var(--radius-sm)",
                   background: "var(--bg-surface-2)",
-                  color: "#ffffff",
+                  color: "var(--text-primary)",
                   fontSize: "12px",
                 }}
               />
@@ -833,7 +833,7 @@ export function PreFlightStudioPanel({
               <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
                 <Type size={18} color={effectiveSubtitles.enabled ? "var(--accent-secondary)" : "var(--text-muted)"} />
                 <div>
-                  <div style={{ fontSize: "13px", fontWeight: "700", color: "#ffffff", display: "flex", alignItems: "center", gap: "8px" }}>
+                  <div style={{ fontSize: "13px", fontWeight: "700", color: "var(--text-primary)", display: "flex", alignItems: "center", gap: "8px" }}>
                     Kinetic Animated Captions & Burn-in
                     <span
                       style={{
